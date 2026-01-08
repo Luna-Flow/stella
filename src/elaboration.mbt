@@ -37,6 +37,22 @@ pub fn v_snd(v : Value) -> Value {
 }
 
 ///|
+pub fn v_j_elim(
+  a : Value,
+  x : Value,
+  motive : Value,
+  base_case : Value,
+  y : Value,
+  p : Value,
+) -> Value {
+  match p {
+    VRfl(_) => base_case
+    VNeutral(n) => VNeutral(NJElim(a, x, motive, base_case, y, n))
+    _ => panic()
+  }
+}
+
+///|
 pub fn eval_inf(t : TermInf, d : Env) -> Value {
   match t {
     Ann(e, _) => eval_chk(e, d)
@@ -48,7 +64,17 @@ pub fn eval_inf(t : TermInf, d : Env) -> Value {
     Sigma(a, b) => VSigma(eval_chk(a, d), fn(x) { eval_chk(b, cons(x, d)) })
     Fst(p) => v_fst(eval_inf(p, d))
     Snd(p) => v_snd(eval_inf(p, d))
-    UnitType => VStar
+    UnitType => VUnitType
+    Id(a, x, y) => VId(eval_chk(a, d), eval_chk(x, d), eval_chk(y, d))
+    JElim(a, x, mot, base, y, p) =>
+      v_j_elim(
+        eval_chk(a, d),
+        eval_chk(x, d),
+        eval_chk(mot, d),
+        eval_chk(base, d),
+        eval_chk(y, d),
+        eval_inf(p, d),
+      )
   }
 }
 
@@ -59,6 +85,7 @@ pub fn eval_chk(t : TermChk, d : Env) -> Value {
     Lam(e) => VLam(x => eval_chk(e, cons(x, d)))
     Pair(x, y) => VPair(eval_chk(x, d), eval_chk(y, d))
     UnitElement => VUnitElement
+    Rfl(x) => VRfl(eval_chk(x, d))
   }
 }
 
@@ -83,6 +110,17 @@ pub fn subst_inf(i : Int, r : TermInf, t : TermInf) -> TermInf {
     Fst(p) => Fst(subst_inf(i, r, p))
     Snd(p) => Snd(subst_inf(i, r, p))
     UnitType => UnitType
+    Id(a, x, y) =>
+      Id(subst_chk(i, r, a), subst_chk(i, r, x), subst_chk(i, r, y))
+    JElim(a, x, mot, met, y, p) =>
+      JElim(
+        subst_chk(i, r, a),
+        subst_chk(i, r, x),
+        subst_chk(i, r, mot),
+        subst_chk(i, r, met),
+        subst_chk(i, r, y),
+        subst_inf(i, r, p),
+      )
   }
 }
 
@@ -93,6 +131,7 @@ pub fn subst_chk(i : Int, r : TermInf, t : TermChk) -> TermChk {
     Lam(e) => Lam(subst_chk(i + 1, r, e))
     Pair(x, y) => Pair(subst_chk(i, r, x), subst_chk(i, r, y))
     UnitElement => UnitElement
+    Rfl(x) => Rfl(subst_chk(i, r, x))
   }
 }
 
@@ -107,6 +146,8 @@ pub fn quote(i : Int, v : Value) -> TermChk {
     VPair(a, b) => Pair(quote(i, a), quote(i, b))
     VUnitType => Inf(UnitType)
     VUnitElement => UnitElement
+    VId(a, x, y) => Inf(Id(quote(i, a), quote(i, x), quote(i, y)))
+    VRfl(x) => Rfl(quote(i, x))
   }
 }
 
@@ -122,6 +163,15 @@ pub fn neutral_quote(i : Int, n : Neutral) -> TermInf {
     NApp(n, v) => App(neutral_quote(i, n), quote(i, v))
     NFst(n) => Fst(neutral_quote(i, n))
     NSnd(n) => Snd(neutral_quote(i, n))
+    NJElim(a, x, mot, base, y, p) =>
+      JElim(
+        quote(i, a),
+        quote(i, x),
+        quote(i, mot),
+        quote(i, base),
+        quote(i, y),
+        neutral_quote(i, p),
+      )
   }
 }
 
@@ -196,6 +246,29 @@ pub fn type_inf(i : Int, g : Context, t : TermInf) -> Type raise TypeError {
       }
     }
     UnitType => VStar
+    Id(a, x, y) => {
+      type_chk(i, g, a, VStar)
+      let va = eval_chk(a, empty())
+      type_chk(i, g, x, va)
+      type_chk(i, g, y, va)
+      VStar
+    }
+    JElim(a, x, mot, base, y, p) => {
+      type_chk(i, g, a, VStar)
+      let va = eval_chk(a, empty())
+      type_chk(i, g, x, va)
+      let vx = eval_chk(x, empty())
+      type_chk(i, g, y, va)
+      let vy = eval_chk(y, empty())
+      type_chk(i, g, Inf(p), VId(va, vx, vy))
+      let vp = eval_inf(p, empty())
+      let mot_ty = VPi(va, fn(y_p) { VPi(VId(va, vx, y_p), fn(_) { VStar }) })
+      type_chk(i, g, mot, mot_ty)
+      let v_mot = eval_chk(mot, empty())
+      let base_ty = v_app(v_app(v_mot, vx), VRfl(vx))
+      type_chk(i, g, base, base_ty)
+      v_app(v_app(v_mot, vy), vp)
+    }
     _ => panic()
   }
 }
@@ -237,6 +310,17 @@ pub fn type_chk(
     UnitElement =>
       match v {
         VUnitType => ()
+        _ => raise TypeError("Type Mismatch")
+      }
+    Rfl(x) =>
+      match v {
+        VId(va, vx, vy) => {
+          type_chk(i, g, x, va)
+          let v_x = eval_chk(x, empty())
+          if quote(i, v_x) != quote(i, vx) || quote(i, v_x) != quote(i, vy) {
+            raise TypeError("Rfl endpoint mismatch")
+          }
+        }
         _ => raise TypeError("Type Mismatch")
       }
   }

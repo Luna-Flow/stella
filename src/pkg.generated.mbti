@@ -1,0 +1,108 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Luna-Flow/stella"
+
+import(
+  "moonbitlang/core/list"
+)
+
+// Values
+pub fn bound_free(Int, Name) -> TermInf
+
+pub fn eval_chk(TermChk, @list.List[Value]) -> Value
+
+pub fn eval_inf(TermInf, @list.List[Value]) -> Value
+
+pub fn neutral_quote(Int, Neutral) -> TermInf
+
+pub fn quote(Int, Value) -> TermChk
+
+pub fn quote_0(Value) -> TermChk
+
+pub fn subst_chk(Int, TermInf, TermChk) -> TermChk
+
+pub fn subst_inf(Int, TermInf, TermInf) -> TermInf
+
+pub fn type_chk(Int, @list.List[(Name, Value)], TermChk, Value) -> Unit raise TypeError
+
+pub fn type_inf(Int, @list.List[(Name, Value)], TermInf) -> Value raise TypeError
+
+pub fn type_inf_0(@list.List[(Name, Value)], TermInf) -> Value raise TypeError
+
+pub fn v_app(Value, Value) -> Value
+
+pub fn v_free(Name) -> Value
+
+pub fn v_fst(Value) -> Value
+
+pub fn v_j_elim(Value, Value, Value, Value, Value, Value) -> Value
+
+pub fn v_snd(Value) -> Value
+
+// Errors
+pub(all) suberror TypeError String
+
+// Types and methods
+pub(all) enum Name {
+  Global(String)
+  Local(Int)
+  Quote(Int)
+}
+pub impl Eq for Name
+pub impl Show for Name
+
+pub(all) enum Neutral {
+  NFree(Name)
+  NApp(Neutral, Value)
+  NFst(Neutral)
+  NSnd(Neutral)
+  NJElim(Value, Value, Value, Value, Value, Neutral)
+}
+
+pub(all) enum TermChk {
+  Inf(TermInf)
+  Lam(TermChk)
+  Pair(TermChk, TermChk)
+  UnitElement
+  Rfl(TermChk)
+}
+pub impl Eq for TermChk
+pub impl Show for TermChk
+
+pub(all) enum TermInf {
+  Ann(TermChk, TermChk)
+  Star
+  Pi(TermChk, TermChk)
+  Sigma(TermChk, TermChk)
+  Bound(Int)
+  Free(Name)
+  App(TermInf, TermChk)
+  Fst(TermInf)
+  Snd(TermInf)
+  UnitType
+  Id(TermChk, TermChk, TermChk)
+  JElim(TermChk, TermChk, TermChk, TermChk, TermChk, TermInf)
+}
+pub impl Eq for TermInf
+pub impl Show for TermInf
+
+#alias(Type)
+pub(all) enum Value {
+  VLam((Value) -> Value)
+  VStar
+  VPi(Value, (Value) -> Value)
+  VSigma(Value, (Value) -> Value)
+  VPair(Value, Value)
+  VNeutral(Neutral)
+  VUnitType
+  VUnitElement
+  VId(Value, Value, Value)
+  VRfl(Value)
+}
+
+// Type aliases
+pub type Context = @list.List[(Name, Value)]
+
+pub type Env = @list.List[Value]
+
+// Traits
+
