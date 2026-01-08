@@ -38,6 +38,8 @@ pub fn v_j_elim(Value, Value, Value, Value, Value, Value) -> Value
 
 pub fn v_snd(Value) -> Value
 
+pub fn v_w_rec(Value, (Value) -> Value, Value, Value, Value) -> Value
+
 // Errors
 pub(all) suberror TypeError String
 
@@ -56,6 +58,7 @@ pub(all) enum Neutral {
   NFst(Neutral)
   NSnd(Neutral)
   NJElim(Value, Value, Value, Value, Value, Neutral)
+  NWRec(Value, (Value) -> Value, Value, Value, Neutral)
 }
 
 pub(all) enum TermChk {
@@ -64,6 +67,7 @@ pub(all) enum TermChk {
   Pair(TermChk, TermChk)
   UnitElement
   Rfl(TermChk)
+  Sup(TermChk, TermChk)
 }
 pub impl Eq for TermChk
 pub impl Show for TermChk
@@ -81,6 +85,8 @@ pub(all) enum TermInf {
   UnitType
   Id(TermChk, TermChk, TermChk)
   JElim(TermChk, TermChk, TermChk, TermChk, TermChk, TermInf)
+  W(TermChk, TermChk)
+  WRec(TermChk, TermChk, TermChk, TermChk, TermInf)
 }
 pub impl Eq for TermInf
 pub impl Show for TermInf
@@ -97,6 +103,8 @@ pub(all) enum Value {
   VUnitElement
   VId(Value, Value, Value)
   VRfl(Value)
+  VW(Value, (Value) -> Value)
+  VSup(Value, (Value) -> Value)
 }
 
 // Type aliases

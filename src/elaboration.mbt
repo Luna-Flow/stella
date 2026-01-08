@@ -53,6 +53,24 @@ pub fn v_j_elim(
 }
 
 ///|
+pub fn v_w_rec(
+  a : Value,
+  b : (Value) -> Value,
+  mot : Value,
+  step : Value,
+  target : Value,
+) -> Value {
+  match target {
+    VSup(s, f) => {
+      let ih = VLam(fn(p) { v_w_rec(a, b, mot, step, f(p)) })
+      v_app(v_app(v_app(step, s), VLam(f)), ih)
+    }
+    VNeutral(n) => VNeutral(NWRec(a, b, mot, step, n))
+    _ => panic()
+  }
+}
+
+///|
 pub fn eval_inf(t : TermInf, d : Env) -> Value {
   match t {
     Ann(e, _) => eval_chk(e, d)
@@ -75,6 +93,12 @@ pub fn eval_inf(t : TermInf, d : Env) -> Value {
         eval_chk(y, d),
         eval_inf(p, d),
       )
+    W(a, b) => VW(eval_chk(a, d), fn(x) { eval_chk(b, cons(x, d)) })
+    WRec(a, b, mot, step, target) => {
+      let va = eval_chk(a, d)
+      let vb = fn(x) { eval_chk(b, cons(x, d)) }
+      v_w_rec(va, vb, eval_chk(mot, d), eval_chk(step, d), eval_inf(target, d))
+    }
   }
 }
 
@@ -86,6 +110,15 @@ pub fn eval_chk(t : TermChk, d : Env) -> Value {
     Pair(x, y) => VPair(eval_chk(x, d), eval_chk(y, d))
     UnitElement => VUnitElement
     Rfl(x) => VRfl(eval_chk(x, d))
+    Sup(s, f) => {
+      let vs = eval_chk(s, d)
+      let vf = eval_chk(f, d)
+      match vf {
+        VLam(cl) => VSup(vs, cl)
+        VNeutral(n) => VSup(vs, fn(v) { v_app(VNeutral(n), v) })
+        _ => panic()
+      }
+    }
   }
 }
 
@@ -121,6 +154,15 @@ pub fn subst_inf(i : Int, r : TermInf, t : TermInf) -> TermInf {
         subst_chk(i, r, y),
         subst_inf(i, r, p),
       )
+    W(a, b) => W(subst_chk(i, r, a), subst_chk(i + 1, r, b))
+    WRec(a, b, mot, step, target) =>
+      WRec(
+        subst_chk(i, r, a),
+        subst_chk(i, r, b),
+        subst_chk(i, r, mot),
+        subst_chk(i, r, step),
+        subst_inf(i, r, target),
+      )
   }
 }
 
@@ -132,6 +174,7 @@ pub fn subst_chk(i : Int, r : TermInf, t : TermChk) -> TermChk {
     Pair(x, y) => Pair(subst_chk(i, r, x), subst_chk(i, r, y))
     UnitElement => UnitElement
     Rfl(x) => Rfl(subst_chk(i, r, x))
+    Sup(s, f) => Sup(subst_chk(i, r, s), subst_chk(i, r, f))
   }
 }
 
@@ -148,6 +191,8 @@ pub fn quote(i : Int, v : Value) -> TermChk {
     VUnitElement => UnitElement
     VId(a, x, y) => Inf(Id(quote(i, a), quote(i, x), quote(i, y)))
     VRfl(x) => Rfl(quote(i, x))
+    VW(a, b) => Inf(W(quote(i, a), quote(i + 1, b(v_free(Quote(i))))))
+    VSup(s, f) => Sup(quote(i, s), Lam(quote(i + 1, f(v_free(Quote(i))))))
   }
 }
 
@@ -171,6 +216,14 @@ pub fn neutral_quote(i : Int, n : Neutral) -> TermInf {
         quote(i, base),
         quote(i, y),
         neutral_quote(i, p),
+      )
+    NWRec(a, b, mot, step, n) =>
+      WRec(
+        quote(i, a),
+        quote(i + 1, b(v_free(Quote(i)))),
+        quote(i, mot),
+        quote(i, step),
+        neutral_quote(i, n),
       )
   }
 }
@@ -269,6 +322,34 @@ pub fn type_inf(i : Int, g : Context, t : TermInf) -> Type raise TypeError {
       type_chk(i, g, base, base_ty)
       v_app(v_app(v_mot, vy), vp)
     }
+    WRec(a, b, mot, step, target) => {
+      type_chk(i, g, a, VStar)
+      let va = eval_chk(a, empty())
+      type_chk(i, g, b, VPi(va, fn(_) { VStar }))
+      let vb_val = eval_chk(b, empty())
+      let vb = match vb_val {
+        VPi(_, f) => f
+        _ => raise TypeError("W position must be a Pi")
+      }
+      let v_w = VW(va, vb)
+      type_chk(i, g, Inf(target), v_w)
+      let v_target = eval_inf(target, empty())
+      type_chk(i, g, mot, VPi(v_w, fn(_) { VStar }))
+      let v_mot = eval_chk(mot, empty())
+      let step_ty = VPi(va, fn(s) {
+        let v_bs = vb(s)
+        let v_f_ty = VPi(v_bs, fn(_) { v_w })
+        VPi(v_f_ty, fn(f) {
+          let v_ih_ty = VPi(v_bs, fn(p) { v_app(v_mot, v_app(f, p)) })
+          VPi(v_ih_ty, fn(_) {
+            let f_closure = fn(pos) { v_app(f, pos) }
+            v_app(v_mot, VSup(s, f_closure))
+          })
+        })
+      })
+      type_chk(i, g, step, step_ty)
+      v_app(v_mot, v_target)
+    }
     _ => panic()
   }
 }
@@ -322,6 +403,16 @@ pub fn type_chk(
           }
         }
         _ => raise TypeError("Type Mismatch")
+      }
+    Sup(s, f) =>
+      match v {
+        VW(va, vb) => {
+          type_chk(i, g, s, va)
+          let vs = eval_chk(s, empty())
+          let v_bs = vb(vs)
+          type_chk(i, g, f, VPi(v_bs, fn(_pos) { VW(va, vb) }))
+        }
+        _ => raise TypeError("Type Mismatch: Expected W-type for Sup")
       }
   }
 }

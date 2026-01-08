@@ -12,6 +12,8 @@ pub(all) enum TermChk {
   Pair(TermChk, TermChk)
   UnitElement
   Rfl(TermChk)
+  /// Sup(shape, children)
+  Sup(TermChk, TermChk)
 } derive(Show, Eq)
 
 ///|
@@ -30,6 +32,10 @@ pub(all) enum TermInf {
   Id(TermChk, TermChk, TermChk)
   /// JElim(A, x, motive, base_case, y, p)
   JElim(TermChk, TermChk, TermChk, TermChk, TermChk, TermInf)
+  /// W(A, B)
+  W(TermChk, TermChk)
+  /// WRec(A, B, motive, step_case, target)
+  WRec(TermChk, TermChk, TermChk, TermChk, TermInf)
 } derive(Show, Eq)
 
 ///|
@@ -39,6 +45,7 @@ pub(all) enum Neutral {
   NFst(Neutral)
   NSnd(Neutral)
   NJElim(Value, Value, Value, Value, Value, Neutral)
+  NWRec(Value, (Value) -> Value, Value, Value, Neutral)
 }
 
 ///|
@@ -53,6 +60,8 @@ pub(all) enum Value {
   VUnitElement
   VId(Value, Value, Value)
   VRfl(Value)
+  VW(Value, (Value) -> Value)
+  VSup(Value, (Value) -> Value)
 }
 
 ///|
