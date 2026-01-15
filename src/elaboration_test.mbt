@@ -17,11 +17,11 @@ test "Universe Hierarchy: Max Rule (Pi Types)" {
 }
 
 ///|
-test "Universe Hierarchy: Subtyping logic" {
-  assert_eq(subtyping(0, VUniverse(0), VUniverse(1)), true)
-  assert_eq(subtyping(0, VUniverse(1), VUniverse(1)), true)
-  assert_eq(subtyping(0, VUniverse(1), VUniverse(0)), false)
-  assert_eq(subtyping(0, VUnitType, VUniverse(0)), false)
+test "Universe Hierarchy: def_eq logic" {
+  assert_eq(def_eq(0, VUniverse(0), VUniverse(1)), true)
+  assert_eq(def_eq(0, VUniverse(1), VUniverse(1)), true)
+  assert_eq(def_eq(0, VUniverse(1), VUniverse(0)), false)
+  assert_eq(def_eq(0, VUnitType, VUniverse(0)), false)
 }
 
 ///|
