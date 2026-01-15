@@ -10,74 +10,74 @@ pub suberror TypeError {
 }
 
 ///|
-pub fn v_free(n : Name) -> Value {
+pub fn val_var(n : Name) -> Value {
   VNeutral(NFree(n))
 }
 
 ///|
-pub fn v_app(e : Value, v : Value) -> Value {
-  match e {
-    VLam(f) => f(v)
-    VNeutral(n) => VNeutral(NApp(n, v))
+pub fn val_app(func : Value, arg : Value) -> Value {
+  match func {
+    VLam(f) => f(arg)
+    VNeutral(neu) => VNeutral(NApp(neu, arg))
     _ => panic()
   }
 }
 
 ///|
-pub fn v_fst(v : Value) -> Value {
-  match v {
+pub fn val_fst(val : Value) -> Value {
+  match val {
     VPair(a, _) => a
-    VNeutral(n) => VNeutral(NFst(n))
+    VNeutral(neu) => VNeutral(NFst(neu))
     _ => panic()
   }
 }
 
 ///|
-pub fn v_snd(v : Value) -> Value {
-  match v {
+pub fn val_snd(val : Value) -> Value {
+  match val {
     VPair(_, b) => b
-    VNeutral(n) => VNeutral(NSnd(n))
+    VNeutral(neu) => VNeutral(NSnd(neu))
     _ => panic()
   }
 }
 
 ///|
-pub fn v_j_elim(
-  a : Value,
-  x : Value,
-  mot : Value,
+pub fn val_j_elim(
+  type_a : Value,
+  val_x : Value,
+  motive : Value,
   base : Value,
-  y : Value,
-  p : Value,
+  val_y : Value,
+  eq_proof : Value,
 ) -> Value {
-  match p {
+  match eq_proof {
     VRfl(_) => base
-    VNeutral(n) => VNeutral(NJElim(a, x, mot, base, y, n))
+    VNeutral(neu) => VNeutral(NJElim(type_a, val_x, motive, base, val_y, neu))
     _ => panic()
   }
 }
 
 ///|
-pub fn v_w_rec(
-  a : Value,
-  b : (Value) -> Value,
-  mot : Value,
+pub fn val_w_rec(
+  type_a : Value,
+  type_b : (Value) -> Value,
+  motive : Value,
   step : Value,
   target : Value,
 ) -> Value {
   match target {
     VSup(s, f) => {
-      let ih = VLam(fn(pos) { v_w_rec(a, b, mot, step, f(pos)) })
-      v_app(v_app(v_app(step, s), VLam(f)), ih)
+      let ih = VLam(fn(pos) { val_w_rec(type_a, type_b, motive, step, f(pos)) })
+      val_app(val_app(val_app(step, s), VLam(f)), ih)
     }
-    VNeutral(n) => VNeutral(NWRec(a, b, mot, step, n))
+    VNeutral(neu) => VNeutral(NWRec(type_a, type_b, motive, step, neu))
     _ => panic()
   }
 }
 
 ///|
-pub fn v_max_univ(v1 : Value, v2 : Value) -> Value {
-  match (v1, v2) {
+pub fn val_max_univ(val1 : Value, val2 : Value) -> Value {
+  match (val1, val2) {
     (VUniverse(u1), VUniverse(u2)) => VUniverse(u1.max(u2))
     _ => panic()
   }
@@ -85,92 +85,98 @@ pub fn v_max_univ(v1 : Value, v2 : Value) -> Value {
 
 ///|
 fn ensure_inf(
-  i : Int,
-  g : Context,
-  d : Env,
-  t : TermChk,
+  lvl : Int,
+  ctx : Context,
+  env : Env,
+  term_chk : TermChk,
 ) -> Value raise TypeError {
-  guard t is Inf(t_inf) else { raise TypeError("Type must be Inf") }
-  type_inf(i, g, d, t_inf)
+  guard term_chk is Inf(term_inf) else { raise TypeError("Type must be Inf") }
+  type_inf(lvl, ctx, env, term_inf)
 }
 
 ///|
-fn ensure_univ(v : Value) -> Int raise TypeError {
-  match v {
-    VUniverse(u) => u
+fn ensure_univ(val : Value) -> Int raise TypeError {
+  match val {
+    VUniverse(univ_lvl) => univ_lvl
     _ => raise TypeError("Expected a universe")
   }
 }
 
 ///|
-pub fn subtyping(i : Int, v1 : Value, v2 : Value) -> Bool {
-  match (v1, v2) {
+pub fn def_eq(lvl : Int, val1 : Value, val2 : Value) -> Bool {
+  match (val1, val2) {
     (VUniverse(u1), VUniverse(u2)) => u1 <= u2
     (VPi(a1, b1), VPi(a2, b2)) => {
-      if quote(i, a1) != quote(i, a2) {
+      if quote(lvl, a1) != quote(lvl, a2) {
         return false
       }
-      let v = v_free(Quote(i))
-      subtyping(i + 1, b1(v), b2(v))
+      let fresh_val = val_var(Quote(lvl))
+      def_eq(lvl + 1, b1(fresh_val), b2(fresh_val))
     }
     (VSigma(a1, b1), VSigma(a2, b2)) => {
-      if not(subtyping(i, a1, a2)) {
+      if not(def_eq(lvl, a1, a2)) {
         return false
       }
-      let v = v_free(Quote(i))
-      subtyping(i + 1, b1(v), b2(v))
+      let fresh_val = val_var(Quote(lvl))
+      def_eq(lvl + 1, b1(fresh_val), b2(fresh_val))
     }
-    _ => quote(i, v1) == quote(i, v2)
+    _ => quote(lvl, val1) == quote(lvl, val2)
   }
 }
 
 ///|
-pub fn eval_inf(t : TermInf, d : Env) -> Value {
-  match t {
-    Ann(e, _) => eval_chk(e, d)
-    Universe(u) => VUniverse(u)
-    Pi(a, b) => VPi(eval_chk(a, d), fn(x) { eval_chk(b, cons(x, d)) })
-    Sigma(a, b) => VSigma(eval_chk(a, d), fn(x) { eval_chk(b, cons(x, d)) })
-    Bound(i) => d.iter().nth(i).unwrap()
-    Free(x) => v_free(x)
-    App(f, e) => v_app(eval_inf(f, d), eval_chk(e, d))
-    Fst(p) => v_fst(eval_inf(p, d))
-    Snd(p) => v_snd(eval_inf(p, d))
+pub fn eval_inf(term : TermInf, env : Env) -> Value {
+  match term {
+    Bound(idx) => env.iter().nth(idx).unwrap()
+    Free(x) => val_var(x)
     UnitType => VUnitType
-    Id(a, x, y) => VId(eval_chk(a, d), eval_chk(x, d), eval_chk(y, d))
-    JElim(a, x, mot, base, y, p) =>
-      v_j_elim(
-        eval_chk(a, d),
-        eval_chk(x, d),
-        eval_chk(mot, d),
-        eval_chk(base, d),
-        eval_chk(y, d),
-        eval_inf(p, d),
+    Universe(univ_lvl) => VUniverse(univ_lvl)
+    Ann(e, _) => eval_chk(e, env)
+    Pi(a, b) => VPi(eval_chk(a, env), fn(x) { eval_chk(b, cons(x, env)) })
+    App(f, e) => val_app(eval_inf(f, env), eval_chk(e, env))
+    Sigma(a, b) => VSigma(eval_chk(a, env), fn(x) { eval_chk(b, cons(x, env)) })
+    Fst(p) => val_fst(eval_inf(p, env))
+    Snd(p) => val_snd(eval_inf(p, env))
+    Id(a, x, y) => VId(eval_chk(a, env), eval_chk(x, env), eval_chk(y, env))
+    JElim(a, x, motive, base, y, p) =>
+      val_j_elim(
+        eval_chk(a, env),
+        eval_chk(x, env),
+        eval_chk(motive, env),
+        eval_chk(base, env),
+        eval_chk(y, env),
+        eval_inf(p, env),
       )
-    W(a, b) => VW(eval_chk(a, d), fn(x) { eval_chk(b, cons(x, d)) })
-    WRec(a, b, mot, step, target) => {
-      let va = eval_chk(a, d)
-      let vb_val = eval_chk(b, d)
-      let vb = fn(v) { v_app(vb_val, v) }
-      v_w_rec(va, vb, eval_chk(mot, d), eval_chk(step, d), eval_inf(target, d))
+    W(a, b) => VW(eval_chk(a, env), fn(x) { eval_chk(b, cons(x, env)) })
+    WRec(a, b, motive, step, target) => {
+      let type_a = eval_chk(a, env)
+      let type_b_val = eval_chk(b, env)
+      let type_b = fn(v) { val_app(type_b_val, v) }
+      val_w_rec(
+        type_a,
+        type_b,
+        eval_chk(motive, env),
+        eval_chk(step, env),
+        eval_inf(target, env),
+      )
     }
   }
 }
 
 ///|
-pub fn eval_chk(t : TermChk, d : Env) -> Value {
-  match t {
-    Inf(i) => eval_inf(i, d)
-    Lam(e) => VLam(fn(x) { eval_chk(e, cons(x, d)) })
-    Pair(x, y) => VPair(eval_chk(x, d), eval_chk(y, d))
+pub fn eval_chk(term : TermChk, env : Env) -> Value {
+  match term {
+    Inf(i) => eval_inf(i, env)
     UnitElement => VUnitElement
-    Rfl(x) => VRfl(eval_chk(x, d))
+    Lam(e) => VLam(fn(x) { eval_chk(e, cons(x, env)) })
+    Pair(x, y) => VPair(eval_chk(x, env), eval_chk(y, env))
+    Rfl(x) => VRfl(eval_chk(x, env))
     Sup(s, f) => {
-      let vs = eval_chk(s, d)
-      let vf = eval_chk(f, d)
-      match vf {
-        VLam(cl) => VSup(vs, cl)
-        VNeutral(n) => VSup(vs, fn(v) { v_app(VNeutral(n), v) })
+      let val_s = eval_chk(s, env)
+      let val_f = eval_chk(f, env)
+      match val_f {
+        VLam(cl) => VSup(val_s, cl)
+        VNeutral(neu) => VSup(val_s, fn(v) { val_app(VNeutral(neu), v) })
         _ => panic()
       }
     }
@@ -178,93 +184,69 @@ pub fn eval_chk(t : TermChk, d : Env) -> Value {
 }
 
 ///|
-pub fn quote(i : Int, v : Value) -> TermChk {
-  match v {
-    VUniverse(u) => Inf(Universe(u))
-    VPi(a, b) => Inf(Pi(quote(i, a), quote(i + 1, b(v_free(Quote(i))))))
-    VSigma(a, b) => Inf(Sigma(quote(i, a), quote(i + 1, b(v_free(Quote(i))))))
-    VLam(f) => Lam(quote(i + 1, f(v_free(Quote(i)))))
-    VPair(a, b) => Pair(quote(i, a), quote(i, b))
+pub fn quote(lvl : Int, val : Value) -> TermChk {
+  match val {
+    VNeutral(neu) => Inf(neutral_quote(lvl, neu))
     VUnitType => Inf(UnitType)
     VUnitElement => UnitElement
-    VId(a, x, y) => Inf(Id(quote(i, a), quote(i, x), quote(i, y)))
-    VRfl(x) => Rfl(quote(i, x))
-    VW(a, b) => Inf(W(quote(i, a), quote(i + 1, b(v_free(Quote(i))))))
-    VSup(s, f) => Sup(quote(i, s), Lam(quote(i + 1, f(v_free(Quote(i))))))
-    VNeutral(n) => Inf(neutral_quote(i, n))
+    VUniverse(univ_lvl) => Inf(Universe(univ_lvl))
+    VLam(f) => Lam(quote(lvl + 1, f(val_var(Quote(lvl)))))
+    VPi(a, b) => Inf(Pi(quote(lvl, a), quote(lvl + 1, b(val_var(Quote(lvl))))))
+    VSigma(a, b) =>
+      Inf(Sigma(quote(lvl, a), quote(lvl + 1, b(val_var(Quote(lvl))))))
+    VPair(a, b) => Pair(quote(lvl, a), quote(lvl, b))
+    VId(a, x, y) => Inf(Id(quote(lvl, a), quote(lvl, x), quote(lvl, y)))
+    VRfl(x) => Rfl(quote(lvl, x))
+    VW(a, b) => Inf(W(quote(lvl, a), quote(lvl + 1, b(val_var(Quote(lvl))))))
+    VSup(s, f) =>
+      Sup(quote(lvl, s), Lam(quote(lvl + 1, f(val_var(Quote(lvl))))))
   }
 }
 
 ///|
-pub fn neutral_quote(i : Int, n : Neutral) -> TermInf {
-  match n {
+pub fn neutral_quote(lvl : Int, neu : Neutral) -> TermInf {
+  match neu {
     NFree(x) =>
       match x {
-        Quote(k) => Bound(i - k - 1)
+        Quote(k) => Bound(lvl - k - 1)
         _ => Free(x)
       }
-    NApp(n, v) => App(neutral_quote(i, n), quote(i, v))
-    NFst(n) => Fst(neutral_quote(i, n))
-    NSnd(n) => Snd(neutral_quote(i, n))
-    NJElim(a, x, mot, base, y, p) =>
+    NApp(n, v) => App(neutral_quote(lvl, n), quote(lvl, v))
+    NFst(n) => Fst(neutral_quote(lvl, n))
+    NSnd(n) => Snd(neutral_quote(lvl, n))
+    NJElim(a, x, motive, base, y, p) =>
       JElim(
-        quote(i, a),
-        quote(i, x),
-        quote(i, mot),
-        quote(i, base),
-        quote(i, y),
-        neutral_quote(i, p),
+        quote(lvl, a),
+        quote(lvl, x),
+        quote(lvl, motive),
+        quote(lvl, base),
+        quote(lvl, y),
+        neutral_quote(lvl, p),
       )
-    NWRec(a, b, mot, step, n) =>
+    NWRec(a, b, motive, step, n) =>
       WRec(
-        quote(i, a),
-        quote(i + 1, b(v_free(Quote(i)))),
-        quote(i, mot),
-        quote(i, step),
-        neutral_quote(i, n),
+        quote(lvl, a),
+        quote(lvl + 1, b(val_var(Quote(lvl)))),
+        quote(lvl, motive),
+        quote(lvl, step),
+        neutral_quote(lvl, n),
       )
   }
 }
 
 ///|
 pub fn type_inf(
-  i : Int,
-  g : Context,
-  d : Env,
-  t : TermInf,
+  lvl : Int,
+  ctx : Context,
+  env : Env,
+  term : TermInf,
 ) -> Type raise TypeError {
-  match t {
-    Universe(u) => VUniverse(u + 1)
-    UnitType => VUniverse(0)
-    Ann(e, dt) => {
-      guard dt is Inf(t_inf) else { raise TypeError("Type must be Inf") }
-      let ti = type_inf(i, g, d, t_inf)
-      match ti {
-        VUniverse(_) => {
-          let ty = eval_inf(t_inf, d)
-          type_chk(i, g, d, e, ty)
-          ty
-        }
-        _ => raise TypeError("The annotation's type is not a type")
-      }
-    }
-    Pi(a, b) | Sigma(a, b) | W(a, b) => {
-      let u1 = ensure_inf(i, g, d, a) |> ensure_univ()
-      let va = eval_chk(a, d)
-      let u2 = ensure_inf(
-          i + 1,
-          cons((Local(i), va), g),
-          cons(v_free(Local(i)), d),
-          b,
-        )
-        |> ensure_univ()
-      VUniverse(u1.max(u2))
-    }
-    Bound(j) => {
-      let val = d.iter().nth(j).unwrap()
+  match term {
+    Bound(idx) => {
+      let val = env.iter().nth(idx).unwrap()
       match val {
         VNeutral(NFree(n)) =>
-          match g.iter().find_first(fn(pair) { pair.0 == n }) {
+          match ctx.iter().find_first(fn(pair) { pair.0 == n }) {
             Some((_, ty)) => ty
             None => raise TypeError("Unknown Identifier")
           }
@@ -273,162 +255,200 @@ pub fn type_inf(
       }
     }
     Free(x) =>
-      match g.iter().find_first(fn(pair) { pair.0 == x }) {
+      match ctx.iter().find_first(fn(pair) { pair.0 == x }) {
         Some((_, ty)) => ty
         None => raise TypeError("Unknown Identifier: \{x}")
       }
+    UnitType => VUniverse(0)
+    Universe(univ_lvl) => VUniverse(univ_lvl + 1)
+    Ann(e, dt) => {
+      guard dt is Inf(term_inf) else { raise TypeError("Type must be Inf") }
+      let type_of_type = type_inf(lvl, ctx, env, term_inf)
+      match type_of_type {
+        VUniverse(_) => {
+          let ty = eval_inf(term_inf, env)
+          type_chk(lvl, ctx, env, e, ty)
+          ty
+        }
+        _ => raise TypeError("The annotation's type is not a type")
+      }
+    }
+    Pi(a, b) | Sigma(a, b) | W(a, b) => {
+      let u1 = ensure_inf(lvl, ctx, env, a) |> ensure_univ()
+      let type_a = eval_chk(a, env)
+      let u2 = ensure_inf(
+          lvl + 1,
+          cons((Local(lvl), type_a), ctx),
+          cons(val_var(Local(lvl)), env),
+          b,
+        )
+        |> ensure_univ()
+      VUniverse(u1.max(u2))
+    }
     App(f, e) =>
-      match type_inf(i, g, d, f) {
+      match type_inf(lvl, ctx, env, f) {
         VPi(a, b) => {
-          type_chk(i, g, d, e, a)
-          b(eval_chk(e, d))
+          type_chk(lvl, ctx, env, e, a)
+          b(eval_chk(e, env))
         }
         _ => raise TypeError("Illegal Application")
       }
     Fst(p) =>
-      match type_inf(i, g, d, p) {
+      match type_inf(lvl, ctx, env, p) {
         VSigma(a, _) => a
         _ => raise TypeError("Fst expects Sigma")
       }
     Snd(p) =>
-      match type_inf(i, g, d, p) {
-        VSigma(_, b) => b(v_fst(eval_inf(p, d)))
+      match type_inf(lvl, ctx, env, p) {
+        VSigma(_, b) => b(val_fst(eval_inf(p, env)))
         _ => raise TypeError("Snd expects Sigma")
       }
     Id(a, x, y) => {
-      let u = ensure_inf(i, g, d, a) |> ensure_univ()
-      let va = eval_chk(a, d)
-      type_chk(i, g, d, x, va)
-      type_chk(i, g, d, y, va)
-      VUniverse(u)
+      let univ_lvl = ensure_inf(lvl, ctx, env, a) |> ensure_univ()
+      let type_a = eval_chk(a, env)
+      type_chk(lvl, ctx, env, x, type_a)
+      type_chk(lvl, ctx, env, y, type_a)
+      VUniverse(univ_lvl)
     }
-    JElim(a, x, mot, base, y, p) => {
-      ensure_inf(i, g, d, a) |> ensure_univ() |> ignore
-      let va = eval_chk(a, d)
-      type_chk(i, g, d, x, va)
-      let vx = eval_chk(x, d)
-      type_chk(i, g, d, y, va)
-      let vy = eval_chk(y, d)
-      type_chk(i, g, d, Inf(p), VId(va, vx, vy))
-      let mot_ty = ensure_inf(i, g, d, mot)
-      match mot_ty {
+    JElim(a, x, motive, base, y, p) => {
+      ensure_inf(lvl, ctx, env, a) |> ensure_univ() |> ignore
+      let type_a = eval_chk(a, env)
+      type_chk(lvl, ctx, env, x, type_a)
+      let val_x = eval_chk(x, env)
+      type_chk(lvl, ctx, env, y, type_a)
+      let val_y = eval_chk(y, env)
+      type_chk(lvl, ctx, env, Inf(p), VId(type_a, val_x, val_y))
+      let type_motive = ensure_inf(lvl, ctx, env, motive)
+      match type_motive {
         VPi(_, f1) =>
-          match f1(v_free(Quote(i))) {
+          match f1(val_var(Quote(lvl))) {
             VPi(_, f2) => {
-              let co_domain = f2(v_free(Quote(i + 1)))
+              let co_domain = f2(val_var(Quote(lvl + 1)))
               ensure_univ(co_domain) |> ignore
             }
             _ => raise TypeError("Motive must be a binary function")
           }
         _ => raise TypeError("Motive must be a function")
       }
-      let v_mot = eval_chk(mot, d)
-      type_chk(i, g, d, base, v_app(v_app(v_mot, vx), VRfl(vx)))
-      v_app(v_app(v_mot, vy), eval_inf(p, d))
+      let val_motive = eval_chk(motive, env)
+      type_chk(
+        lvl,
+        ctx,
+        env,
+        base,
+        val_app(val_app(val_motive, val_x), VRfl(val_x)),
+      )
+      val_app(val_app(val_motive, val_y), eval_inf(p, env))
     }
-    WRec(a, b, mot, step, target) => {
-      ensure_inf(i, g, d, a) |> ensure_univ() |> ignore
-      let va = eval_chk(a, d)
-      let b_ty = ensure_inf(i, g, d, b)
-      match b_ty {
+    WRec(a, b, motive, step, target) => {
+      ensure_inf(lvl, ctx, env, a) |> ensure_univ() |> ignore
+      let type_a = eval_chk(a, env)
+      let type_b_type = ensure_inf(lvl, ctx, env, b)
+      match type_b_type {
         VPi(dom, cod) => {
-          if quote(i, dom) != quote(i, va) {
+          if quote(lvl, dom) != quote(lvl, type_a) {
             raise TypeError("W-type: B domain mismatch")
           }
-          let _ = ensure_univ(cod(v_free(Quote(i))))
+          let _ = ensure_univ(cod(val_var(Quote(lvl))))
 
         }
         _ => raise TypeError("WRec: B must be a function")
       }
-      let vb_val = eval_chk(b, d)
-      let vb = fn(v) { v_app(vb_val, v) }
-      let v_w = VW(va, vb)
-      type_chk(i, g, d, Inf(target), v_w)
-      let mot_ty = ensure_inf(i, g, d, mot)
-      match mot_ty {
+      let type_b_val = eval_chk(b, env)
+      let type_b = fn(v) { val_app(type_b_val, v) }
+      let type_w = VW(type_a, type_b)
+      type_chk(lvl, ctx, env, Inf(target), type_w)
+      let type_motive = ensure_inf(lvl, ctx, env, motive)
+      match type_motive {
         VPi(dom, cod) => {
-          if quote(i, dom) != quote(i, v_w) {
+          if quote(lvl, dom) != quote(lvl, type_w) {
             raise TypeError("WRec: motive domain mismatch")
           }
-          ensure_univ(cod(v_free(Quote(i)))) |> ignore
+          ensure_univ(cod(val_var(Quote(lvl)))) |> ignore
         }
         _ => raise TypeError("WRec: motive must be a function")
       }
-      let v_mot = eval_chk(mot, d)
-      let step_ty = VPi(va, fn(s) {
-        let v_bs = vb(s)
-        VPi(VPi(v_bs, fn(_) { v_w }), fn(f) {
-          VPi(VPi(v_bs, fn(p) { v_app(v_mot, v_app(f, p)) }), fn(_) {
-            v_app(v_mot, VSup(s, fn(pos) { v_app(f, pos) }))
+      let val_motive = eval_chk(motive, env)
+      let step_ty = VPi(type_a, fn(s) {
+        let val_bs = type_b(s)
+        VPi(VPi(val_bs, fn(_) { type_w }), fn(f) {
+          VPi(VPi(val_bs, fn(p) { val_app(val_motive, val_app(f, p)) }), fn(_) {
+            val_app(val_motive, VSup(s, fn(pos) { val_app(f, pos) }))
           })
         })
       })
-      type_chk(i, g, d, step, step_ty)
-      v_app(v_mot, eval_inf(target, d))
+      type_chk(lvl, ctx, env, step, step_ty)
+      val_app(val_motive, eval_inf(target, env))
     }
   }
 }
 
 ///|
 pub fn type_chk(
-  i : Int,
-  g : Context,
-  d : Env,
-  t : TermChk,
-  v : Type,
+  lvl : Int,
+  ctx : Context,
+  env : Env,
+  term : TermChk,
+  exp_type : Type,
 ) -> Unit raise TypeError {
-  match t {
-    Inf(e) => {
-      let vn = type_inf(i, g, d, e)
-      if not(subtyping(i, vn, v)) {
+  match term {
+    Inf(term_inf) => {
+      let inferred_type = type_inf(lvl, ctx, env, term_inf)
+      if not(def_eq(lvl, inferred_type, exp_type)) {
         raise TypeError(
           "Type Mismatch: inferred type is not a subtype of expected type",
         )
       }
     }
     Lam(e) =>
-      match v {
+      match exp_type {
         VPi(a, b) =>
           type_chk(
-            i + 1,
-            cons((Local(i), a), g),
-            cons(v_free(Local(i)), d),
+            lvl + 1,
+            cons((Local(lvl), a), ctx),
+            cons(val_var(Local(lvl)), env),
             e,
-            b(v_free(Local(i))),
+            b(val_var(Local(lvl))),
           )
         _ => raise TypeError("Expected Pi type for Lambda")
       }
-    Pair(e1, e2) =>
-      match v {
+    Pair(tm_fst, tm_snd) =>
+      match exp_type {
         VSigma(a, b) => {
-          type_chk(i, g, d, e1, a)
-          type_chk(i, g, d, e2, b(eval_chk(e1, d)))
+          type_chk(lvl, ctx, env, tm_fst, a)
+          type_chk(lvl, ctx, env, tm_snd, b(eval_chk(tm_fst, env)))
         }
         _ => raise TypeError("Expected Sigma type for Pair")
       }
     UnitElement =>
-      match v {
+      match exp_type {
         VUnitType => ()
         _ => raise TypeError("Expected UnitType")
       }
     Rfl(x) =>
-      match v {
-        VId(va, vx, vy) => {
-          type_chk(i, g, d, x, va)
-          let vx_val = eval_chk(x, d)
-          if quote(i, vx_val) != quote(i, vx) ||
-            quote(i, vx_val) != quote(i, vy) {
+      match exp_type {
+        VId(type_a, val_x, val_y) => {
+          type_chk(lvl, ctx, env, x, type_a)
+          let val_x_computed = eval_chk(x, env)
+          if quote(lvl, val_x_computed) != quote(lvl, val_x) ||
+            quote(lvl, val_x_computed) != quote(lvl, val_y) {
             raise TypeError("Rfl endpoints mismatch")
           }
         }
         _ => raise TypeError("Expected Id type for Rfl")
       }
     Sup(s, f) =>
-      match v {
-        VW(va, vb) => {
-          type_chk(i, g, d, s, va)
-          let vs = eval_chk(s, d)
-          type_chk(i, g, d, f, VPi(vb(vs), fn(_) { VW(va, vb) }))
+      match exp_type {
+        VW(type_a, type_b) => {
+          type_chk(lvl, ctx, env, s, type_a)
+          let val_s = eval_chk(s, env)
+          type_chk(
+            lvl,
+            ctx,
+            env,
+            f,
+            VPi(type_b(val_s), fn(_) { VW(type_a, type_b) }),
+          )
         }
         _ => raise TypeError("Expected W type for Sup")
       }
@@ -436,6 +456,6 @@ pub fn type_chk(
 }
 
 ///|
-pub fn type_inf_0(g : Context, t : TermInf) -> Type raise TypeError {
-  type_inf(0, g, empty(), t)
+pub fn type_inf_0(ctx : Context, term : TermInf) -> Type raise TypeError {
+  type_inf(0, ctx, empty(), term)
 }
