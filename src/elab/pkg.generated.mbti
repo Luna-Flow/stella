@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "Luna-Flow/stella"
+package "Luna-Flow/stella/elab"
 
 import(
   "moonbitlang/core/list"
