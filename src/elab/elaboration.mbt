@@ -103,25 +103,175 @@ fn ensure_univ(val : Value) -> Int raise TypeError {
 }
 
 ///|
-pub fn def_eq(lvl : Int, val1 : Value, val2 : Value) -> Bool {
+fn infer_neutral_type(ctx : Context, neu : Neutral) -> Type? {
+  match neu {
+    NFree(x) =>
+      match ctx.iter().find_first(fn(pair) { pair.0 == x }) {
+        Some((_, ty)) => Some(ty)
+        None => None
+      }
+    NApp(n, arg) =>
+      match infer_neutral_type(ctx, n) {
+        Some(VPi(_, cod)) => Some(cod(arg))
+        _ => None
+      }
+    NFst(n) =>
+      match infer_neutral_type(ctx, n) {
+        Some(VSigma(dom, _)) => Some(dom)
+        _ => None
+      }
+    NSnd(n) =>
+      match infer_neutral_type(ctx, n) {
+        Some(VSigma(_, cod)) => Some(cod(val_fst(VNeutral(n))))
+        _ => None
+      }
+    NJElim(_, _, motive, _, val_y, p) =>
+      Some(val_app(val_app(motive, val_y), VNeutral(p)))
+    NWRec(_, _, motive, _, n) => Some(val_app(motive, VNeutral(n)))
+  }
+}
+
+///|
+fn conv_neu(lvl : Int, ctx : Context, n1 : Neutral, n2 : Neutral) -> Bool {
+  match (n1, n2) {
+    (NFree(x1), NFree(x2)) => x1 == x2
+    (NApp(f1, a1), NApp(f2, a2)) =>
+      match infer_neutral_type(ctx, f1) {
+        Some(VPi(dom, _)) => {
+          if not(conv_neu(lvl, ctx, f1, f2)) {
+            return false
+          }
+          conv_nf(lvl, ctx, a1, a2, dom)
+        }
+        _ => false
+      }
+    (NFst(p1), NFst(p2)) =>
+      match infer_neutral_type(ctx, p1) {
+        Some(VSigma(_, _)) => conv_neu(lvl, ctx, p1, p2)
+        _ => false
+      }
+    (NSnd(p1), NSnd(p2)) =>
+      match infer_neutral_type(ctx, p1) {
+        Some(VSigma(_, _)) => conv_neu(lvl, ctx, p1, p2)
+        _ => false
+      }
+    _ => neutral_quote(lvl, n1) == neutral_quote(lvl, n2)
+  }
+}
+
+///|
+fn conv_nf(
+  lvl : Int,
+  ctx : Context,
+  val1 : Value,
+  val2 : Value,
+  ty : Value,
+) -> Bool {
+  match ty {
+    VUniverse(_) => conv_type(lvl, ctx, val1, val2)
+    VPi(dom, cod) => {
+      let fresh = val_var(Local(lvl))
+      let ctx1 = cons((Local(lvl), dom), ctx)
+      conv_nf(
+        lvl + 1,
+        ctx1,
+        val_app(val1, fresh),
+        val_app(val2, fresh),
+        cod(fresh),
+      )
+    }
+    VSigma(dom, cod) => {
+      let fst1 = val_fst(val1)
+      let fst2 = val_fst(val2)
+      if not(conv_nf(lvl, ctx, fst1, fst2, dom)) {
+        return false
+      }
+      conv_nf(lvl, ctx, val_snd(val1), val_snd(val2), cod(fst1))
+    }
+    VUnitType => true
+    _ =>
+      match (val1, val2) {
+        (VNeutral(n1), VNeutral(n2)) => conv_neu(lvl, ctx, n1, n2)
+        _ => quote(lvl, val1) == quote(lvl, val2)
+      }
+  }
+}
+
+///|
+fn conv_type(lvl : Int, ctx : Context, val1 : Value, val2 : Value) -> Bool {
+  match (val1, val2) {
+    (VUniverse(u1), VUniverse(u2)) => u1 == u2
+    (VPi(a1, b1), VPi(a2, b2)) => {
+      if not(conv_type(lvl, ctx, a1, a2)) {
+        return false
+      }
+      let fresh = val_var(Local(lvl))
+      let ctx1 = cons((Local(lvl), a1), ctx)
+      conv_type(lvl + 1, ctx1, b1(fresh), b2(fresh))
+    }
+    (VSigma(a1, b1), VSigma(a2, b2)) => {
+      if not(conv_type(lvl, ctx, a1, a2)) {
+        return false
+      }
+      let fresh = val_var(Local(lvl))
+      let ctx1 = cons((Local(lvl), a1), ctx)
+      conv_type(lvl + 1, ctx1, b1(fresh), b2(fresh))
+    }
+    (VUnitType, VUnitType) => true
+    (VId(a1, x1, y1), VId(a2, x2, y2)) => {
+      if not(conv_type(lvl, ctx, a1, a2)) {
+        return false
+      }
+      if not(conv_nf(lvl, ctx, x1, x2, a1)) {
+        return false
+      }
+      conv_nf(lvl, ctx, y1, y2, a1)
+    }
+    (VW(a1, b1), VW(a2, b2)) => {
+      if not(conv_type(lvl, ctx, a1, a2)) {
+        return false
+      }
+      let fresh = val_var(Local(lvl))
+      let ctx1 = cons((Local(lvl), a1), ctx)
+      conv_type(lvl + 1, ctx1, b1(fresh), b2(fresh))
+    }
+    (VNeutral(n1), VNeutral(n2)) => conv_neu(lvl, ctx, n1, n2)
+    _ => quote(lvl, val1) == quote(lvl, val2)
+  }
+}
+
+///|
+fn subtype_nf(lvl : Int, ctx : Context, val1 : Value, val2 : Value) -> Bool {
   match (val1, val2) {
     (VUniverse(u1), VUniverse(u2)) => u1 <= u2
     (VPi(a1, b1), VPi(a2, b2)) => {
-      if quote(lvl, a1) != quote(lvl, a2) {
+      if not(subtype_nf(lvl, ctx, a2, a1)) {
         return false
       }
-      let fresh_val = val_var(Quote(lvl))
-      def_eq(lvl + 1, b1(fresh_val), b2(fresh_val))
+      let fresh = val_var(Local(lvl))
+      let ctx1 = cons((Local(lvl), a2), ctx)
+      subtype_nf(lvl + 1, ctx1, b1(fresh), b2(fresh))
     }
     (VSigma(a1, b1), VSigma(a2, b2)) => {
-      if not(def_eq(lvl, a1, a2)) {
+      if not(conv_type(lvl, ctx, a1, a2)) {
         return false
       }
-      let fresh_val = val_var(Quote(lvl))
-      def_eq(lvl + 1, b1(fresh_val), b2(fresh_val))
+      let fresh = val_var(Local(lvl))
+      let ctx1 = cons((Local(lvl), a1), ctx)
+      subtype_nf(lvl + 1, ctx1, b1(fresh), b2(fresh))
     }
-    _ => quote(lvl, val1) == quote(lvl, val2)
+    _ => conv_type(lvl, ctx, val1, val2)
   }
+}
+
+///|
+fn subtype(lvl : Int, ctx : Context, val1 : Value, val2 : Value) -> Bool {
+  subtype_nf(lvl, ctx, val1, val2)
+}
+
+///|
+pub fn def_eq(lvl : Int, val1 : Value, val2 : Value) -> Bool {
+  subtype(lvl, empty(), val1, val2)
 }
 
 ///|
@@ -394,7 +544,7 @@ pub fn type_chk(
   match term {
     Inf(term_inf) => {
       let inferred_type = type_inf(lvl, ctx, env, term_inf)
-      if not(def_eq(lvl, inferred_type, exp_type)) {
+      if not(subtype(lvl, ctx, inferred_type, exp_type)) {
         raise TypeError(
           "Type Mismatch: inferred type is not a subtype of expected type",
         )

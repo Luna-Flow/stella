@@ -144,6 +144,7 @@ pub(all) enum Value {
   VSup(Value, (Value) -> Value)
 } derive(Show)
 
+///|
 pub type Type = Value
 
 ///|
