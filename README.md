@@ -16,7 +16,7 @@ Luceat scientia sicut stellae.
 - [x] J eliminator
 - [x] W type
 - [x] Universe Hierarchy
-- [ ] Contravariant Subtyping for Pi-types
+- [x] Contravariant Subtyping for Pi-types
 
 ## Reference
 
