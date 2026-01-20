@@ -21,6 +21,7 @@ Luceat scientia sicut stellae.
 ## Reference
 
 [Towards a practical programming language based on dependent type theory](https://www.cse.chalmers.se/~ulfn/papers/thesis.pdf)
+
 [A tutorial implementation of a dependently typed lambda calculus](https://www.andres-loeh.de/LambdaPi/LambdaPi.pdf)
 
 ## Contact
