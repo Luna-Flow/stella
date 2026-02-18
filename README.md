@@ -2,9 +2,8 @@
 
 [![img](https://img.shields.io/badge/Maintainer-KCN--judu-violet)](https://github.com/KCN-judu) [![img](https://img.shields.io/badge/License-MIT-blue)](https://github.com/Luna-Flow/linear-algebra/blob/main/LICENSE) ![img](https://img.shields.io/badge/State-active-success)
 
-(WIP) A Moonbit Proof Assistant.
-
-Luceat scientia sicut stellae.
+(WIP) a Proof Assistant written in Moonbit.
+Now it is just a NbE based bidirectional type checker for MLTT.
 
 ## Progress
 
