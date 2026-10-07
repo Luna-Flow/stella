@@ -1,0 +1,156 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Luna-Flow documentation\n"
+"Report-Msgid-Bugs-To: https://github.com/Luna-Flow\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: conf.json:summary
+msgid "A work-in-progress proof assistant written in MoonBit, built around a type checker for Martin-Löf type theory."
+msgstr ""
+
+#: manual/api/elab.md:1
+msgid "elab API"
+msgstr ""
+
+#: manual/api/elab.md:3
+msgid "elab is part of Luna-Flow/stella. This page should describe the public types, constructors, functions, traits, and observable semantics that are implemented in the current branch."
+msgstr ""
+
+#: manual/api/elab.md:5
+msgid "Scope"
+msgstr ""
+
+#: manual/api/elab.md:7
+msgid "Source boundary: `src/elab`"
+msgstr ""
+
+#: manual/api/elab.md:8
+msgid "Audience: package users, integrators, and maintainers who need the exported contract"
+msgstr ""
+
+#: manual/api/elab.md:9
+msgid "Status: active"
+msgstr ""
+
+#: manual/api/elab.md:11
+msgid "Public Contract"
+msgstr ""
+
+#: manual/api/elab.md:13
+msgid "Describe only exported behavior that exists today."
+msgstr ""
+
+#: manual/api/elab.md:14
+msgid "Call out backend or subtype differences when they are observable."
+msgstr ""
+
+#: manual/api/elab.md:15
+msgid "Keep naming, argument ordering, and error semantics aligned with sibling modules when possible."
+msgstr ""
+
+#: manual/design/elab.md:1
+msgid "elab Design"
+msgstr ""
+
+#: manual/design/elab.md:3
+msgid "Use this page to explain the structural responsibilities and implementation constraints of this module. elab in Luna-Flow/stella."
+msgstr ""
+
+#: manual/design/elab.md:5
+msgid "Responsibilities"
+msgstr ""
+
+#: manual/design/elab.md:7
+msgid "Keep the code and docs aligned around `src/elab`."
+msgstr ""
+
+#: manual/design/elab.md:8
+msgid "Preserve the real execution model instead of smoothing over important internal differences."
+msgstr ""
+
+#: manual/design/elab.md:9
+msgid "Note extension points, invariants, and limitations that maintainers must keep stable."
+msgstr ""
+
+#: manual/design/elab.md:11
+msgid "Maintenance Notes"
+msgstr ""
+
+#: manual/design/elab.md:13
+msgid "Update this page whenever the module boundary, core algorithm, or observable semantics change."
+msgstr ""
+
+#: manual/design/elab.md:14
+msgid "If the module is intentionally incomplete, say so here instead of documenting speculative APIs."
+msgstr ""
+
+#: manual/index.md:1
+msgid "stella"
+msgstr ""
+
+#: manual/index.md:3
+msgid "stella is a proof assistant written in MoonBit and still a work in progress. Its core is the `elab` package, a bidirectional type checker for Martin-Löf type theory based on normalization by evaluation."
+msgstr ""
+
+#: manual/index.md:5
+msgid "The checker supports the unit type, Π types, Σ types, identity types with the J eliminator, W types and a universe hierarchy, with contravariant subtyping for Π types."
+msgstr ""
+
+#: manual/index.md:7
+msgid "Packages"
+msgstr ""
+
+#: manual/index.md:9
+msgid "**`elab`** (`src/elab`): abstract syntax, evaluation, quotation and bidirectional type checking. See the [API reference](api/elab.md), the [design notes](design/elab.md) and the [tutorial](tutorial/elab.md)."
+msgstr ""
+
+#: manual/index.md:11
+msgid "Theory"
+msgstr ""
+
+#: manual/index.md:13
+msgid "The treatise below develops the type theory behind stella, from the untyped lambda calculus to Martin-Löf type theory, and explains how the kernel elaborates it. Read it as the narrative overview before working on elaboration details or extending the proof language."
+msgstr ""
+
+#: manual/index.md:15
+msgid "[Foundations and Elaboration of Stella Based on Dependent Type Theory](../attachments/stella_foundations.typ)"
+msgstr ""
+
+#: manual/tutorial/elab.md:1
+msgid "elab Tutorial"
+msgstr ""
+
+#: manual/tutorial/elab.md:3
+msgid "Use this page as the starting point for practical workflows around this module. elab in Luna-Flow/stella."
+msgstr ""
+
+#: manual/tutorial/elab.md:5
+msgid "Suggested Flow"
+msgstr ""
+
+#: manual/tutorial/elab.md:7
+msgid "Read the repository README and the elab API reference."
+msgstr ""
+
+#: manual/tutorial/elab.md:8
+msgid "Start from the constructors or entry points under `src/elab`."
+msgstr ""
+
+#: manual/tutorial/elab.md:9
+msgid "Validate behavior with the existing tests or examples before depending on edge-case semantics."
+msgstr ""
+
+#: manual/tutorial/elab.md:11
+msgid "Practical Guidance"
+msgstr ""
+
+#: manual/tutorial/elab.md:13
+msgid "Prefer the documented entry points over internal helpers."
+msgstr ""
+
+#: manual/tutorial/elab.md:14
+msgid "Record runtime, numeric, or proof-state assumptions explicitly in downstream code."
+msgstr ""

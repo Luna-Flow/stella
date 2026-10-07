@@ -1,0 +1,237 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Luna-Flow documentation\n"
+"Report-Msgid-Bugs-To: https://github.com/Luna-Flow\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: conf.json:summary
+msgid "A work-in-progress proof assistant written in MoonBit, built around a type checker for Martin-Löf type theory."
+msgstr "一个用 MoonBit 编写、仍在开发中的证明助手，核心是 Martin-Löf 类型论的类型检查器。"
+
+#: manual/api/elab.md:1
+msgid "elab API"
+msgstr "elab API 参考"
+
+#: manual/api/elab.md:3
+msgid "elab is part of Luna-Flow/stella. This page should describe the public types, constructors, functions, traits, and observable semantics that are implemented in the current branch."
+msgstr "elab 属于 Luna-Flow/stella。本页描述当前分支已经实现的公开类型、构造器、函数、trait 以及可观察语义。"
+
+#: manual/api/elab.md:5
+msgid "Scope"
+msgstr "范围"
+
+#: manual/api/elab.md:7
+msgid "Source boundary: `src/elab`"
+msgstr "源码边界：`src/elab`"
+
+#: manual/api/elab.md:8
+msgid "Audience: package users, integrators, and maintainers who need the exported contract"
+msgstr "读者：需要依赖公开契约的使用者、集成方和维护者"
+
+#: manual/api/elab.md:9
+msgid "Status: active"
+msgstr "状态：active"
+
+#: manual/api/elab.md:11
+msgid "Public Contract"
+msgstr "公开契约"
+
+#: manual/api/elab.md:13
+msgid "Describe only exported behavior that exists today."
+msgstr "只描述今天已经存在的导出行为。"
+
+#: manual/api/elab.md:14
+msgid "Call out backend or subtype differences when they are observable."
+msgstr "如果后端、子类型或执行路径存在可观察差异，要明确写出。"
+
+#: manual/api/elab.md:15
+msgid "Keep naming, argument ordering, and error semantics aligned with sibling modules when possible."
+msgstr "在可能的情况下，与同类模块保持命名、参数顺序和错误语义一致。"
+
+#: manual/design/elab.md:1
+msgid "elab Design"
+msgstr "elab 设计"
+
+#: manual/design/elab.md:3
+msgid "Use this page to explain the structural responsibilities and implementation constraints of this module. elab in Luna-Flow/stella."
+msgstr "本页用于说明这个模块的结构职责和实现约束。 这里聚焦 Luna-Flow/stella 中的 elab。"
+
+#: manual/design/elab.md:5
+msgid "Responsibilities"
+msgstr "职责"
+
+#: manual/design/elab.md:7
+msgid "Keep the code and docs aligned around `src/elab`."
+msgstr "让代码和文档围绕 `src/elab` 保持一致。"
+
+#: manual/design/elab.md:8
+msgid "Preserve the real execution model instead of smoothing over important internal differences."
+msgstr "如实保留执行模型，不掩盖重要的内部差异。"
+
+#: manual/design/elab.md:9
+msgid "Note extension points, invariants, and limitations that maintainers must keep stable."
+msgstr "记录维护者必须稳定保留的扩展点、不变量和限制。"
+
+#: manual/design/elab.md:11
+msgid "Maintenance Notes"
+msgstr "维护说明"
+
+#: manual/design/elab.md:13
+msgid "Update this page whenever the module boundary, core algorithm, or observable semantics change."
+msgstr "只要模块边界、核心算法或可观察语义变化，就更新本页。"
+
+#: manual/design/elab.md:14
+msgid "If the module is intentionally incomplete, say so here instead of documenting speculative APIs."
+msgstr "如果模块仍然不完整，也要明确写出，不要伪造未来 API。"
+
+#: manual/index.md:1
+msgid "stella"
+msgstr "stella"
+
+#: manual/index.md:3
+msgid "stella is a proof assistant written in MoonBit and still a work in progress. Its core is the `elab` package, a bidirectional type checker for Martin-Löf type theory based on normalization by evaluation."
+msgstr "stella 是一个用 MoonBit 编写、仍在开发中的证明助手。其核心是 `elab` 包——一个基于求值归一化（normalization by evaluation）的 Martin-Löf 类型论双向类型检查器。"
+
+#: manual/index.md:5
+msgid "The checker supports the unit type, Π types, Σ types, identity types with the J eliminator, W types and a universe hierarchy, with contravariant subtyping for Π types."
+msgstr "该检查器支持单位类型、Π 类型、Σ 类型、带 J 消去子的恒等类型、W 类型和宇宙层级，并支持 Π 类型的逆变子类型。"
+
+#: manual/index.md:7
+msgid "Packages"
+msgstr "包"
+
+#: manual/index.md:9
+msgid "**`elab`** (`src/elab`): abstract syntax, evaluation, quotation and bidirectional type checking. See the [API reference](api/elab.md), the [design notes](design/elab.md) and the [tutorial](tutorial/elab.md)."
+msgstr "**`elab`**（`src/elab`）：抽象语法、求值、引用（quotation）与双向类型检查。参见 [API 参考](api/elab.md)、[设计说明](design/elab.md)和[教程](tutorial/elab.md)。"
+
+#: manual/index.md:11
+msgid "Theory"
+msgstr "理论"
+
+#: manual/index.md:13
+msgid "The treatise below develops the type theory behind stella, from the untyped lambda calculus to Martin-Löf type theory, and explains how the kernel elaborates it. Read it as the narrative overview before working on elaboration details or extending the proof language."
+msgstr "下面的论述从无类型 lambda 演算一路发展到 Martin-Löf 类型论，阐述 stella 背后的类型理论，并说明内核如何对其进行 elaboration。在深入 elaboration 细节或扩展证明语言之前，请先把它当作整体概述来阅读。"
+
+#: manual/index.md:15
+msgid "[Foundations and Elaboration of Stella Based on Dependent Type Theory](../attachments/stella_foundations.typ)"
+msgstr "[基于依值类型论的 Stella 基础与 Elaboration](../attachments/stella_foundations.typ)"
+
+#: manual/tutorial/elab.md:1
+msgid "elab Tutorial"
+msgstr "elab 教程"
+
+#: manual/tutorial/elab.md:3
+msgid "Use this page as the starting point for practical workflows around this module. elab in Luna-Flow/stella."
+msgstr "本页用于说明这个模块的实际使用路径。 这里聚焦 Luna-Flow/stella 中的 elab。"
+
+#: manual/tutorial/elab.md:5
+msgid "Suggested Flow"
+msgstr "建议阅读顺序"
+
+#: manual/tutorial/elab.md:7
+msgid "Read the repository README and the elab API reference."
+msgstr "先看仓库 README 和 elab 的 API 文档。"
+
+#: manual/tutorial/elab.md:8
+msgid "Start from the constructors or entry points under `src/elab`."
+msgstr "从 `src/elab` 中的构造入口或主入口开始。"
+
+#: manual/tutorial/elab.md:9
+msgid "Validate behavior with the existing tests or examples before depending on edge-case semantics."
+msgstr "在依赖边界行为之前，先结合已有测试或示例验证语义。"
+
+#: manual/tutorial/elab.md:11
+msgid "Practical Guidance"
+msgstr "实践建议"
+
+#: manual/tutorial/elab.md:13
+msgid "Prefer the documented entry points over internal helpers."
+msgstr "优先使用已文档化的入口，而不是内部辅助函数。"
+
+#: manual/tutorial/elab.md:14
+msgid "Record runtime, numeric, or proof-state assumptions explicitly in downstream code."
+msgstr "下游代码里显式记录运行时、数值或证明状态前提。"
+
+#~ msgid "theory is part of Luna-Flow/stella. This page should describe the public types, constructors, functions, traits, and observable semantics that are implemented in the current branch."
+#~ msgstr "theory 属于 Luna-Flow/stella。本页描述当前分支已经实现的公开类型、构造器、函数、trait 以及可观察语义。"
+
+#~ msgid "Source boundary: `doc/doc_en.typ`"
+#~ msgstr "源码边界：`doc/doc_en.typ`"
+
+#~ msgid "Documentation Standard"
+#~ msgstr "文档标准"
+
+#~ msgid "This repository's documentation must describe the real implementation on the current branch for Luna-Flow/stella. It should stay aligned with the exported surface, repository layout, and release narrative."
+#~ msgstr "Luna-Flow/stella 的文档必须描述当前分支里的真实实现，并且持续与导出接口、仓库结构和版本叙事保持一致。"
+
+#~ msgid "Provide `README.md`, `doc_standard.md`, and structured module or subsystem documents for every supported locale."
+#~ msgstr "每个支持语言都提供 `README.md`、`doc_standard.md` 和按模块或子系统组织的文档。"
+
+#~ msgid "Document only APIs, workflows, and design decisions that exist in the current branch."
+#~ msgstr "只记录当前分支已经存在的 API、工作流和设计约束，不写计划中接口。"
+
+#~ msgid "Keep the directory layout aligned with real package or subsystem boundaries."
+#~ msgstr "目录结构必须与真实包边界或子系统边界对齐。"
+
+#~ msgid "Each module or subsystem directory must contain `api.md`, `tutorial.md`, and `design.md`."
+#~ msgstr "每个模块或子系统目录都包含 `api.md`、`tutorial.md`、`design.md`。"
+
+#~ msgid "Use cross-links between related mutable/immutable, runtime/frontend, or spec/implementation areas when semantics differ."
+#~ msgstr "当可观察语义存在差异时，要在相关文档之间建立交叉引用并明确说明。"
+
+#~ msgid "Use this page to explain the structural responsibilities and implementation constraints of this module. theory in Luna-Flow/stella."
+#~ msgstr "本页用于说明这个模块的结构职责和实现约束。 这里聚焦 Luna-Flow/stella 中的 theory。"
+
+#~ msgid "Keep the code and docs aligned around `doc/doc_en.typ`."
+#~ msgstr "让代码和文档围绕 `doc/doc_en.typ` 保持一致。"
+
+#~ msgid "This documentation tracks the current branch state."
+#~ msgstr "本文档跟踪当前分支状态。"
+
+#~ msgid "Repository Positioning"
+#~ msgstr "仓库定位"
+
+#~ msgid "MoonBit proof-assistant workbench centered on elaboration and type-theoretic core ideas."
+#~ msgstr "围绕 elaboration 与类型论核心思路构建的 MoonBit 证明助手工作台。"
+
+#~ msgid "Documentation Layout"
+#~ msgstr "文档布局"
+
+#~ msgid "`README.md` for the repository narrative and release baseline."
+#~ msgstr "`README.md` 记录仓库叙事与版本基线。"
+
+#~ msgid "`doc_standard.md` for the documentation contract."
+#~ msgstr "`doc_standard.md` 记录文档契约。"
+
+#~ msgid "Module or subsystem folders with `api.md`, `tutorial.md`, and `design.md`."
+#~ msgstr "模块或子系统目录下放 `api.md`、`tutorial.md`、`design.md`。"
+
+#~ msgid "Module Overview"
+#~ msgstr "模块概览"
+
+#~ msgid "**`elab`**: Implemented around `src/elab`."
+#~ msgstr "**`elab`**: 主要实现位于 `src/elab`。"
+
+#~ msgid "**`theory`**: Implemented around `doc/doc_en.typ`."
+#~ msgstr "**`theory`**: 主要实现位于 `doc/doc_en.typ`。"
+
+#~ msgid "Documentation Entry Points"
+#~ msgstr "文档入口"
+
+#~ msgid "API Reference: [elab](./api/elab.md)"
+#~ msgstr "API 参考: [elab](./api/elab.md)"
+
+#~ msgid "API Reference: [theory](./api/theory.md)"
+#~ msgstr "API 参考: [theory](./api/theory.md)"
+
+#~ msgid "theory Tutorial"
+#~ msgstr "theory 教程"
+
+#~ msgid "Read the repository README and the theory API reference."
+#~ msgstr "先看仓库 README 和 theory 的 API 文档。"
+
+#~ msgid "Start from the constructors or entry points under `doc/doc_en.typ`."
+#~ msgstr "从 `doc/doc_en.typ` 中的构造入口或主入口开始。"

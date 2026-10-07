@@ -1,6 +1,6 @@
 # STELLA
 
-[![img](https://img.shields.io/badge/Maintainer-KCN--judu-violet)](https://github.com/KCN-judu) [![img](https://img.shields.io/badge/License-MIT-blue)](https://github.com/Luna-Flow/linear-algebra/blob/main/LICENSE) ![img](https://img.shields.io/badge/State-active-success)
+[![img](https://img.shields.io/badge/Maintainer-KCN--judu-violet)](https://github.com/KCN-judu) [![img](https://img.shields.io/badge/License-Apache%202.0-blue)](https://github.com/Luna-Flow/stella/blob/main/LICENSE) ![img](https://img.shields.io/badge/State-active-success)
 
 (WIP) a Proof Assistant written in Moonbit.
 Now it is just a NbE based bidirectional type checker for MLTT.
@@ -16,6 +16,10 @@ Now it is just a NbE based bidirectional type checker for MLTT.
 - [x] W type
 - [x] Universe Hierarchy
 - [x] Contravariant Subtyping for Pi-types
+
+## Documentation
+
+The manual is published at <https://luna-flow.github.io/en/stella/>; its sources are in [`doc/manual/`](doc/manual/index.md).
 
 ## Reference
 
