@@ -1,0 +1,237 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Luna-Flow documentation\n"
+"Report-Msgid-Bugs-To: https://github.com/Luna-Flow\n"
+"Language: ja_JP\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: conf.json:summary
+msgid "A work-in-progress proof assistant written in MoonBit, built around a type checker for Martin-Löf type theory."
+msgstr "MoonBit で書かれた開発中の証明支援系で、Martin-Löf 型理論の型検査器を中核とする。"
+
+#: manual/api/elab.md:1
+msgid "elab API"
+msgstr "elab API リファレンス"
+
+#: manual/api/elab.md:3
+msgid "elab is part of Luna-Flow/stella. This page should describe the public types, constructors, functions, traits, and observable semantics that are implemented in the current branch."
+msgstr "elab は Luna-Flow/stella の一部です。このページでは、現在のブランチで実装されている公開型、コンストラクタ、関数、trait、および可観測セマンティクスを記述します。"
+
+#: manual/api/elab.md:5
+msgid "Scope"
+msgstr "範囲"
+
+#: manual/api/elab.md:7
+msgid "Source boundary: `src/elab`"
+msgstr "ソース境界: `src/elab`"
+
+#: manual/api/elab.md:8
+msgid "Audience: package users, integrators, and maintainers who need the exported contract"
+msgstr "想定読者: 公開契約に依存する利用者、統合担当者、保守者"
+
+#: manual/api/elab.md:9
+msgid "Status: active"
+msgstr "状態: active"
+
+#: manual/api/elab.md:11
+msgid "Public Contract"
+msgstr "公開契約"
+
+#: manual/api/elab.md:13
+msgid "Describe only exported behavior that exists today."
+msgstr "今日存在する公開挙動だけを記述する。"
+
+#: manual/api/elab.md:14
+msgid "Call out backend or subtype differences when they are observable."
+msgstr "バックエンドや実行経路に可観測差異がある場合は明記する。"
+
+#: manual/api/elab.md:15
+msgid "Keep naming, argument ordering, and error semantics aligned with sibling modules when possible."
+msgstr "可能な限り、兄弟モジュールと命名・引数順・エラー意味論をそろえる。"
+
+#: manual/design/elab.md:1
+msgid "elab Design"
+msgstr "elab 設計"
+
+#: manual/design/elab.md:3
+msgid "Use this page to explain the structural responsibilities and implementation constraints of this module. elab in Luna-Flow/stella."
+msgstr "このページは、このモジュールの構造上の責務と実装制約を説明します。 Luna-Flow/stella の elab を対象にします。"
+
+#: manual/design/elab.md:5
+msgid "Responsibilities"
+msgstr "責務"
+
+#: manual/design/elab.md:7
+msgid "Keep the code and docs aligned around `src/elab`."
+msgstr "`src/elab` を軸にコードと文書の整合を保つ。"
+
+#: manual/design/elab.md:8
+msgid "Preserve the real execution model instead of smoothing over important internal differences."
+msgstr "重要な内部差異を隠さず、実際の実行モデルをそのまま説明する。"
+
+#: manual/design/elab.md:9
+msgid "Note extension points, invariants, and limitations that maintainers must keep stable."
+msgstr "保守者が維持すべき拡張点、不変条件、制約を書く。"
+
+#: manual/design/elab.md:11
+msgid "Maintenance Notes"
+msgstr "保守メモ"
+
+#: manual/design/elab.md:13
+msgid "Update this page whenever the module boundary, core algorithm, or observable semantics change."
+msgstr "モジュール境界、主要アルゴリズム、可観測意味論が変わったら更新する。"
+
+#: manual/design/elab.md:14
+msgid "If the module is intentionally incomplete, say so here instead of documenting speculative APIs."
+msgstr "未完成なモジュールなら、その事実を明記し、未来の API を捏造しない。"
+
+#: manual/index.md:1
+msgid "stella"
+msgstr "stella"
+
+#: manual/index.md:3
+msgid "stella is a proof assistant written in MoonBit and still a work in progress. Its core is the `elab` package, a bidirectional type checker for Martin-Löf type theory based on normalization by evaluation."
+msgstr "stella は MoonBit で書かれた、現在開発中の証明支援系です。中核となるのは `elab` パッケージで、評価による正規化（normalization by evaluation）に基づく Martin-Löf 型理論の双方向型検査器です。"
+
+#: manual/index.md:5
+msgid "The checker supports the unit type, Π types, Σ types, identity types with the J eliminator, W types and a universe hierarchy, with contravariant subtyping for Π types."
+msgstr "この検査器は、ユニット型、Π 型、Σ 型、J 除去子を伴う同一性型、W 型、宇宙の階層をサポートし、Π 型については反変的な部分型付けを備えています。"
+
+#: manual/index.md:7
+msgid "Packages"
+msgstr "パッケージ"
+
+#: manual/index.md:9
+msgid "**`elab`** (`src/elab`): abstract syntax, evaluation, quotation and bidirectional type checking. See the [API reference](api/elab.md), the [design notes](design/elab.md) and the [tutorial](tutorial/elab.md)."
+msgstr "**`elab`**（`src/elab`）：抽象構文、評価、クオート（quotation）、双方向型検査。[API リファレンス](api/elab.md)、[設計ノート](design/elab.md)、[チュートリアル](tutorial/elab.md)を参照してください。"
+
+#: manual/index.md:11
+msgid "Theory"
+msgstr "理論"
+
+#: manual/index.md:13
+msgid "The treatise below develops the type theory behind stella, from the untyped lambda calculus to Martin-Löf type theory, and explains how the kernel elaborates it. Read it as the narrative overview before working on elaboration details or extending the proof language."
+msgstr "以下の論考は、型なしラムダ計算から Martin-Löf 型理論までを順に展開して stella の背後にある型理論を説明し、カーネルがそれをどのようにエラボレートするかを解説します。エラボレーションの詳細に取り組んだり証明言語を拡張したりする前に、全体像をつかむための概説として読んでください。"
+
+#: manual/index.md:15
+msgid "[Foundations and Elaboration of Stella Based on Dependent Type Theory](../attachments/stella_foundations.typ)"
+msgstr "[依存型理論に基づく Stella の基礎とエラボレーション](../attachments/stella_foundations.typ)"
+
+#: manual/tutorial/elab.md:1
+msgid "elab Tutorial"
+msgstr "elab チュートリアル"
+
+#: manual/tutorial/elab.md:3
+msgid "Use this page as the starting point for practical workflows around this module. elab in Luna-Flow/stella."
+msgstr "このページは、このモジュールの実用的な利用フローを説明する出発点です。 Luna-Flow/stella の elab を対象にします。"
+
+#: manual/tutorial/elab.md:5
+msgid "Suggested Flow"
+msgstr "推奨フロー"
+
+#: manual/tutorial/elab.md:7
+msgid "Read the repository README and the elab API reference."
+msgstr "まずリポジトリ README と elab の API 文書を読む。"
+
+#: manual/tutorial/elab.md:8
+msgid "Start from the constructors or entry points under `src/elab`."
+msgstr "`src/elab` にあるコンストラクタまたは入口から始める。"
+
+#: manual/tutorial/elab.md:9
+msgid "Validate behavior with the existing tests or examples before depending on edge-case semantics."
+msgstr "境界挙動へ依存する前に、既存のテストや例で意味論を確認する。"
+
+#: manual/tutorial/elab.md:11
+msgid "Practical Guidance"
+msgstr "実践ガイド"
+
+#: manual/tutorial/elab.md:13
+msgid "Prefer the documented entry points over internal helpers."
+msgstr "内部ヘルパーではなく、文書化された入口を優先する。"
+
+#: manual/tutorial/elab.md:14
+msgid "Record runtime, numeric, or proof-state assumptions explicitly in downstream code."
+msgstr "ランタイム・数値・証明状態の前提を下流コードに明示する。"
+
+#~ msgid "theory is part of Luna-Flow/stella. This page should describe the public types, constructors, functions, traits, and observable semantics that are implemented in the current branch."
+#~ msgstr "theory は Luna-Flow/stella の一部です。このページでは、現在のブランチで実装されている公開型、コンストラクタ、関数、trait、および可観測セマンティクスを記述します。"
+
+#~ msgid "Source boundary: `doc/doc_en.typ`"
+#~ msgstr "ソース境界: `doc/doc_en.typ`"
+
+#~ msgid "Documentation Standard"
+#~ msgstr "ドキュメント標準"
+
+#~ msgid "This repository's documentation must describe the real implementation on the current branch for Luna-Flow/stella. It should stay aligned with the exported surface, repository layout, and release narrative."
+#~ msgstr "Luna-Flow/stella のドキュメントは、現在のブランチに存在する実装だけを記述し、公開面・リポジトリ構成・リリース叙述と常に整合していなければなりません。"
+
+#~ msgid "Provide `README.md`, `doc_standard.md`, and structured module or subsystem documents for every supported locale."
+#~ msgstr "各対応言語で `README.md`、`doc_standard.md`、モジュールまたはサブシステム文書をそろえる。"
+
+#~ msgid "Document only APIs, workflows, and design decisions that exist in the current branch."
+#~ msgstr "現在のブランチに存在しない API や運用手順は書かない。"
+
+#~ msgid "Keep the directory layout aligned with real package or subsystem boundaries."
+#~ msgstr "ディレクトリ構成は実際のパッケージ境界またはサブシステム境界に合わせる。"
+
+#~ msgid "Each module or subsystem directory must contain `api.md`, `tutorial.md`, and `design.md`."
+#~ msgstr "各モジュールまたはサブシステム配下に `api.md`、`tutorial.md`、`design.md` を置く。"
+
+#~ msgid "Use cross-links between related mutable/immutable, runtime/frontend, or spec/implementation areas when semantics differ."
+#~ msgstr "可観測な差異がある場合は、関連ページを相互参照しつつ明示する。"
+
+#~ msgid "Use this page to explain the structural responsibilities and implementation constraints of this module. theory in Luna-Flow/stella."
+#~ msgstr "このページは、このモジュールの構造上の責務と実装制約を説明します。 Luna-Flow/stella の theory を対象にします。"
+
+#~ msgid "Keep the code and docs aligned around `doc/doc_en.typ`."
+#~ msgstr "`doc/doc_en.typ` を軸にコードと文書の整合を保つ。"
+
+#~ msgid "This documentation tracks the current branch state."
+#~ msgstr "このドキュメントは現在のブランチ状態を追跡します。"
+
+#~ msgid "Repository Positioning"
+#~ msgstr "リポジトリの位置付け"
+
+#~ msgid "MoonBit proof-assistant workbench centered on elaboration and type-theoretic core ideas."
+#~ msgstr "elaboration と型理論コアを中心にした MoonBit 証明支援ワークベンチです。"
+
+#~ msgid "Documentation Layout"
+#~ msgstr "ドキュメント構成"
+
+#~ msgid "`README.md` for the repository narrative and release baseline."
+#~ msgstr "`README.md` にリポジトリ叙述とリリース基線を書く。"
+
+#~ msgid "`doc_standard.md` for the documentation contract."
+#~ msgstr "`doc_standard.md` に文書契約を書く。"
+
+#~ msgid "Module or subsystem folders with `api.md`, `tutorial.md`, and `design.md`."
+#~ msgstr "モジュールまたはサブシステム配下に `api.md`、`tutorial.md`、`design.md` を置く。"
+
+#~ msgid "Module Overview"
+#~ msgstr "モジュール概要"
+
+#~ msgid "**`elab`**: Implemented around `src/elab`."
+#~ msgstr "**`elab`**: 主な実装は `src/elab` にあります。"
+
+#~ msgid "**`theory`**: Implemented around `doc/doc_en.typ`."
+#~ msgstr "**`theory`**: 主な実装は `doc/doc_en.typ` にあります。"
+
+#~ msgid "Documentation Entry Points"
+#~ msgstr "ドキュメント入口"
+
+#~ msgid "API Reference: [elab](./api/elab.md)"
+#~ msgstr "API リファレンス: [elab](./api/elab.md)"
+
+#~ msgid "API Reference: [theory](./api/theory.md)"
+#~ msgstr "API リファレンス: [theory](./api/theory.md)"
+
+#~ msgid "theory Tutorial"
+#~ msgstr "theory チュートリアル"
+
+#~ msgid "Read the repository README and the theory API reference."
+#~ msgstr "まずリポジトリ README と theory の API 文書を読む。"
+
+#~ msgid "Start from the constructors or entry points under `doc/doc_en.typ`."
+#~ msgstr "`doc/doc_en.typ` にあるコンストラクタまたは入口から始める。"

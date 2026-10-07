@@ -18,6 +18,10 @@ Luceat scientia sicut stellae.
 - [x] Universe Hierarchy
 - [x] Contravariant Subtyping for Pi-types
 
+## Documentation
+
+The manual is published at <https://luna-flow.github.io/en/stella/>; its sources are in [`doc/manual/`](doc/manual/index.md).
+
 ## Reference
 
 [Towards a practical programming language based on dependent type theory](https://www.cse.chalmers.se/~ulfn/papers/thesis.pdf)

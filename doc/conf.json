@@ -1,0 +1,8 @@
+{
+  "title": "stella",
+  "summary": "A work-in-progress proof assistant written in MoonBit, built around a type checker for Martin-Löf type theory.",
+  "locales": [
+    "zh_CN",
+    "ja_JP"
+  ]
+}
