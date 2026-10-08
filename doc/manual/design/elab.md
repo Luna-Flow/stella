@@ -11,6 +11,12 @@ The `elab` package is the kernel of stella. It implements a dependent type theor
 
 [^refs]: A. Löh, C. McBride, W. Swierstra, "A tutorial implementation of a dependently typed lambda calculus", *Fundamenta Informaticae* 102 (2010). U. Norell, *Towards a practical programming language based on dependent type theory*, PhD thesis, Chalmers (2007).
 
+## Constraints
+
+- Terms are MoonBit values built by the user; there is no parser, so the core syntax must be usable directly.
+- MoonBit closures cannot be compared or printed, so a value that contains a binder can only be inspected by applying it, and every equality test on values has to go through application or read-back.
+- The kernel must stay small enough to audit by reading: each rule is one match arm, and the checker has no unification, no metavariables and no global state.
+
 ## Mathematical background
 
 ### Syntax
@@ -40,7 +46,7 @@ $$
 
 where $f, F : D \to D$ are MoonBit functions. A binder body becomes a function on values: $\Pi(A, F)$ is the type $\Pi_{x : A} F(x)$. The neutral terms $n$ (`Neutral`) are eliminations stuck on a free variable $x$.
 
-Every value is in weak head normal form: no elimination is applied to an introduction form, because the evaluator reduces such redexes as soon as it builds them.
+Every value is in weak head normal form: no elimination is applied to an introduction form, because the evaluator reduces such redexes as soon as it builds them. Bodies of binders are not normalised: a closure $F$ is only evaluated when it is applied, by the checker or by read-back.
 
 ### Evaluation
 
@@ -91,19 +97,39 @@ The *normal form* of a closed term is $\mathrm{nf}(t) = q_0(\llbracket t \rrbrac
 
 ### Why evaluation respects $\beta$
 
-The central lemma of NbE is that $\beta$-equal terms have the same value. For a redex,
+Write $t \to u$ for one step of the reduction the evaluator implements: a $\beta$-step $(\lambda.\,t : T)\;u \to t[u]$, a projection of a pair, $J$ on $\mathrm{refl}$, $\mathrm{wrec}$ on $\sup$, or the erasure $(t : T) \to t$ of an annotation, at any position in the term. With de Bruijn indices, $t[u]$ replaces $\#0$ by $u$ and lowers every other free index of $t$ by one, because the binder that $\#0$ referred to is gone.
+
+Values contain closures, so "the same value" means the same read-back: $v \simeq w$ when $q_l(v) = q_l(w)$ at every level $l$ and for every way of applying them. The central lemma of NbE is that a reduction step does not change the value. For a redex,
 
 $$
 \begin{aligned}
 \llbracket (\lambda.\,t : T)\;u \rrbracket_\rho
-&= \llbracket \lambda.\,t \rrbracket_\rho \cdot \llbracket u \rrbracket_\rho \\
-&= \bigl(v \mapsto \llbracket t \rrbracket_{v :: \rho}\bigr)\bigl(\llbracket u \rrbracket_\rho\bigr) \\
-&= \llbracket t \rrbracket_{\llbracket u \rrbracket_\rho :: \rho} \\
-&= \llbracket t[u / \#0] \rrbracket_\rho ,
+&= \llbracket \lambda.\,t \rrbracket_\rho \cdot \llbracket u \rrbracket_\rho
+  && \text{annotations are erased} \\
+&= \bigl(v \mapsto \llbracket t \rrbracket_{v :: \rho}\bigr)\bigl(\llbracket u \rrbracket_\rho\bigr)
+  && \text{definition of } \llbracket \lambda.\,t \rrbracket \\
+&= \llbracket t \rrbracket_{\llbracket u \rrbracket_\rho :: \rho}
+  && (\beta) \text{ in the host language} \\
+&= \llbracket t[u] \rrbracket_\rho
+  && \text{substitution lemma.}
 \end{aligned}
 $$
 
-where the last step is the substitution lemma, proved by induction on $t$: substituting $u$ for $\#0$ and evaluating in $\rho$ gives the same value as evaluating in $\rho$ extended with the value of $u$. The same computation for the other redexes uses $\Sigma\beta$, $J\beta$ and $W\beta$ above. Since the value of a term depends only on its $\beta$-class, so does its normal form: $t =_\beta u \Rightarrow \mathrm{nf}(t) = \mathrm{nf}(u)$. Conversely, $\mathrm{nf}(t)$ is reached from $t$ by $\beta$-steps, so equal normal forms imply $\beta$-equality. Together these make "compare normal forms" a decision procedure for $\beta$-equality on terms whose evaluation terminates.[^nbe]
+The substitution lemma $\llbracket t \rrbracket_{\llbracket u \rrbracket_\rho :: \rho} = \llbracket t[u] \rrbracket_\rho$ is proved by induction on $t$. Going under binders forces a more general statement: for an environment prefix $\sigma$ of length $k$,
+
+$$
+\llbracket t \rrbracket_{\sigma \,\mathbin{+\!\!+}\, (\llbracket u \rrbracket_\rho :: \rho)} = \llbracket t[k \mapsto u] \rrbracket_{\sigma \,\mathbin{+\!\!+}\, \rho},
+$$
+
+where $t[k \mapsto u]$ replaces $\#k$ by $u$ with its free indices raised by $k$, and lowers the indices above $k$ by one. An occurrence of $\#k$ evaluates to $\llbracket u \rrbracket_\rho$ on the left, and on the right to the raised copy of $u$ in $\sigma \mathbin{+\!\!+} \rho$, which skips the $k$ entries of $\sigma$ and therefore also evaluates to $\llbracket u \rrbracket_\rho$. An index below $k$ is bound inside $t$ and reads the same entry of $\sigma$ on both sides. An index above $k$ reads one position further on the left, which is what the lowering compensates. Every other constructor follows from the induction hypothesis, with $k + 1$ under a binder. The other redexes reduce by the computation rules $\Sigma\beta$, $J\beta$ and $W\beta$ of `val_fst`, `val_snd`, `val_j_elim` and `val_w_rec`, and evaluation is compositional, so a step inside a subterm changes only the value of that subterm. Hence
+
+$$
+t \to^{*} u \;\Longrightarrow\; \llbracket t \rrbracket_\varepsilon \simeq \llbracket u \rrbracket_\varepsilon \;\Longrightarrow\; \mathrm{nf}(t) = \mathrm{nf}(u),
+$$
+
+and since $\simeq$ is an equivalence, terms that are equal under the symmetric closure $=_\beta$ of $\to$ have equal normal forms. Conversely, $\mathrm{nf}(t)$ is reached from $t$ by reduction steps, because every equation of $\llbracket - \rrbracket$ and $q_l$ either rebuilds a constructor or performs one of the steps above; so equal normal forms imply $t =_\beta \mathrm{nf}(t) = \mathrm{nf}(u) =_\beta u$. Together these make "compare normal forms" a decision procedure for $=_\beta$ on terms whose evaluation terminates without a panic, which includes every well-typed closed term.[^nbe]
+
+Read-back is untyped, so it does not $\eta$-expand: `quote` keeps a variable $f$ of type $\mathbf 1 \to \mathbf 1$ as $f$, while $\lambda x.\,f\,x$ reads back as a $\lambda$. The checker adds $\eta$ in the type-directed conversion below; normal forms from `quote` decide $\beta$ only.
 
 [^nbe]: U. Berger and H. Schwichtenberg, "An inverse of the evaluation functional for typed λ-calculus", LICS 1991, introduced NbE. A. Abel, *Normalization by Evaluation: Dependent Types and Impredicativity*, habilitation, LMU Munich (2013), proves soundness and completeness of NbE for Martin-Löf type theory with $\eta$. These are results about the theory; for this implementation they are tested, not proved.
 
@@ -251,7 +277,7 @@ The universes are *predicative* and *Russell style*: a type is itself a term, an
 
 **Options.** (a) Annotate every binder, $\lambda (x : A).\,t$. (b) Infer with unification variables. (c) Split the terms into checked and inferred ones.
 
-**Choice.** (c). Introduction forms ($\lambda$, pairs, $\star$, $\mathrm{refl}$, $\sup$) are checked, because their type determines the missing information; eliminations and type formers are inferred, because the type of the head determines the type of the whole. An annotation is needed only where an introduction meets an elimination, that is, at a $\beta$-redex such as $(\lambda.\,t : T)\;u$, or where a motive must be a function. A term in normal form needs no annotations at all apart from the motives. Encoding the split in the types `TermInf` and `TermChk` makes an unannotated redex unrepresentable rather than a runtime error.
+**Choice.** (c). Introduction forms ($\lambda$, pairs, $\star$, $\mathrm{refl}$, $\sup$) are checked, because their type determines the missing information; eliminations and type formers are inferred, because the type of the head determines the type of the whole. An annotation is needed only where an introduction meets an elimination, that is, at a $\beta$-redex such as $(\lambda.\,t : T)\;u$, or where a function must be inferable: the motives of $J$ and $\mathrm{wrec}$ and the family $B$ of $\mathrm{wrec}$. A term in normal form checked against a known type needs no other annotations. Encoding the split in the types `TermInf` and `TermChk` makes an unannotated redex unrepresentable rather than a runtime error.
 
 ### Values with closures
 
@@ -271,16 +297,18 @@ Cumulativity could be expressed with explicit lifting operators $\uparrow : \mat
 
 ## Correctness and invariants
 
-1. **Environment invariant.** At level $l$, `env` has exactly $l$ entries, entry $i$ is $x_{l-1-i}$, and `ctx` declares every $x_k$. The rules that go under a binder are the only places that extend the state, and they extend all three together. $(\textsf{Var})$ relies on this invariant; a caller of `type_inf` that breaks it gets `Internal error: Bound variable not in environment`.
+1. **Environment invariant.** At level $l$, `env` has exactly $l$ entries, entry $i$ is $x_{l-1-i}$, and `ctx` declares every $x_k$. The rules that go under a binder are the only places that extend the state, and they extend all three together. $(\textsf{Var})$ relies on this invariant. A caller of `type_inf` that breaks it gets `Internal error: Bound variable not in environment` when entry $i$ is not a variable, `Unknown Identifier` when the variable is missing from `ctx`, and a panic when `env` has no entry $i$ (see the known gaps).
 2. **Evaluate only what has been checked.** In every rule, a subterm is evaluated after the premise that checks it, for example the argument in $(\Pi\textsf{-E})$ and the type in $(\textsf{Ann})$. Since the evaluator panics on ill-typed redexes, this ordering is what keeps the checker total on ill-typed input: it raises `TypeError` before it evaluates.
 3. **Stability of types.** Every type the checker returns is a value, so the caller never has to normalise it again, and every comparison of types happens on values.
-4. **Termination.** Evaluation of a well-typed term terminates by the normalisation theorem for Martin-Löf type theory with W types and predicative universes. The checker only evaluates checked terms (invariant 2), so it terminates on every input for which its rules are sound; the gaps listed below are the exceptions.
+4. **Termination.** Evaluation of a well-typed term terminates by the normalisation theorem for Martin-Löf type theory with W types and predicative universes. The checker only evaluates terms that it has already checked (invariant 2), and every recursive call of `type_inf` and `type_chk` is on a proper subterm, so the checker terminates on every input as long as the rules it implements are sound for that theory. This is an argument about the theory, not a proof about the code: it is tested, not verified.
 
 ### Known gaps
 
 The implementation is a work in progress, and some rules are weaker or stronger than the theory above. They are recorded here so that users can avoid them; the code is unchanged.
 
 - **Subtyping only for $\Pi$, $\Sigma$ and universes.** $W$ and identity types are compared by conversion, without cumulativity in their components.
+- **No $\eta$ below identity and W values.** The type-directed conversion $\equiv_A$ uses $\eta$ at $\Pi$, $\Sigma$ and $\mathbf 1$ only. At an identity type, a W type or a neutral type it compares read-backs, so the components of $\mathrm{refl}$, $\sup$ and stuck eliminations are compared without $\eta$. For a variable $f : \mathbf 1 \to \mathbf 1$ the checker accepts $\mathrm{refl}\;f : \mathrm{Id}(\mathbf 1 \to \mathbf 1, f, \lambda x.\,f\,x)$, but rejects $\mathrm{refl}\,(\mathrm{refl}\;f) : \mathrm{Id}\bigl(\mathrm{Id}(\mathbf 1 \to \mathbf 1, f, f), \mathrm{refl}\;f, \mathrm{refl}\,(\lambda x.\,f\,x)\bigr)$ with `Rfl endpoints mismatch`, although the endpoints are definitionally equal. The checker is incomplete here, not unsound.
+- **Open terms at the top level abort.** $(\textsf{Var})$ looks up $\rho(i)$ without a bounds check, so `type_inf_0(ctx, Bound(0))` panics instead of raising `TypeError`.
 
 ## Alternatives rejected
 

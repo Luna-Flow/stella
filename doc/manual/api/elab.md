@@ -1,19 +1,23 @@
 # elab API
 
+## Purpose
+
 The `elab` package (`src/elab`, import path `Luna-Flow/stella/elab`) is the kernel of stella: the syntax of a dependent type theory, its evaluation into values, the read-back of values into normal forms, and a bidirectional type checker. Its interface file is [`src/elab/pkg.generated.mbti`](../../../src/elab/pkg.generated.mbti).
 
 Terms use de Bruijn indices: `Bound(0)` is the variable bound by the nearest enclosing binder. The binders are `Lam`, the second argument of `Pi`, `Sigma` and `W`, and nothing else. The [design notes](../design/elab.md) give the typing rules in full.
 
-The examples on this page are tests in a package with this `moon.pkg`:
+## Importing
 
-```text
+Add the package and the list package, which provides contexts and environments, to your `moon.pkg`:
+
+```moonbit nocheck
 import {
   "Luna-Flow/stella/elab",
   "moonbitlang/core/list",
 }
 ```
 
-and they bring the types into scope with:
+The examples on this page bring the types into scope with one `using` declaration, so that constructors can be written without the `@elab.` prefix:
 
 ```moonbit
 using @elab {type TermChk, type TermInf, type Value}
@@ -256,6 +260,26 @@ pub fn val_max_univ(Value, Value) -> Value
 
 `val_max_univ(VUniverse(i), VUniverse(j))` is `VUniverse(max(i, j))`. Any other argument panics. The checker computes the level of a $\Pi$, $\Sigma$ or $W$ type with this rule but does not call the function.
 
+The semantic eliminations reduce on introduction forms and get stuck on variables:
+
+```moonbit
+test "semantic eliminations" {
+  let a = @elab.val_var(Global("a"))
+  debug_inspect(@elab.val_app(VLam(x => x), VUnitElement), content="VUnitElement")
+  debug_inspect(@elab.val_snd(VPair(VUnitType, VUnitElement)), content="VUnitElement")
+  // projection of a variable: a stuck (neutral) value
+  debug_inspect(@elab.quote(0, @elab.val_fst(a)), content="Inf(Fst(Free(Global(\"a\"))))")
+  // J on refl returns the base case
+  let j = @elab.val_j_elim(VUnitType, VUnitElement, VUnitType, VUniverse(0), VUnitElement, VRfl(VUnitElement))
+  debug_inspect(j, content="VUniverse(0)")
+  // wrec on sup(l, f) applies the step to l, f and the recursive results
+  let step = Value::VLam(l => VLam(_ => VLam(_ => l)))
+  let w = Value::VSup(VUnitElement, _ => a)
+  debug_inspect(@elab.val_w_rec(VUnitType, _ => VUnitType, VUnitType, step, w), content="VUnitElement")
+  debug_inspect(@elab.val_max_univ(VUniverse(2), VUniverse(5)), content="VUniverse(5)")
+}
+```
+
 ## Normal forms
 
 ### `quote`, `neutral_quote`
@@ -307,7 +331,12 @@ pub fn type_chk(Int, @list.List[(Name, Value)], @list.List[Value], TermChk, Valu
 - `ctx` contains the user's `Global` declarations and one entry `(Local(k), A_k)` for every binder entered;
 - `env` has one entry `val_var(Local(k))` for every binder entered, the innermost first.
 
-At the top level, pass `0`, the user's context and an empty environment. `Bound(i)` is resolved through `env` and then `ctx`, so `env` may contain only variables that are declared in `ctx`; any other value raises an internal error. In checking mode, a term that can only be inferred is accepted when its inferred type is a subtype of the expected one (cumulativity, see `def_eq`).
+At the top level, pass `0`, the user's context and an empty environment. `Bound(i)` is resolved through `env` and then `ctx`, so `env` may contain only variables that are declared in `ctx`; any other value raises `TypeError("Internal error: Bound variable not in environment")`, and a variable of `env` missing from `ctx` raises `TypeError("Unknown Identifier")`. In checking mode, a term that can only be inferred is accepted when its inferred type is a subtype of the expected one (cumulativity, see `def_eq`).
+
+> [!WARNING]
+> An index with no entry in `env` aborts instead of raising `TypeError`: `type_inf_0(ctx, Bound(0))` panics, because the lookup unwraps a missing list element. Check that a term is closed (every `Bound(i)` lies under more than `i` binders) before passing it at the top level.
+
+`type_chk` trusts its expected type: pass a value that is already known to be a type, such as the result of `type_inf` or the evaluation of a checked type. On an ill-formed expected type the checker may panic in the semantic eliminations.
 
 ```moonbit
 test "check and infer" {
@@ -354,7 +383,7 @@ test "global declarations" {
 pub fn def_eq(Int, Value, Value) -> Bool
 ```
 
-`def_eq(l, s, t)` returns `true` when $s \le t$ under the cumulative subtyping of the design notes: $\mathcal U_i \le \mathcal U_j$ for $i \le j$, $\Pi$ types are contravariant in the domain and covariant in the codomain, $\Sigma$ types are invariant in the first component and covariant in the second, and all other types are compared by conversion. Despite its name the relation is not symmetric: `def_eq(0, VUniverse(0), VUniverse(1))` is `true` and `def_eq(0, VUniverse(1), VUniverse(0))` is `false`.
+`def_eq(l, s, t)` returns `true` when $s \le t$ under the cumulative subtyping of the design notes, with `l` the number of binders the values are under (normally `0`): $\mathcal U_i \le \mathcal U_j$ for $i \le j$, $\Pi$ types are contravariant in the domain and covariant in the codomain, $\Sigma$ types are invariant in the first component and covariant in the second, and all other types are compared by conversion. Despite its name the relation is not symmetric: `def_eq(0, VUniverse(0), VUniverse(1))` is `true` and `def_eq(0, VUniverse(1), VUniverse(0))` is `false`. On two values that are not types, such as two functions, it compares their read-backs, which is $\beta$-equality.
 
 > [!NOTE]
 > Because the context is empty, `def_eq` cannot look up the type of a free variable. Two neutral terms are then compared by their read-backs, so `f x` equals `f x` for a free `f`, but arguments that are only $\eta$-equal, such as `f g` and `f (λx. g x)`, are not identified. Inside `type_chk`, where the context is known, $\eta$ is used.
