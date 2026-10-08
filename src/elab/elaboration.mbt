@@ -138,7 +138,7 @@ fn conv_neu(lvl : Int, ctx : Context, n1 : Neutral, n2 : Neutral) -> Bool {
     (NApp(f1, a1), NApp(f2, a2)) =>
       match infer_neutral_type(ctx, f1) {
         Some(VPi(dom, _)) => {
-          if not(conv_neu(lvl, ctx, f1, f2)) {
+          if !conv_neu(lvl, ctx, f1, f2) {
             return false
           }
           conv_nf(lvl, ctx, a1, a2, dom)
@@ -183,7 +183,7 @@ fn conv_nf(
     VSigma(dom, cod) => {
       let fst1 = val_fst(val1)
       let fst2 = val_fst(val2)
-      if not(conv_nf(lvl, ctx, fst1, fst2, dom)) {
+      if !conv_nf(lvl, ctx, fst1, fst2, dom) {
         return false
       }
       conv_nf(lvl, ctx, val_snd(val1), val_snd(val2), cod(fst1))
@@ -202,7 +202,7 @@ fn conv_type(lvl : Int, ctx : Context, val1 : Value, val2 : Value) -> Bool {
   match (val1, val2) {
     (VUniverse(u1), VUniverse(u2)) => u1 == u2
     (VPi(a1, b1), VPi(a2, b2)) => {
-      if not(conv_type(lvl, ctx, a1, a2)) {
+      if !conv_type(lvl, ctx, a1, a2) {
         return false
       }
       let fresh = val_var(Local(lvl))
@@ -210,7 +210,7 @@ fn conv_type(lvl : Int, ctx : Context, val1 : Value, val2 : Value) -> Bool {
       conv_type(lvl + 1, ctx1, b1(fresh), b2(fresh))
     }
     (VSigma(a1, b1), VSigma(a2, b2)) => {
-      if not(conv_type(lvl, ctx, a1, a2)) {
+      if !conv_type(lvl, ctx, a1, a2) {
         return false
       }
       let fresh = val_var(Local(lvl))
@@ -219,16 +219,16 @@ fn conv_type(lvl : Int, ctx : Context, val1 : Value, val2 : Value) -> Bool {
     }
     (VUnitType, VUnitType) => true
     (VId(a1, x1, y1), VId(a2, x2, y2)) => {
-      if not(conv_type(lvl, ctx, a1, a2)) {
+      if !conv_type(lvl, ctx, a1, a2) {
         return false
       }
-      if not(conv_nf(lvl, ctx, x1, x2, a1)) {
+      if !conv_nf(lvl, ctx, x1, x2, a1) {
         return false
       }
       conv_nf(lvl, ctx, y1, y2, a1)
     }
     (VW(a1, b1), VW(a2, b2)) => {
-      if not(conv_type(lvl, ctx, a1, a2)) {
+      if !conv_type(lvl, ctx, a1, a2) {
         return false
       }
       let fresh = val_var(Local(lvl))
@@ -245,7 +245,7 @@ fn subtype_nf(lvl : Int, ctx : Context, val1 : Value, val2 : Value) -> Bool {
   match (val1, val2) {
     (VUniverse(u1), VUniverse(u2)) => u1 <= u2
     (VPi(a1, b1), VPi(a2, b2)) => {
-      if not(subtype_nf(lvl, ctx, a2, a1)) {
+      if !subtype_nf(lvl, ctx, a2, a1) {
         return false
       }
       let fresh = val_var(Local(lvl))
@@ -253,7 +253,7 @@ fn subtype_nf(lvl : Int, ctx : Context, val1 : Value, val2 : Value) -> Bool {
       subtype_nf(lvl + 1, ctx1, b1(fresh), b2(fresh))
     }
     (VSigma(a1, b1), VSigma(a2, b2)) => {
-      if not(conv_type(lvl, ctx, a1, a2)) {
+      if !conv_type(lvl, ctx, a1, a2) {
         return false
       }
       let fresh = val_var(Local(lvl))
@@ -407,7 +407,7 @@ pub fn type_inf(
     Free(x) =>
       match ctx.iter().find_first(fn(pair) { pair.0 == x }) {
         Some((_, ty)) => ty
-        None => raise TypeError("Unknown Identifier: \{x}")
+        None => raise TypeError("Unknown Identifier: \{Repr(x)}")
       }
     UnitType => VUniverse(0)
     Universe(univ_lvl) => VUniverse(univ_lvl + 1)
@@ -500,7 +500,6 @@ pub fn type_inf(
             raise TypeError("W-type: B domain mismatch")
           }
           let _ = ensure_univ(cod(val_var(Quote(lvl))))
-
         }
         _ => raise TypeError("WRec: B must be a function")
       }
@@ -544,7 +543,7 @@ pub fn type_chk(
   match term {
     Inf(term_inf) => {
       let inferred_type = type_inf(lvl, ctx, env, term_inf)
-      if not(subtype(lvl, ctx, inferred_type, exp_type)) {
+      if !subtype(lvl, ctx, inferred_type, exp_type) {
         raise TypeError(
           "Type Mismatch: inferred type is not a subtype of expected type",
         )
