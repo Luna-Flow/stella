@@ -10,7 +10,7 @@ pub(all) enum Name {
   Global(String)
   Local(Int)
   Quote(Int)
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// Checkable term in dependent type theory that can be type-checked against a
@@ -34,7 +34,7 @@ pub(all) enum TermChk {
   Rfl(TermChk)
   /// Sup(shape, children)
   Sup(TermChk, TermChk)
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// Inferrable terms in type theory that synthesize their types during type
@@ -77,7 +77,7 @@ pub(all) enum TermInf {
   W(TermChk, TermChk)
   /// WRec(A, B, motive, step_case, target)
   WRec(TermChk, TermChk, TermChk, TermChk, TermInf)
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// Neutral value in the type theory system that represents terms that cannot be
@@ -105,7 +105,7 @@ pub(all) enum Neutral {
   NSnd(Neutral)
   NJElim(Value, Value, Value, Value, Value, Neutral)
   NWRec(Value, (Value) -> Value, Value, Value, Neutral)
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Runtime values in the type system representing fully evaluated terms.
@@ -142,7 +142,7 @@ pub(all) enum Value {
   VRfl(Value)
   VW(Value, (Value) -> Value)
   VSup(Value, (Value) -> Value)
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub type Type = Value
