@@ -282,3 +282,25 @@ test "Rfl: endpoints compared by conversion with eta (#20)" {
     ),
   )
 }
+
+///|
+test "quote: stuck WRec reads back to a term that evaluates to itself (#21)" {
+  let unit_ty : TermChk = Inf(UnitType)
+  let arr = fn(a : TermChk, b : TermChk) -> TermChk { Inf(Pi(a, b)) }
+  let b_fun : TermChk = Inf(Ann(Lam(unit_ty), arr(unit_ty, Inf(Universe(0)))))
+  let w_ty : TermChk = Inf(W(unit_ty, unit_ty))
+  let motive : TermChk = Inf(Ann(Lam(unit_ty), arr(w_ty, Inf(Universe(0)))))
+  let t : TermInf = WRec(
+    unit_ty,
+    b_fun,
+    motive,
+    Lam(Lam(Lam(UnitElement))),
+    Free(Global("w")),
+  )
+  let q1 = quote(0, eval_inf(t, @list.empty()))
+  guard q1 is Inf(WRec(_, Lam(_), _, _, _) as t1) else {
+    fail("expected B to be read back as a function")
+  }
+  let q2 = quote(0, eval_inf(t1, @list.empty()))
+  assert_eq(q1, q2)
+}

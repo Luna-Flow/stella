@@ -378,7 +378,7 @@ pub fn neutral_quote(lvl : Int, neu : Neutral) -> TermInf {
     NWRec(a, b, motive, step, n) =>
       WRec(
         quote(lvl, a),
-        quote(lvl + 1, b(val_var(Quote(lvl)))),
+        Lam(quote(lvl + 1, b(val_var(Quote(lvl))))),
         quote(lvl, motive),
         quote(lvl, step),
         neutral_quote(lvl, n),
