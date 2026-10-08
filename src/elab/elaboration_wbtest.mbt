@@ -1,19 +1,19 @@
 ///|
 test "Universe Hierarchy: Inference levels" {
   let ctx = @list.empty()
-  inspect(type_inf_0(ctx, Universe(0)), content="VUniverse(1)")
-  inspect(type_inf_0(ctx, Universe(1)), content="VUniverse(2)")
+  debug_inspect(type_inf_0(ctx, Universe(0)), content="VUniverse(1)")
+  debug_inspect(type_inf_0(ctx, Universe(1)), content="VUniverse(2)")
 }
 
 ///|
 test "Universe Hierarchy: Max Rule (Pi Types)" {
   let ctx = @list.empty()
   let t_base = TermInf::Pi(Inf(UnitType), Inf(UnitType))
-  inspect(type_inf_0(ctx, t_base), content="VUniverse(0)")
+  debug_inspect(type_inf_0(ctx, t_base), content="VUniverse(0)")
   let t_poly = TermInf::Pi(Inf(Universe(0)), Inf(Universe(0)))
-  inspect(type_inf_0(ctx, t_poly), content="VUniverse(1)")
+  debug_inspect(type_inf_0(ctx, t_poly), content="VUniverse(1)")
   let t_mixed = TermInf::Pi(Inf(UnitType), Inf(Universe(0)))
-  inspect(type_inf_0(ctx, t_mixed), content="VUniverse(1)")
+  debug_inspect(type_inf_0(ctx, t_mixed), content="VUniverse(1)")
 }
 
 ///|
@@ -76,13 +76,13 @@ test "Type checking: Pi subtyping rejection" {
     Ann(Lam(Inf(UnitType)), Inf(Pi(Inf(Universe(0)), Inf(Universe(0))))),
   )
   let expected = VPi(VUniverse(1), fn(_ : Value) { VUniverse(0) })
-  let res : Result[Unit, Error] = try? type_chk(
-    0,
-    @list.empty(),
-    @list.empty(),
-    term,
-    expected,
-  )
+  let res : Result[Unit, Error] = try
+    type_chk(0, @list.empty(), @list.empty(), term, expected)
+  catch {
+    e => Err(e)
+  } noraise {
+    v => Ok(v)
+  }
   guard res is Err(TypeError(_)) else {
     fail("Expected Pi subtyping to be rejected")
   }
@@ -97,13 +97,13 @@ test "Type checking: Sigma domain mismatch rejection" {
     ),
   )
   let expected = VSigma(VUniverse(0), fn(_ : Value) { VUniverse(0) })
-  let res : Result[Unit, Error] = try? type_chk(
-    0,
-    @list.empty(),
-    @list.empty(),
-    term,
-    expected,
-  )
+  let res : Result[Unit, Error] = try
+    type_chk(0, @list.empty(), @list.empty(), term, expected)
+  catch {
+    e => Err(e)
+  } noraise {
+    v => Ok(v)
+  }
   guard res is Err(TypeError(_)) else {
     fail("Expected Sigma domain invariance to be enforced")
   }
@@ -128,9 +128,9 @@ test "Type checking: Sigma codomain covariance" {
 test "Universe Hierarchy: W-Types" {
   let ctx = @list.empty()
   let w_term = TermInf::W(Inf(UnitType), Inf(UnitType))
-  inspect(type_inf_0(ctx, w_term), content="VUniverse(0)")
+  debug_inspect(type_inf_0(ctx, w_term), content="VUniverse(0)")
   let w_lifted = TermInf::W(Inf(Universe(0)), Inf(UnitType))
-  inspect(type_inf_0(ctx, w_lifted), content="VUniverse(1)")
+  debug_inspect(type_inf_0(ctx, w_lifted), content="VUniverse(1)")
 }
 
 ///|
