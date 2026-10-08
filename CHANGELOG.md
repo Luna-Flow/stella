@@ -27,6 +27,7 @@ All notable changes to this project are documented in this file.
 
 - Documentation rewritten (API, tutorial and design pages for `elab`, and the manual overview) with zh_CN and ja_JP translations. The design notes give the typing rules in inference-rule notation, the NbE equations and the known gaps of the kernel.
 - The README describes the current version only.
+- The manual follows the luna-generic layout: the overview gains install, pages, exported items, reading paths and validation sections; the API page gains purpose and importing sections and an example of the semantic eliminations; the tutorial gains a task table and a W-type recursion example; the design page gains a constraints section, a corrected substitution lemma for de Bruijn indices, and two known gaps (no $\eta$ below identity and W values, a panic on open terms at the top level).
 
 ## 0.1.2
 

@@ -2,13 +2,15 @@
 
 [![img](https://img.shields.io/badge/Maintainer-KCN--judu-violet)](https://github.com/KCN-judu) [![img](https://img.shields.io/badge/License-Apache%202.0-blue)](https://github.com/Luna-Flow/stella/blob/main/LICENSE) ![img](https://img.shields.io/badge/State-active-success)
 
-stella is a proof assistant written in [MoonBit](https://www.moonbitlang.com/), still a work in progress. Version 0.1.2 provides its kernel: a bidirectional type checker for Martin-Löf type theory based on normalisation by evaluation, with the unit type, $\Pi$, $\Sigma$, identity types with $J$, W types and a cumulative universe hierarchy.
+stella is a proof assistant written in [MoonBit](https://www.moonbitlang.com/), still a work in progress. The `main` branch, to be released as 0.2.0, provides its kernel: a bidirectional type checker for Martin-Löf type theory based on normalisation by evaluation, with the unit type, $\Pi$, $\Sigma$, identity types with $J$, W types and a cumulative universe hierarchy.
 
 ## Installation
 
 ```bash
 moon add Luna-Flow/stella@0.1.2
 ```
+
+`moon.mod` still declares 0.1.2, the last published version; it implements `Show` for the kernel types, which `main` replaces with `Debug`.
 
 ```text
 // moon.pkg
@@ -57,7 +59,7 @@ MoonBit toolchain with `moonc` 0.10 or newer. No dependencies besides the MoonBi
 ## Documentation
 
 - Online manual (English, Chinese, Japanese): <https://lunaflow.cn/en/stella/>
-- English source: [`doc/manual/index.md`](doc/manual/index.md), with the API reference, a tutorial and the typing rules.
+- English source: [`doc/manual/index.md`](doc/manual/index.md), with the [API reference](doc/manual/api/elab.md), the [tutorial](doc/manual/tutorial/elab.md) (from the identity function to path induction and W-type recursion) and the [design notes](doc/manual/design/elab.md) (typing rules, normalisation by evaluation, known gaps).
 - Changes between versions: [`CHANGELOG.md`](CHANGELOG.md).
 
 ## References
