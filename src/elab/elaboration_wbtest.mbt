@@ -231,3 +231,54 @@ test "def_eq: reflexive on neutral applications (#18)" {
   assert_true(def_eq(0, f_u, f_u))
   assert_false(def_eq(0, f_tt, f_u))
 }
+
+///|
+fn rfl_ctx() -> Context {
+  @list.List([
+    (Global("f"), VPi(VUnitType, fn(_ : Value) { VUnitType })),
+    (Global("u"), VUnitType),
+  ])
+}
+
+///|
+fn accepts(ctx : Context, term : TermInf) -> Bool {
+  let res : Result[Value, Error] = try type_inf_0(ctx, term) catch {
+    e => Err(e)
+  } noraise {
+    v => Ok(v)
+  }
+  res is Ok(_)
+}
+
+///|
+test "Rfl: endpoints compared by conversion with eta (#20)" {
+  let unit_ty : TermChk = Inf(UnitType)
+  let fn_ty : TermChk = Inf(Pi(unit_ty, unit_ty))
+  let f : TermInf = Free(Global("f"))
+  let eta_f : TermChk = Lam(Inf(App(f, Inf(Bound(0)))))
+  // refl f : Id(1 → 1, f, λx. f x)  — η for functions
+  assert_true(
+    accepts(rfl_ctx(), Ann(Rfl(Inf(f)), Inf(Id(fn_ty, Inf(f), eta_f)))),
+  )
+  // refl tt : Id(1, tt, u)  — η for Unit
+  assert_true(
+    accepts(
+      rfl_ctx(),
+      Ann(
+        Rfl(UnitElement),
+        Inf(Id(unit_ty, UnitElement, Inf(Free(Global("u"))))),
+      ),
+    ),
+  )
+  // endpoints that are not convertible are still rejected:
+  // refl Unit : Id(U0, Unit, Unit → Unit)
+  assert_false(
+    accepts(
+      rfl_ctx(),
+      Ann(
+        Rfl(unit_ty),
+        Inf(Id(Inf(Universe(0)), unit_ty, Inf(Pi(unit_ty, unit_ty)))),
+      ),
+    ),
+  )
+}

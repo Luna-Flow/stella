@@ -600,8 +600,8 @@ pub fn type_chk(
         VId(type_a, val_x, val_y) => {
           type_chk(lvl, ctx, env, x, type_a)
           let val_x_computed = eval_chk(x, env)
-          if quote(lvl, val_x_computed) != quote(lvl, val_x) ||
-            quote(lvl, val_x_computed) != quote(lvl, val_y) {
+          if !conv_nf(lvl, ctx, val_x_computed, val_x, type_a) ||
+            !conv_nf(lvl, ctx, val_x_computed, val_y, type_a) {
             raise TypeError("Rfl endpoints mismatch")
           }
         }
