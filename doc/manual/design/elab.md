@@ -153,7 +153,7 @@ $$
 $$
 
 $$
-\dfrac{\Gamma; \rho \vdash_l t \Leftarrow A \qquad q_l(\llbracket t \rrbracket) = q_l(v) = q_l(w)}{\Gamma; \rho \vdash_l \mathrm{refl}\;t \Leftarrow \mathrm{Id}(A, v, w)}\;(\mathrm{Id}\textsf{-I})
+\dfrac{\Gamma; \rho \vdash_l t \Leftarrow A \qquad \llbracket t \rrbracket \equiv_A v \qquad \llbracket t \rrbracket \equiv_A w}{\Gamma; \rho \vdash_l \mathrm{refl}\;t \Leftarrow \mathrm{Id}(A, v, w)}\;(\mathrm{Id}\textsf{-I})
 \qquad
 \dfrac{\Gamma; \rho \vdash a \Leftarrow A \qquad \Gamma; \rho \vdash f \Leftarrow \Pi\bigl(F(\llbracket a \rrbracket),\ \_ \mapsto W(A, F)\bigr)}{\Gamma; \rho \vdash \sup(a, f) \Leftarrow W(A, F)}\;(W\textsf{-I})
 $$
@@ -195,9 +195,9 @@ $$
 \dfrac{
 \begin{gathered}
 \Gamma; \rho \vdash A \Rightarrow \mathcal U_i \qquad
-\Gamma; \rho \vdash B \Rightarrow \Pi(D, G),\ q_l(D) = q_l(\bar A),\ G(z) = \mathcal U_k \qquad
+\Gamma; \rho \vdash B \Rightarrow \Pi(D, G),\ \bar A \le D,\ G(z) = \mathcal U_k \qquad
 \Gamma; \rho \vdash w \Leftarrow \bar W \\
-\Gamma; \rho \vdash P \Rightarrow \Pi(D', G'),\ q_l(D') = q_l(\bar W),\ G'(z) = \mathcal U_m \qquad
+\Gamma; \rho \vdash P \Rightarrow \Pi(D', G'),\ \bar W \le D',\ G'(z) = \mathcal U_m \qquad
 \Gamma; \rho \vdash s \Leftarrow \Pi_{a : \bar A}\, \Pi_{f : \bar B(a) \to \bar W}\, \Pi_{h : \Pi_{b : \bar B(a)} \bar P \cdot f(b)}\; \bar P \cdot \sup(a, f)
 \end{gathered}
 }{\Gamma; \rho \vdash \mathrm{wrec}(A, B, P, s, w) \Rightarrow \bar P \cdot \llbracket w \rrbracket}\;(W\textsf{-E})
@@ -235,7 +235,7 @@ p \equiv_{\Sigma(A, F)} r \iff \pi_1 p \equiv_A \pi_1 r \;\wedge\; \pi_2 p \equi
 u \equiv_{\mathbf 1} u'.
 $$
 
-Neutral terms are compared spine by spine (`conv_neu`), looking up the type of the head variable in $\Gamma$ to compare application arguments at the right type. Everything else falls back to comparing read-backs, $q_l(v) = q_l(v')$.
+Neutral terms are compared spine by spine (`conv_neu`), looking up the type of the head variable in $\Gamma$ to compare application arguments at the right type. When the head's type is not in $\Gamma$, as in `def_eq`, which has no context, the two spines are compared by their read-backs instead. That is sound, because equal read-backs are definitionally equal, but it does not use $\eta$ on the arguments. Everything else falls back to comparing read-backs, $q_l(v) = q_l(v')$.
 
 ### Universes
 
@@ -280,9 +280,6 @@ Cumulativity could be expressed with explicit lifting operators $\uparrow : \mat
 
 The implementation is a work in progress, and some rules are weaker or stronger than the theory above. They are recorded here so that users can avoid them; the code is unchanged.
 
-- **`def_eq` uses an empty context.** It cannot look up the types of free variables, so `conv_neu` cannot compare the arguments of two neutral applications, and `def_eq(0, f x, f x)` returns `false` for a free `f`. Inside the checker, where the context is available, the comparison succeeds.
-- **$\mathrm{refl}$ compares read-backs without $\eta$.** $(\mathrm{Id}\textsf{-I})$ compares $q_l$ syntactically, so $\mathrm{refl}\;f : \mathrm{Id}(\mathbf 1 \to \mathbf 1, f, \lambda.\,f\,\#0)$ is rejected even though the two endpoints are $\eta$-equal. The same holds for the domain checks in $(W\textsf{-E})$.
-- **Read-back of a stuck `wrec` is not re-evaluable.** `neutral_quote` writes the family $B$ of an `NWRec` as a body under a binder, but `WRec` expects $B$ as a function term, so $\llbracket q_l(v) \rrbracket$ can differ from $v$ for such values.
 - **Subtyping only for $\Pi$, $\Sigma$ and universes.** $W$ and identity types are compared by conversion, without cumulativity in their components.
 
 ## Alternatives rejected

@@ -315,8 +315,8 @@ msgid "`def_eq(l, s, t)` returns `true` when $s \\le t$ under the cumulative sub
 msgstr "`def_eq(l, s, t)` は、設計ノートの累積的部分型付けのもとで $s \\le t$ が成り立つとき `true` を返します。すなわち $i \\le j$ に対して $\\mathcal U_i \\le \\mathcal U_j$、$\\Pi$ 型は定義域について反変かつ余域について共変、$\\Sigma$ 型は第 1 成分について不変かつ第 2 成分について共変で、その他の型はすべて変換（conversion）によって比較されます。名前に反してこの関係は対称ではありません。`def_eq(0, VUniverse(0), VUniverse(1))` は `true`、`def_eq(0, VUniverse(1), VUniverse(0))` は `false` です。"
 
 #: manual/api/elab.md:359
-msgid "[!WARNING] Because the context is empty, `def_eq` cannot look up the type of a free variable, and it returns `false` for two equal neutral applications such as `f x` and `f x` with a free `f`. Inside `type_chk`, where the context is known, the same comparison succeeds."
-msgstr "[!WARNING] 文脈が空であるため、`def_eq` は自由変数の型を調べることができず、自由な `f` に対する `f x` と `f x` のような 2 つの等しい中立な適用に対して `false` を返します。文脈がわかっている `type_chk` の内部では、同じ比較は成功します。"
+msgid "[!NOTE] Because the context is empty, `def_eq` cannot look up the type of a free variable. Two neutral terms are then compared by their read-backs, so `f x` equals `f x` for a free `f`, but arguments that are only $\\eta$-equal, such as `f g` and `f (λx. g x)`, are not identified. Inside `type_chk`, where the context is known, $\\eta$ is used."
+msgstr "[!NOTE] コンテキストが空なので、`def_eq` は自由変数の型を調べられない。そのため二つの中立項は読み戻しの結果で比較され、自由変数 `f` について `f x` と `f x` は等しくなるが、`f g` と `f (λx. g x)` のように $\\eta$ でのみ等しい引数は同一視されない。コンテキストが分かっている `type_chk` の内部では $\\eta$ が使われる。"
 
 #: manual/api/elab.md:372
 msgid "Deprecated"
@@ -527,8 +527,8 @@ msgid "Conversion $A \\equiv A'$ (`conv_type`) compares types structurally, ente
 msgstr "変換 $A \\equiv A'$（`conv_type`）は型を構造的に比較し、新しい変数で束縛子に入り、同一性型の端点を $\\eta$ を加えた型主導の $\\equiv_A$（`conv_nf`）で比較します。"
 
 #: manual/design/elab.md:238
-msgid "Neutral terms are compared spine by spine (`conv_neu`), looking up the type of the head variable in $\\Gamma$ to compare application arguments at the right type. Everything else falls back to comparing read-backs, $q_l(v) = q_l(v')$."
-msgstr "中立項はスパインごとに比較されます（`conv_neu`）。適用の引数を正しい型で比較するために、先頭の変数の型を $\\Gamma$ から調べます。それ以外はすべて読み戻しの比較 $q_l(v) = q_l(v')$ にフォールバックします。"
+msgid "Neutral terms are compared spine by spine (`conv_neu`), looking up the type of the head variable in $\\Gamma$ to compare application arguments at the right type. When the head's type is not in $\\Gamma$, as in `def_eq`, which has no context, the two spines are compared by their read-backs instead. That is sound, because equal read-backs are definitionally equal, but it does not use $\\eta$ on the arguments. Everything else falls back to comparing read-backs, $q_l(v) = q_l(v')$."
+msgstr "中立項はスパインごとに比較する（`conv_neu`）。適用の引数を正しい型で比較するために、先頭変数の型を $\\Gamma$ から調べる。先頭の型が $\\Gamma$ にない場合、たとえばコンテキストを持たない `def_eq` では、二つのスパインを読み戻しの結果で比較する。読み戻しが等しい値は定義的に等しいので、これは健全だが、引数に $\\eta$ は使わない。それ以外はすべて読み戻しの比較 $q_l(v) = q_l(v')$ に帰着する。"
 
 #: manual/design/elab.md:240
 msgid "Universes"
@@ -623,66 +623,54 @@ msgid "The implementation is a work in progress, and some rules are weaker or st
 msgstr "実装は開発途中であり、いくつかの規則は上記の理論より弱かったり強かったりします。ユーザーが避けられるようにここに記録しますが、コードは変更していません。"
 
 #: manual/design/elab.md:283
-msgid "**`def_eq` uses an empty context.** It cannot look up the types of free variables, so `conv_neu` cannot compare the arguments of two neutral applications, and `def_eq(0, f x, f x)` returns `false` for a free `f`. Inside the checker, where the context is available, the comparison succeeds."
-msgstr "**`def_eq` は空の文脈を使う。** 自由変数の型を調べられないため、`conv_neu` は 2 つの中立な適用の引数を比較できず、自由な `f` に対して `def_eq(0, f x, f x)` は `false` を返します。文脈が利用できる検査器の内部では、この比較は成功します。"
-
-#: manual/design/elab.md:284
-msgid "**$\\mathrm{refl}$ compares read-backs without $\\eta$.** $(\\mathrm{Id}\\textsf{-I})$ compares $q_l$ syntactically, so $\\mathrm{refl}\\;f : \\mathrm{Id}(\\mathbf 1 \\to \\mathbf 1, f, \\lambda.\\,f\\,\\#0)$ is rejected even though the two endpoints are $\\eta$-equal. The same holds for the domain checks in $(W\\textsf{-E})$."
-msgstr "**$\\mathrm{refl}$ は $\\eta$ なしで読み戻しを比較する。** $(\\mathrm{Id}\\textsf{-I})$ は $q_l$ を構文的に比較するため、2 つの端点が $\\eta$ 等価であるにもかかわらず $\\mathrm{refl}\\;f : \\mathrm{Id}(\\mathbf 1 \\to \\mathbf 1, f, \\lambda.\\,f\\,\\#0)$ は拒否されます。$(W\\textsf{-E})$ の定義域の検査も同様です。"
-
-#: manual/design/elab.md:285
-msgid "**Read-back of a stuck `wrec` is not re-evaluable.** `neutral_quote` writes the family $B$ of an `NWRec` as a body under a binder, but `WRec` expects $B$ as a function term, so $\\llbracket q_l(v) \\rrbracket$ can differ from $v$ for such values."
-msgstr "**行き詰まった `wrec` の読み戻しは再評価できない。** `neutral_quote` は `NWRec` の族 $B$ を束縛子の下の本体として書き出しますが、`WRec` は $B$ を関数項として期待するため、そのような値では $\\llbracket q_l(v) \\rrbracket$ が $v$ と異なることがあります。"
-
-#: manual/design/elab.md:286
 msgid "**Subtyping only for $\\Pi$, $\\Sigma$ and universes.** $W$ and identity types are compared by conversion, without cumulativity in their components."
 msgstr "**部分型付けは $\\Pi$、$\\Sigma$、宇宙だけ。** $W$ と同一性型は、成分に累積性を持たない変換によって比較されます。"
 
-#: manual/design/elab.md:288
+#: manual/design/elab.md:285
 msgid "Alternatives rejected"
 msgstr "採用しなかった代替案"
 
-#: manual/design/elab.md:290
+#: manual/design/elab.md:287
 msgid "**Typed terms with names.** Named variables need capture-avoiding substitution and make $\\alpha$-equivalence a separate check; de Bruijn indices avoid both."
 msgstr "**名前付きの型付き項。** 名前付き変数は捕獲回避代入を必要とし、$\\alpha$ 同値を別の検査にしてしまいます。de Bruijn インデックスはその両方を避けます。"
 
-#: manual/design/elab.md:291
+#: manual/design/elab.md:288
 msgid "**Substitution-based normalisation.** Repeated syntactic substitution is slower and harder to get right than evaluation into closures, and it still needs a separate conversion check."
 msgstr "**代入に基づく正規化。** 構文的代入の繰り返しは、クロージャへの評価より遅く、正しく実装するのも難しく、しかも別途変換の検査が必要です。"
 
-#: manual/design/elab.md:292
+#: manual/design/elab.md:289
 msgid "**Impredicative or self-containing universes.** $\\mathcal U : \\mathcal U$ is inconsistent, and an impredicative $\\mathrm{Prop}$ is not part of the theory stella follows."
 msgstr "**非可述的な宇宙や自分自身を含む宇宙。** $\\mathcal U : \\mathcal U$ は矛盾しており、非可述的な $\\mathrm{Prop}$ は stella が従う理論には含まれません。"
 
-#: manual/design/elab.md:293
+#: manual/design/elab.md:290
 msgid "**Inductive families.** W types provide well-founded trees with a single eliminator, which keeps the kernel small; general inductive definitions would need a positivity checker."
 msgstr "**帰納族。** W 型は単一の除去子で整礎木を提供し、カーネルを小さく保ちます。一般の帰納的定義には正値性検査器が必要になります。"
 
-#: manual/design/elab.md:295
+#: manual/design/elab.md:292
 msgid "Boundaries"
 msgstr "境界"
 
-#: manual/design/elab.md:297
+#: manual/design/elab.md:294
 msgid "The package deliberately does not:"
 msgstr "このパッケージは意図的に次のことを行いません。"
 
-#: manual/design/elab.md:299
+#: manual/design/elab.md:296
 msgid "parse a surface syntax, elaborate implicit arguments or solve unification problems; terms are built as MoonBit values in core syntax;"
 msgstr "表層構文の解析、暗黙引数のエラボレーション、単一化問題の求解。項はコア構文の MoonBit 値として構築します。"
 
-#: manual/design/elab.md:300
+#: manual/design/elab.md:297
 msgid "support definitions, `let` or global definitions with bodies; the context holds postulates (names with types) only;"
 msgstr "定義、`let`、本体を持つグローバル定義のサポート。文脈には公理（型を持つ名前）だけが入ります。"
 
-#: manual/design/elab.md:301
+#: manual/design/elab.md:298
 msgid "provide universe polymorphism, inductive families, an empty type or sum types;"
 msgstr "宇宙多相、帰納族、空型、直和型の提供。"
 
-#: manual/design/elab.md:302
+#: manual/design/elab.md:299
 msgid "implement univalence, higher inductive types or any other feature of homotopy type theory, although the treatise describes them as goals of the project;"
 msgstr "一価性、高次帰納型、その他ホモトピー型理論の機能の実装。論考ではそれらをプロジェクトの目標として述べていますが、実装はされていません。"
 
-#: manual/design/elab.md:303
+#: manual/design/elab.md:300
 msgid "guarantee anything for ill-typed input to the evaluator; `eval_inf`, `eval_chk` and the `val_` functions may panic."
 msgstr "評価器への型の誤った入力に対する保証。`eval_inf`、`eval_chk`、`val_` 関数は panic することがあります。"
 
@@ -915,8 +903,8 @@ msgid "**`W` and `WRec` write the family differently.** In `W(A, B)`, `B` is a b
 msgstr "**`W` と `WRec` では族の書き方が異なる。** `W(A, B)` では `B` は束縛子の下の本体ですが、`WRec(A, B, ...)` では `B` は型 $A \\to \\mathcal U_k$ の推論可能な関数項です。"
 
 #: manual/tutorial/elab.md:203
-msgid "**`def_eq` is directed and context-free.** It tests subtyping, and it cannot compare neutral applications such as `f x` because it does not know the type of `f`."
-msgstr "**`def_eq` は向きがあり、文脈を持たない。** 部分型を判定するものであり、`f` の型を知らないため `f x` のような中立な適用を比較できません。"
+msgid "**`def_eq` is directed and context-free.** It tests subtyping, and because it does not know the type of `f` it compares neutral applications such as `f x` by their read-backs, without $\\eta$ on the arguments."
+msgstr "**`def_eq` は向きがあり、コンテキストを持たない。** 部分型を判定するものであり、`f` の型を知らないため、`f x` のような中立適用は読み戻しの結果で比較し、引数に $\\eta$ は使わない。"
 
 #: manual/tutorial/elab.md:204
 msgid "**Evaluation trusts its input.** `eval_inf` and the `val_` functions panic on ill-typed terms; type-check first."
@@ -941,6 +929,15 @@ msgstr "[設計ノート](../design/elab.md)では、型付け規則を推論規
 #: manual/tutorial/elab.md:211
 msgid "The treatise linked from the [overview](../index.md) develops the type theory from the untyped lambda calculus."
 msgstr "[概要](../index.md)からリンクされている論考は、型なしラムダ計算から出発してこの型理論を展開しています。"
+
+#~ msgid "**`def_eq` uses an empty context.** It cannot look up the types of free variables, so `conv_neu` cannot compare the arguments of two neutral applications, and `def_eq(0, f x, f x)` returns `false` for a free `f`. Inside the checker, where the context is available, the comparison succeeds."
+#~ msgstr "**`def_eq` は空の文脈を使う。** 自由変数の型を調べられないため、`conv_neu` は 2 つの中立な適用の引数を比較できず、自由な `f` に対して `def_eq(0, f x, f x)` は `false` を返します。文脈が利用できる検査器の内部では、この比較は成功します。"
+
+#~ msgid "**$\\mathrm{refl}$ compares read-backs without $\\eta$.** $(\\mathrm{Id}\\textsf{-I})$ compares $q_l$ syntactically, so $\\mathrm{refl}\\;f : \\mathrm{Id}(\\mathbf 1 \\to \\mathbf 1, f, \\lambda.\\,f\\,\\#0)$ is rejected even though the two endpoints are $\\eta$-equal. The same holds for the domain checks in $(W\\textsf{-E})$."
+#~ msgstr "**$\\mathrm{refl}$ は $\\eta$ なしで読み戻しを比較する。** $(\\mathrm{Id}\\textsf{-I})$ は $q_l$ を構文的に比較するため、2 つの端点が $\\eta$ 等価であるにもかかわらず $\\mathrm{refl}\\;f : \\mathrm{Id}(\\mathbf 1 \\to \\mathbf 1, f, \\lambda.\\,f\\,\\#0)$ は拒否されます。$(W\\textsf{-E})$ の定義域の検査も同様です。"
+
+#~ msgid "**Read-back of a stuck `wrec` is not re-evaluable.** `neutral_quote` writes the family $B$ of an `NWRec` as a body under a binder, but `WRec` expects $B$ as a function term, so $\\llbracket q_l(v) \\rrbracket$ can differ from $v$ for such values."
+#~ msgstr "**行き詰まった `wrec` の読み戻しは再評価できない。** `neutral_quote` は `NWRec` の族 $B$ を束縛子の下の本体として書き出しますが、`WRec` は $B$ を関数項として期待するため、そのような値では $\\llbracket q_l(v) \\rrbracket$ が $v$ と異なることがあります。"
 
 #~ msgid "**The motive of $J$ is checked only for its shape.** $(J)$ requires $P$ to have a type of the form $\\Pi(D_1, \\Pi(D_2, \\mathcal U_k))$, but it does not compare $D_1$ with $A$ or $D_2$ with $\\mathrm{Id}(A, x, z)$. A motive with the wrong domains is accepted, so this rule is not sound in general."
 #~ msgstr "**$J$ のモチーフは形だけが検査される。** $(J)$ は $P$ が $\\Pi(D_1, \\Pi(D_2, \\mathcal U_k))$ の形の型を持つことを要求しますが、$D_1$ を $A$ と、$D_2$ を $\\mathrm{Id}(A, x, z)$ と比較しません。定義域の誤ったモチーフも受理されるため、この規則は一般には健全ではありません。"

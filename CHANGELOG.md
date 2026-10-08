@@ -11,6 +11,10 @@ All notable changes to this project are documented in this file.
 ### Fixed
 
 - `JElim` now checks the domains of its motive: the motive's type must accept $A$ as its first argument and $\mathrm{Id}(A, x, y)$ as its second, up to subtyping. Before, only the shape $\Pi(\_, \Pi(\_, \mathcal U_k))$ was checked, so ill-typed motives were accepted or crashed the checker with `RuntimeError: unreachable` (#19). The check was lost when cumulative universes were introduced.
+- `def_eq` is reflexive on neutral terms: when the type of a neutral head is unknown (as in `def_eq`, which has no context), `conv_neu` now compares the read-backs instead of returning `false`, so `def_eq(0, f tt, f tt)` is `true` (#18).
+- `Rfl` compares its endpoints by type-directed conversion, so `refl f : Id(1 → 1, f, λx. f x)` and `refl tt : Id(1, tt, u)` are accepted, as $\eta$ requires (#20).
+- `quote` reads back the family `B` of a stuck `WRec` as a function term, so evaluating a read-back stuck `wrec` gives the same value instead of crashing (#21).
+- `WRec` checks the domains of `B` and of the motive by subtyping instead of comparing read-backs, so definitionally equal domains are accepted.
 
 ### Changed
 

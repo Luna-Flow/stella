@@ -356,8 +356,8 @@ pub fn def_eq(Int, Value, Value) -> Bool
 
 `def_eq(l, s, t)` returns `true` when $s \le t$ under the cumulative subtyping of the design notes: $\mathcal U_i \le \mathcal U_j$ for $i \le j$, $\Pi$ types are contravariant in the domain and covariant in the codomain, $\Sigma$ types are invariant in the first component and covariant in the second, and all other types are compared by conversion. Despite its name the relation is not symmetric: `def_eq(0, VUniverse(0), VUniverse(1))` is `true` and `def_eq(0, VUniverse(1), VUniverse(0))` is `false`.
 
-> [!WARNING]
-> Because the context is empty, `def_eq` cannot look up the type of a free variable, and it returns `false` for two equal neutral applications such as `f x` and `f x` with a free `f`. Inside `type_chk`, where the context is known, the same comparison succeeds.
+> [!NOTE]
+> Because the context is empty, `def_eq` cannot look up the type of a free variable. Two neutral terms are then compared by their read-backs, so `f x` equals `f x` for a free `f`, but arguments that are only $\eta$-equal, such as `f g` and `f (λx. g x)`, are not identified. Inside `type_chk`, where the context is known, $\eta$ is used.
 
 ```moonbit
 test "cumulativity" {
