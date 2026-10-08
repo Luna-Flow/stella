@@ -517,10 +517,10 @@ pub fn type_inf(
       let type_b_type = ensure_inf(lvl, ctx, env, b)
       match type_b_type {
         VPi(dom, cod) => {
-          if quote(lvl, dom) != quote(lvl, type_a) {
+          if !subtype(lvl, ctx, type_a, dom) {
             raise TypeError("W-type: B domain mismatch")
           }
-          let _ = ensure_univ(cod(val_var(Quote(lvl))))
+          ensure_univ(cod(val_var(Local(lvl)))) |> ignore
         }
         _ => raise TypeError("WRec: B must be a function")
       }
@@ -531,10 +531,10 @@ pub fn type_inf(
       let type_motive = ensure_inf(lvl, ctx, env, motive)
       match type_motive {
         VPi(dom, cod) => {
-          if quote(lvl, dom) != quote(lvl, type_w) {
+          if !subtype(lvl, ctx, type_w, dom) {
             raise TypeError("WRec: motive domain mismatch")
           }
-          ensure_univ(cod(val_var(Quote(lvl)))) |> ignore
+          ensure_univ(cod(val_var(Local(lvl)))) |> ignore
         }
         _ => raise TypeError("WRec: motive must be a function")
       }
