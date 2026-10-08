@@ -1,9 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "Luna-Flow/stella/elab"
 
-import(
-  "moonbitlang/core/list"
-)
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/list",
+}
 
 // Values
 pub fn def_eq(Int, Value, Value) -> Bool
@@ -46,9 +47,8 @@ pub(all) enum Name {
   Global(String)
   Local(Int)
   Quote(Int)
-}
-pub impl Eq for Name
-pub impl Show for Name
+} derive(Eq, @debug.Debug)
+pub fn Name::equal(Self, Self) -> Bool
 
 pub(all) enum Neutral {
   NFree(Name)
@@ -57,8 +57,7 @@ pub(all) enum Neutral {
   NSnd(Neutral)
   NJElim(Value, Value, Value, Value, Value, Neutral)
   NWRec(Value, (Value) -> Value, Value, Value, Neutral)
-}
-pub impl Show for Neutral
+} derive(@debug.Debug)
 
 pub(all) enum TermChk {
   Inf(TermInf)
@@ -67,9 +66,8 @@ pub(all) enum TermChk {
   Pair(TermChk, TermChk)
   Rfl(TermChk)
   Sup(TermChk, TermChk)
-}
-pub impl Eq for TermChk
-pub impl Show for TermChk
+} derive(Eq, @debug.Debug)
+pub fn TermChk::equal(Self, Self) -> Bool
 
 pub(all) enum TermInf {
   Bound(Int)
@@ -86,9 +84,8 @@ pub(all) enum TermInf {
   JElim(TermChk, TermChk, TermChk, TermChk, TermChk, TermInf)
   W(TermChk, TermChk)
   WRec(TermChk, TermChk, TermChk, TermChk, TermInf)
-}
-pub impl Eq for TermInf
-pub impl Show for TermInf
+} derive(Eq, @debug.Debug)
+pub fn TermInf::equal(Self, Self) -> Bool
 
 #alias(Type)
 pub(all) enum Value {
@@ -104,8 +101,7 @@ pub(all) enum Value {
   VRfl(Value)
   VW(Value, (Value) -> Value)
   VSup(Value, (Value) -> Value)
-}
-pub impl Show for Value
+} derive(@debug.Debug)
 
 // Type aliases
 pub type Context = @list.List[(Name, Value)]
@@ -113,4 +109,3 @@ pub type Context = @list.List[(Name, Value)]
 pub type Env = @list.List[Value]
 
 // Traits
-
