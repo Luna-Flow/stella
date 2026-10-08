@@ -8,6 +8,10 @@ All notable changes to this project are documented in this file.
 
 - `Name`, `TermChk`, `TermInf`, `Neutral` and `Value` derive `Debug` instead of `Show`. Their `Show` implementations are removed, so `inspect(x)`, `x.to_string()` and `"\{x}"` no longer compile for these types. Use `debug_inspect(x)`, `@debug.to_string(x)` or `"\{Repr(x)}"` instead.
 
+### Fixed
+
+- `JElim` now checks the domains of its motive: the motive's type must accept $A$ as its first argument and $\mathrm{Id}(A, x, y)$ as its second, up to subtyping. Before, only the shape $\Pi(\_, \Pi(\_, \mathcal U_k))$ was checked, so ill-typed motives were accepted or crashed the checker with `RuntimeError: unreachable` (#19). The check was lost when cumulative universes were introduced.
+
 ### Changed
 
 - Migrated to MoonBit 0.10 (`moonc` 0.10 or newer is required).

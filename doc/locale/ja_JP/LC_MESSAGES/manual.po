@@ -494,195 +494,195 @@ msgstr "**除去は推論される。** 除去される項の型を推論し、�
 msgid "Path induction, with the motive $P$ inferred and $\\bar A = \\llbracket A \\rrbracket$, $\\bar x = \\llbracket x \\rrbracket$, $\\bar y = \\llbracket y \\rrbracket$, $\\bar P = \\llbracket P \\rrbracket$:"
 msgstr "パス帰納法。モチーフ $P$ は推論され、$\\bar A = \\llbracket A \\rrbracket$、$\\bar x = \\llbracket x \\rrbracket$、$\\bar y = \\llbracket y \\rrbracket$、$\\bar P = \\llbracket P \\rrbracket$ とします。"
 
-#: manual/design/elab.md:186
+#: manual/design/elab.md:190
+msgid "The universe level $k$ of the motive is inferred rather than fixed, which is what cumulative universes need. The two domains are still checked: $P$ is only ever applied to a point of $\\bar A$ and to a path out of $\\bar x$, so its domains must accept those arguments, and $\\Pi$ is contravariant in its domain. Checking only the shape $\\Pi(D_1, \\Pi(D_2, \\mathcal U_k))$ would let $P$ be applied to arguments of the wrong type during checking."
+msgstr "motive の宇宙レベル $k$ は固定せずに推論する。これは累積的宇宙に必要な性質である。ただし二つの定義域は引き続き検査する。$P$ が適用されるのは $\\bar A$ の点と $\\bar x$ から出るパスだけなので、その定義域はこれらの引数を受け付けなければならず、$\\Pi$ は定義域について反変である。形 $\\Pi(D_1, \\Pi(D_2, \\mathcal U_k))$ だけを検査すると、検査中に $P$ が誤った型の引数に適用されうる。"
+
+#: manual/design/elab.md:192
 msgid "W recursion, where $B$ is an inferable *function* $A \\to \\mathcal U_k$, $\\bar B(v) = \\llbracket B \\rrbracket \\cdot v$ and $\\bar W = W(\\bar A, \\bar B)$:"
 msgstr "W 再帰。$B$ は推論可能な*関数* $A \\to \\mathcal U_k$ で、$\\bar B(v) = \\llbracket B \\rrbracket \\cdot v$、$\\bar W = W(\\bar A, \\bar B)$ とします。"
 
-#: manual/design/elab.md:200
+#: manual/design/elab.md:206
 msgid "**Changing direction.** An inferable term is accepted in checking mode when its type is a subtype of the expected one:"
 msgstr "**方向の切り替え。** 推論可能な項は、その型が期待される型の部分型であれば検査モードで受理されます。"
 
-#: manual/design/elab.md:206
+#: manual/design/elab.md:212
 msgid "The opposite direction is $(\\textsf{Ann})$: a checkable term becomes inferable once its type is written down."
 msgstr "逆方向は $(\\textsf{Ann})$ です。検査可能な項は、その型を書き下せば推論可能になります。"
 
-#: manual/design/elab.md:208
+#: manual/design/elab.md:214
 msgid "Subtyping and conversion"
 msgstr "部分型付けと変換"
 
-#: manual/design/elab.md:210
+#: manual/design/elab.md:216
 msgid "The relation $A \\le A'$ (`subtype_nf`, exposed for the empty context as `def_eq`) is cumulativity:"
 msgstr "関係 $A \\le A'$（`subtype_nf`。空の文脈向けには `def_eq` として公開）は累積性です。"
 
-#: manual/design/elab.md:222
+#: manual/design/elab.md:228
 msgid "The $\\Pi$ rule is contravariant in the domain: a function that accepts every element of $A$ accepts every element of a subtype $A' \\le A$, and its results in $F(x)$ are also results in the supertype $F'(x)$. The $\\Sigma$ rule keeps the first component *invariant*; covariance would also be sound, but the implementation, and its tests, require conversion there."
 msgstr "$\\Pi$ 規則は定義域について反変です。$A$ のすべての要素を受け付ける関数は部分型 $A' \\le A$ のすべての要素を受け付け、その $F(x)$ における結果は上位型 $F'(x)$ における結果でもあります。$\\Sigma$ 規則は第 1 成分を*不変*に保ちます。共変にしても健全ですが、実装とそのテストはそこで変換を要求します。"
 
-#: manual/design/elab.md:224
+#: manual/design/elab.md:230
 msgid "Conversion $A \\equiv A'$ (`conv_type`) compares types structurally, entering binders with a fresh variable, and compares the endpoints of identity types with the type-directed $\\equiv_A$ (`conv_nf`), which adds $\\eta$:"
 msgstr "変換 $A \\equiv A'$（`conv_type`）は型を構造的に比較し、新しい変数で束縛子に入り、同一性型の端点を $\\eta$ を加えた型主導の $\\equiv_A$（`conv_nf`）で比較します。"
 
-#: manual/design/elab.md:232
+#: manual/design/elab.md:238
 msgid "Neutral terms are compared spine by spine (`conv_neu`), looking up the type of the head variable in $\\Gamma$ to compare application arguments at the right type. Everything else falls back to comparing read-backs, $q_l(v) = q_l(v')$."
 msgstr "中立項はスパインごとに比較されます（`conv_neu`）。適用の引数を正しい型で比較するために、先頭の変数の型を $\\Gamma$ から調べます。それ以外はすべて読み戻しの比較 $q_l(v) = q_l(v')$ にフォールバックします。"
 
-#: manual/design/elab.md:234
+#: manual/design/elab.md:240
 msgid "Universes"
 msgstr "宇宙"
 
-#: manual/design/elab.md:236
+#: manual/design/elab.md:242
 msgid "The universes are *predicative* and *Russell style*: a type is itself a term, and $\\mathcal U_i : \\mathcal U_{i+1}$. There is no rule $\\mathcal U_i : \\mathcal U_i$, because a universe containing itself makes the theory inconsistent (Girard's paradox).[^girard] A type former lands in the larger universe of its parts, $\\max(i, j)$, which is what predicativity requires: $\\Pi_{A : \\mathcal U_0} A \\to A$ quantifies over $\\mathcal U_0$ and therefore lives in $\\mathcal U_1$. Cumulativity $\\mathcal U_i \\le \\mathcal U_{i+1}$ is not a typing rule but part of subtyping, used by $(\\textsf{Sub})$."
 msgstr "宇宙は*可述的*かつ *Russell 流*です。型それ自体が項であり、$\\mathcal U_i : \\mathcal U_{i+1}$ です。自分自身を含む宇宙は理論を矛盾させる（Girard のパラドックス）ため、規則 $\\mathcal U_i : \\mathcal U_i$ はありません。[^girard] 型形成子は構成要素の大きい方の宇宙 $\\max(i, j)$ に属し、これが可述性の要求するところです。$\\Pi_{A : \\mathcal U_0} A \\to A$ は $\\mathcal U_0$ 上で量化するので $\\mathcal U_1$ に属します。累積性 $\\mathcal U_i \\le \\mathcal U_{i+1}$ は型付け規則ではなく部分型付けの一部で、$(\\textsf{Sub})$ で使われます。"
 
-#: manual/design/elab.md:238
+#: manual/design/elab.md:244
 msgid "J.-Y. Girard, *Interprétation fonctionnelle et élimination des coupures de l'arithmétique d'ordre supérieur*, thèse d'État (1972); a short proof is A. J. C. Hurkens, \"A simplification of Girard's paradox\", TLCA 1995."
 msgstr "J.-Y. Girard, *Interprétation fonctionnelle et élimination des coupures de l'arithmétique d'ordre supérieur*, thèse d'État (1972)。短い証明として A. J. C. Hurkens, \"A simplification of Girard's paradox\", TLCA 1995 があります。"
 
-#: manual/design/elab.md:240
+#: manual/design/elab.md:246
 msgid "Design decisions"
 msgstr "設計上の決定"
 
-#: manual/design/elab.md:242
+#: manual/design/elab.md:248
 msgid "Bidirectional checking"
 msgstr "双方向検査"
 
-#: manual/design/elab.md:244
+#: manual/design/elab.md:250
 msgid "**Problem.** Inferring the type of an unannotated $\\lambda$ in a dependent type theory requires guessing its domain, which in general means higher-order unification, which is undecidable."
 msgstr "**問題。** 依存型理論で注釈のない $\\lambda$ の型を推論するには定義域を推測する必要があり、これは一般に高階単一化を意味し、高階単一化は決定不能です。"
 
-#: manual/design/elab.md:246
+#: manual/design/elab.md:252
 msgid "**Options.** (a) Annotate every binder, $\\lambda (x : A).\\,t$. (b) Infer with unification variables. (c) Split the terms into checked and inferred ones."
 msgstr "**選択肢。** (a) すべての束縛子に注釈を付ける、$\\lambda (x : A).\\,t$。(b) 単一化変数で推論する。(c) 項を検査されるものと推論されるものに分ける。"
 
-#: manual/design/elab.md:248
+#: manual/design/elab.md:254
 msgid "**Choice.** (c). Introduction forms ($\\lambda$, pairs, $\\star$, $\\mathrm{refl}$, $\\sup$) are checked, because their type determines the missing information; eliminations and type formers are inferred, because the type of the head determines the type of the whole. An annotation is needed only where an introduction meets an elimination, that is, at a $\\beta$-redex such as $(\\lambda.\\,t : T)\\;u$, or where a motive must be a function. A term in normal form needs no annotations at all apart from the motives. Encoding the split in the types `TermInf` and `TermChk` makes an unannotated redex unrepresentable rather than a runtime error."
 msgstr "**選択。** (c)。導入形式（$\\lambda$、ペア、$\\star$、$\\mathrm{refl}$、$\\sup$）は、型が欠けている情報を決定するので検査されます。除去と型形成子は、先頭の型が全体の型を決定するので推論されます。注釈が必要なのは導入が除去と出会う箇所、すなわち $(\\lambda.\\,t : T)\\;u$ のような $\\beta$ 簡約基か、モチーフが関数でなければならない箇所だけです。正規形の項は、モチーフを除けば注釈をまったく必要としません。この区別を型 `TermInf` と `TermChk` に符号化することで、注釈のない簡約基は実行時エラーではなく表現不可能になります。"
 
-#: manual/design/elab.md:250
+#: manual/design/elab.md:256
 msgid "Values with closures"
 msgstr "クロージャを持つ値"
 
-#: manual/design/elab.md:252
+#: manual/design/elab.md:258
 msgid "**Problem.** Comparing types requires evaluating them, including under binders."
 msgstr "**問題。** 型を比較するには、束縛子の下も含めて型を評価する必要があります。"
 
-#: manual/design/elab.md:254
+#: manual/design/elab.md:260
 msgid "**Options.** (a) Rewrite syntax by substitution, which needs capture-avoiding substitution and index shifting at every step. (b) Evaluate into a semantic domain where binders are host functions."
 msgstr "**選択肢。** (a) 代入によって構文を書き換える。これには各ステップで捕獲回避代入とインデックスのシフトが必要です。(b) 束縛子がホスト言語の関数である意味領域へ評価する。"
 
-#: manual/design/elab.md:256
+#: manual/design/elab.md:262
 msgid "**Choice.** (b). A body is represented by a MoonBit function `(Value) -> Value`, so $\\beta$-reduction is a host function call and substitution never happens on syntax. Read-back recovers syntax only when needed: for printing, for comparison by $q_l$, and in the checks that compare normal forms."
 msgstr "**選択。** (b)。本体は MoonBit の関数 `(Value) -> Value` で表現されるため、$\\beta$ 簡約はホスト関数の呼び出しであり、構文上の代入は決して起こりません。読み戻しは必要なときだけ構文を復元します。表示のため、$q_l$ による比較のため、そして正規形を比較する検査の中でです。"
 
-#: manual/design/elab.md:258
+#: manual/design/elab.md:264
 msgid "Indices in terms, levels in values"
 msgstr "項ではインデックス、値ではレベル"
 
-#: manual/design/elab.md:260
+#: manual/design/elab.md:266
 msgid "Terms use indices, so that $\\alpha$-equivalence is structural equality and closed subterms do not depend on their position. Fresh variables in values use levels, `Local(l)` for the checker and `Quote(l)` for read-back, so that creating a fresh variable is a counter increment and values never need shifting. The two kinds of fresh variable are separate `Name` constructors, so a variable introduced by the checker cannot be mistaken for one introduced while reading back."
 msgstr "項はインデックスを使うので、$\\alpha$ 同値は構造的等価性となり、閉じた部分項はその位置に依存しません。値の中の新しい変数はレベル（検査器では `Local(l)`、読み戻しでは `Quote(l)`）を使うので、新しい変数の作成はカウンタのインクリメントであり、値がシフトを必要とすることはありません。2 種類の新しい変数は別々の `Name` コンストラクタなので、検査器が導入した変数が読み戻し中に導入された変数と取り違えられることはありません。"
 
-#: manual/design/elab.md:262
+#: manual/design/elab.md:268
 msgid "Subtyping instead of explicit lifts"
 msgstr "明示的な持ち上げの代わりに部分型付け"
 
-#: manual/design/elab.md:264
+#: manual/design/elab.md:270
 msgid "Cumulativity could be expressed with explicit lifting operators $\\uparrow : \\mathcal U_i \\to \\mathcal U_{i+1}$. Building it into the change of direction $(\\textsf{Sub})$ instead means a type written in $\\mathcal U_0$ can be used in $\\mathcal U_1$ without any term-level coercion, as in `type_chk(..., Inf(UnitType), VUniverse(1))`."
 msgstr "累積性は、明示的な持ち上げ演算子 $\\uparrow : \\mathcal U_i \\to \\mathcal U_{i+1}$ で表現することもできます。代わりにそれを方向の切り替え $(\\textsf{Sub})$ に組み込むことで、$\\mathcal U_0$ で書かれた型を項レベルの型強制なしに $\\mathcal U_1$ で使えます。`type_chk(..., Inf(UnitType), VUniverse(1))` のようにです。"
 
-#: manual/design/elab.md:266
+#: manual/design/elab.md:272
 msgid "Correctness and invariants"
 msgstr "正しさと不変条件"
 
-#: manual/design/elab.md:268
+#: manual/design/elab.md:274
 msgid "**Environment invariant.** At level $l$, `env` has exactly $l$ entries, entry $i$ is $x_{l-1-i}$, and `ctx` declares every $x_k$. The rules that go under a binder are the only places that extend the state, and they extend all three together. $(\\textsf{Var})$ relies on this invariant; a caller of `type_inf` that breaks it gets `Internal error: Bound variable not in environment`."
 msgstr "**環境の不変条件。** レベル $l$ では、`env` はちょうど $l$ 個のエントリを持ち、エントリ $i$ は $x_{l-1-i}$ であり、`ctx` はすべての $x_k$ を宣言しています。束縛子の下に入る規則だけが状態を拡張し、その際 3 つすべてを同時に拡張します。$(\\textsf{Var})$ はこの不変条件に依存しています。これを破る `type_inf` の呼び出し側は `Internal error: Bound variable not in environment` を受け取ります。"
 
-#: manual/design/elab.md:269
+#: manual/design/elab.md:275
 msgid "**Evaluate only what has been checked.** In every rule, a subterm is evaluated after the premise that checks it, for example the argument in $(\\Pi\\textsf{-E})$ and the type in $(\\textsf{Ann})$. Since the evaluator panics on ill-typed redexes, this ordering is what keeps the checker total on ill-typed input: it raises `TypeError` before it evaluates."
 msgstr "**検査済みのものだけを評価する。** どの規則でも、部分項はそれを検査する前提の後で評価されます。たとえば $(\\Pi\\textsf{-E})$ の引数や $(\\textsf{Ann})$ の型です。評価器は型の誤った簡約基で panic するので、この順序こそが型の誤った入力に対して検査器を全域的に保つものです。検査器は評価する前に `TypeError` を送出します。"
 
-#: manual/design/elab.md:270
+#: manual/design/elab.md:276
 msgid "**Stability of types.** Every type the checker returns is a value, so the caller never has to normalise it again, and every comparison of types happens on values."
 msgstr "**型の安定性。** 検査器が返す型はすべて値なので、呼び出し側が再び正規化する必要はなく、型の比較はすべて値の上で行われます。"
 
-#: manual/design/elab.md:271
+#: manual/design/elab.md:277
 msgid "**Termination.** Evaluation of a well-typed term terminates by the normalisation theorem for Martin-Löf type theory with W types and predicative universes. The checker only evaluates checked terms (invariant 2), so it terminates on every input for which its rules are sound; the gaps listed below are the exceptions."
 msgstr "**停止性。** 型の正しい項の評価は、W 型と可述的宇宙を持つ Martin-Löf 型理論の正規化定理により停止します。検査器は検査済みの項だけを評価する（不変条件 2）ので、規則が健全であるすべての入力で停止します。以下に挙げる欠落が例外です。"
 
-#: manual/design/elab.md:273
+#: manual/design/elab.md:279
 msgid "Known gaps"
 msgstr "既知の欠落"
 
-#: manual/design/elab.md:275
+#: manual/design/elab.md:281
 msgid "The implementation is a work in progress, and some rules are weaker or stronger than the theory above. They are recorded here so that users can avoid them; the code is unchanged."
 msgstr "実装は開発途中であり、いくつかの規則は上記の理論より弱かったり強かったりします。ユーザーが避けられるようにここに記録しますが、コードは変更していません。"
 
-#: manual/design/elab.md:277
-msgid "**The motive of $J$ is checked only for its shape.** $(J)$ requires $P$ to have a type of the form $\\Pi(D_1, \\Pi(D_2, \\mathcal U_k))$, but it does not compare $D_1$ with $A$ or $D_2$ with $\\mathrm{Id}(A, x, z)$. A motive with the wrong domains is accepted, so this rule is not sound in general."
-msgstr "**$J$ のモチーフは形だけが検査される。** $(J)$ は $P$ が $\\Pi(D_1, \\Pi(D_2, \\mathcal U_k))$ の形の型を持つことを要求しますが、$D_1$ を $A$ と、$D_2$ を $\\mathrm{Id}(A, x, z)$ と比較しません。定義域の誤ったモチーフも受理されるため、この規則は一般には健全ではありません。"
-
-#: manual/design/elab.md:278
+#: manual/design/elab.md:283
 msgid "**`def_eq` uses an empty context.** It cannot look up the types of free variables, so `conv_neu` cannot compare the arguments of two neutral applications, and `def_eq(0, f x, f x)` returns `false` for a free `f`. Inside the checker, where the context is available, the comparison succeeds."
 msgstr "**`def_eq` は空の文脈を使う。** 自由変数の型を調べられないため、`conv_neu` は 2 つの中立な適用の引数を比較できず、自由な `f` に対して `def_eq(0, f x, f x)` は `false` を返します。文脈が利用できる検査器の内部では、この比較は成功します。"
 
-#: manual/design/elab.md:279
+#: manual/design/elab.md:284
 msgid "**$\\mathrm{refl}$ compares read-backs without $\\eta$.** $(\\mathrm{Id}\\textsf{-I})$ compares $q_l$ syntactically, so $\\mathrm{refl}\\;f : \\mathrm{Id}(\\mathbf 1 \\to \\mathbf 1, f, \\lambda.\\,f\\,\\#0)$ is rejected even though the two endpoints are $\\eta$-equal. The same holds for the domain checks in $(W\\textsf{-E})$."
 msgstr "**$\\mathrm{refl}$ は $\\eta$ なしで読み戻しを比較する。** $(\\mathrm{Id}\\textsf{-I})$ は $q_l$ を構文的に比較するため、2 つの端点が $\\eta$ 等価であるにもかかわらず $\\mathrm{refl}\\;f : \\mathrm{Id}(\\mathbf 1 \\to \\mathbf 1, f, \\lambda.\\,f\\,\\#0)$ は拒否されます。$(W\\textsf{-E})$ の定義域の検査も同様です。"
 
-#: manual/design/elab.md:280
+#: manual/design/elab.md:285
 msgid "**Read-back of a stuck `wrec` is not re-evaluable.** `neutral_quote` writes the family $B$ of an `NWRec` as a body under a binder, but `WRec` expects $B$ as a function term, so $\\llbracket q_l(v) \\rrbracket$ can differ from $v$ for such values."
 msgstr "**行き詰まった `wrec` の読み戻しは再評価できない。** `neutral_quote` は `NWRec` の族 $B$ を束縛子の下の本体として書き出しますが、`WRec` は $B$ を関数項として期待するため、そのような値では $\\llbracket q_l(v) \\rrbracket$ が $v$ と異なることがあります。"
 
-#: manual/design/elab.md:281
+#: manual/design/elab.md:286
 msgid "**Subtyping only for $\\Pi$, $\\Sigma$ and universes.** $W$ and identity types are compared by conversion, without cumulativity in their components."
 msgstr "**部分型付けは $\\Pi$、$\\Sigma$、宇宙だけ。** $W$ と同一性型は、成分に累積性を持たない変換によって比較されます。"
 
-#: manual/design/elab.md:283
+#: manual/design/elab.md:288
 msgid "Alternatives rejected"
 msgstr "採用しなかった代替案"
 
-#: manual/design/elab.md:285
+#: manual/design/elab.md:290
 msgid "**Typed terms with names.** Named variables need capture-avoiding substitution and make $\\alpha$-equivalence a separate check; de Bruijn indices avoid both."
 msgstr "**名前付きの型付き項。** 名前付き変数は捕獲回避代入を必要とし、$\\alpha$ 同値を別の検査にしてしまいます。de Bruijn インデックスはその両方を避けます。"
 
-#: manual/design/elab.md:286
+#: manual/design/elab.md:291
 msgid "**Substitution-based normalisation.** Repeated syntactic substitution is slower and harder to get right than evaluation into closures, and it still needs a separate conversion check."
 msgstr "**代入に基づく正規化。** 構文的代入の繰り返しは、クロージャへの評価より遅く、正しく実装するのも難しく、しかも別途変換の検査が必要です。"
 
-#: manual/design/elab.md:287
+#: manual/design/elab.md:292
 msgid "**Impredicative or self-containing universes.** $\\mathcal U : \\mathcal U$ is inconsistent, and an impredicative $\\mathrm{Prop}$ is not part of the theory stella follows."
 msgstr "**非可述的な宇宙や自分自身を含む宇宙。** $\\mathcal U : \\mathcal U$ は矛盾しており、非可述的な $\\mathrm{Prop}$ は stella が従う理論には含まれません。"
 
-#: manual/design/elab.md:288
+#: manual/design/elab.md:293
 msgid "**Inductive families.** W types provide well-founded trees with a single eliminator, which keeps the kernel small; general inductive definitions would need a positivity checker."
 msgstr "**帰納族。** W 型は単一の除去子で整礎木を提供し、カーネルを小さく保ちます。一般の帰納的定義には正値性検査器が必要になります。"
 
-#: manual/design/elab.md:290
+#: manual/design/elab.md:295
 msgid "Boundaries"
 msgstr "境界"
 
-#: manual/design/elab.md:292
+#: manual/design/elab.md:297
 msgid "The package deliberately does not:"
 msgstr "このパッケージは意図的に次のことを行いません。"
 
-#: manual/design/elab.md:294
+#: manual/design/elab.md:299
 msgid "parse a surface syntax, elaborate implicit arguments or solve unification problems; terms are built as MoonBit values in core syntax;"
 msgstr "表層構文の解析、暗黙引数のエラボレーション、単一化問題の求解。項はコア構文の MoonBit 値として構築します。"
 
-#: manual/design/elab.md:295
+#: manual/design/elab.md:300
 msgid "support definitions, `let` or global definitions with bodies; the context holds postulates (names with types) only;"
 msgstr "定義、`let`、本体を持つグローバル定義のサポート。文脈には公理（型を持つ名前）だけが入ります。"
 
-#: manual/design/elab.md:296
+#: manual/design/elab.md:301
 msgid "provide universe polymorphism, inductive families, an empty type or sum types;"
 msgstr "宇宙多相、帰納族、空型、直和型の提供。"
 
-#: manual/design/elab.md:297
+#: manual/design/elab.md:302
 msgid "implement univalence, higher inductive types or any other feature of homotopy type theory, although the treatise describes them as goals of the project;"
 msgstr "一価性、高次帰納型、その他ホモトピー型理論の機能の実装。論考ではそれらをプロジェクトの目標として述べていますが、実装はされていません。"
 
-#: manual/design/elab.md:298
+#: manual/design/elab.md:303
 msgid "guarantee anything for ill-typed input to the evaluator; `eval_inf`, `eval_chk` and the `val_` functions may panic."
 msgstr "評価器への型の誤った入力に対する保証。`eval_inf`、`eval_chk`、`val_` 関数は panic することがあります。"
 
@@ -941,6 +941,9 @@ msgstr "[設計ノート](../design/elab.md)では、型付け規則を推論規
 #: manual/tutorial/elab.md:211
 msgid "The treatise linked from the [overview](../index.md) develops the type theory from the untyped lambda calculus."
 msgstr "[概要](../index.md)からリンクされている論考は、型なしラムダ計算から出発してこの型理論を展開しています。"
+
+#~ msgid "**The motive of $J$ is checked only for its shape.** $(J)$ requires $P$ to have a type of the form $\\Pi(D_1, \\Pi(D_2, \\mathcal U_k))$, but it does not compare $D_1$ with $A$ or $D_2$ with $\\mathrm{Id}(A, x, z)$. A motive with the wrong domains is accepted, so this rule is not sound in general."
+#~ msgstr "**$J$ のモチーフは形だけが検査される。** $(J)$ は $P$ が $\\Pi(D_1, \\Pi(D_2, \\mathcal U_k))$ の形の型を持つことを要求しますが、$D_1$ を $A$ と、$D_2$ を $\\mathrm{Id}(A, x, z)$ と比較しません。定義域の誤ったモチーフも受理されるため、この規則は一般には健全ではありません。"
 
 #~ msgid "elab is part of Luna-Flow/stella. This page should describe the public types, constructors, functions, traits, and observable semantics that are implemented in the current branch."
 #~ msgstr "elab は Luna-Flow/stella の一部です。このページでは、現在のブランチで実装されている公開型、コンストラクタ、関数、trait、および可観測セマンティクスを記述します。"

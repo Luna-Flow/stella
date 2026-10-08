@@ -177,11 +177,17 @@ $$
 \Gamma; \rho \vdash x \Leftarrow \bar A \qquad
 \Gamma; \rho \vdash y \Leftarrow \bar A \qquad
 \Gamma; \rho \vdash p \Leftarrow \mathrm{Id}(\bar A, \bar x, \bar y) \\
-\Gamma; \rho \vdash P \Rightarrow \Pi(D_1, F_1), \quad F_1(z) = \Pi(D_2, F_2), \quad F_2(w) = \mathcal U_k \qquad
+\Gamma; \rho \vdash P \Rightarrow \Pi(D_1, F_1) \qquad
+\Gamma \vdash_l \bar A \le D_1 \\
+F_1(z) = \Pi(D_2, F_2) \qquad
+\Gamma, z : \bar A \vdash_{l+1} \mathrm{Id}(\bar A, \bar x, z) \le D_2 \qquad
+F_2(w) = \mathcal U_k \qquad
 \Gamma; \rho \vdash d \Leftarrow \bar P \cdot \bar x \cdot \mathrm{refl}\;\bar x
 \end{gathered}
 }{\Gamma; \rho \vdash J(A, x, P, d, y, p) \Rightarrow \bar P \cdot \bar y \cdot \llbracket p \rrbracket}\;(J)
 $$
+
+The universe level $k$ of the motive is inferred rather than fixed, which is what cumulative universes need. The two domains are still checked: $P$ is only ever applied to a point of $\bar A$ and to a path out of $\bar x$, so its domains must accept those arguments, and $\Pi$ is contravariant in its domain. Checking only the shape $\Pi(D_1, \Pi(D_2, \mathcal U_k))$ would let $P$ be applied to arguments of the wrong type during checking.
 
 W recursion, where $B$ is an inferable *function* $A \to \mathcal U_k$, $\bar B(v) = \llbracket B \rrbracket \cdot v$ and $\bar W = W(\bar A, \bar B)$:
 
@@ -274,7 +280,6 @@ Cumulativity could be expressed with explicit lifting operators $\uparrow : \mat
 
 The implementation is a work in progress, and some rules are weaker or stronger than the theory above. They are recorded here so that users can avoid them; the code is unchanged.
 
-- **The motive of $J$ is checked only for its shape.** $(J)$ requires $P$ to have a type of the form $\Pi(D_1, \Pi(D_2, \mathcal U_k))$, but it does not compare $D_1$ with $A$ or $D_2$ with $\mathrm{Id}(A, x, z)$. A motive with the wrong domains is accepted, so this rule is not sound in general.
 - **`def_eq` uses an empty context.** It cannot look up the types of free variables, so `conv_neu` cannot compare the arguments of two neutral applications, and `def_eq(0, f x, f x)` returns `false` for a free `f`. Inside the checker, where the context is available, the comparison succeeds.
 - **$\mathrm{refl}$ compares read-backs without $\eta$.** $(\mathrm{Id}\textsf{-I})$ compares $q_l$ syntactically, so $\mathrm{refl}\;f : \mathrm{Id}(\mathbf 1 \to \mathbf 1, f, \lambda.\,f\,\#0)$ is rejected even though the two endpoints are $\eta$-equal. The same holds for the domain checks in $(W\textsf{-E})$.
 - **Read-back of a stuck `wrec` is not re-evaluable.** `neutral_quote` writes the family $B$ of an `NWRec` as a body under a binder, but `WRec` expects $B$ as a function term, so $\llbracket q_l(v) \rrbracket$ can differ from $v$ for such values.

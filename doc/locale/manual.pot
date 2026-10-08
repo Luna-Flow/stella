@@ -494,195 +494,195 @@ msgstr ""
 msgid "Path induction, with the motive $P$ inferred and $\\bar A = \\llbracket A \\rrbracket$, $\\bar x = \\llbracket x \\rrbracket$, $\\bar y = \\llbracket y \\rrbracket$, $\\bar P = \\llbracket P \\rrbracket$:"
 msgstr ""
 
-#: manual/design/elab.md:186
+#: manual/design/elab.md:190
+msgid "The universe level $k$ of the motive is inferred rather than fixed, which is what cumulative universes need. The two domains are still checked: $P$ is only ever applied to a point of $\\bar A$ and to a path out of $\\bar x$, so its domains must accept those arguments, and $\\Pi$ is contravariant in its domain. Checking only the shape $\\Pi(D_1, \\Pi(D_2, \\mathcal U_k))$ would let $P$ be applied to arguments of the wrong type during checking."
+msgstr ""
+
+#: manual/design/elab.md:192
 msgid "W recursion, where $B$ is an inferable *function* $A \\to \\mathcal U_k$, $\\bar B(v) = \\llbracket B \\rrbracket \\cdot v$ and $\\bar W = W(\\bar A, \\bar B)$:"
 msgstr ""
 
-#: manual/design/elab.md:200
+#: manual/design/elab.md:206
 msgid "**Changing direction.** An inferable term is accepted in checking mode when its type is a subtype of the expected one:"
 msgstr ""
 
-#: manual/design/elab.md:206
+#: manual/design/elab.md:212
 msgid "The opposite direction is $(\\textsf{Ann})$: a checkable term becomes inferable once its type is written down."
 msgstr ""
 
-#: manual/design/elab.md:208
+#: manual/design/elab.md:214
 msgid "Subtyping and conversion"
 msgstr ""
 
-#: manual/design/elab.md:210
+#: manual/design/elab.md:216
 msgid "The relation $A \\le A'$ (`subtype_nf`, exposed for the empty context as `def_eq`) is cumulativity:"
 msgstr ""
 
-#: manual/design/elab.md:222
+#: manual/design/elab.md:228
 msgid "The $\\Pi$ rule is contravariant in the domain: a function that accepts every element of $A$ accepts every element of a subtype $A' \\le A$, and its results in $F(x)$ are also results in the supertype $F'(x)$. The $\\Sigma$ rule keeps the first component *invariant*; covariance would also be sound, but the implementation, and its tests, require conversion there."
 msgstr ""
 
-#: manual/design/elab.md:224
+#: manual/design/elab.md:230
 msgid "Conversion $A \\equiv A'$ (`conv_type`) compares types structurally, entering binders with a fresh variable, and compares the endpoints of identity types with the type-directed $\\equiv_A$ (`conv_nf`), which adds $\\eta$:"
 msgstr ""
 
-#: manual/design/elab.md:232
+#: manual/design/elab.md:238
 msgid "Neutral terms are compared spine by spine (`conv_neu`), looking up the type of the head variable in $\\Gamma$ to compare application arguments at the right type. Everything else falls back to comparing read-backs, $q_l(v) = q_l(v')$."
 msgstr ""
 
-#: manual/design/elab.md:234
+#: manual/design/elab.md:240
 msgid "Universes"
 msgstr ""
 
-#: manual/design/elab.md:236
+#: manual/design/elab.md:242
 msgid "The universes are *predicative* and *Russell style*: a type is itself a term, and $\\mathcal U_i : \\mathcal U_{i+1}$. There is no rule $\\mathcal U_i : \\mathcal U_i$, because a universe containing itself makes the theory inconsistent (Girard's paradox).[^girard] A type former lands in the larger universe of its parts, $\\max(i, j)$, which is what predicativity requires: $\\Pi_{A : \\mathcal U_0} A \\to A$ quantifies over $\\mathcal U_0$ and therefore lives in $\\mathcal U_1$. Cumulativity $\\mathcal U_i \\le \\mathcal U_{i+1}$ is not a typing rule but part of subtyping, used by $(\\textsf{Sub})$."
 msgstr ""
 
-#: manual/design/elab.md:238
+#: manual/design/elab.md:244
 msgid "J.-Y. Girard, *Interprétation fonctionnelle et élimination des coupures de l'arithmétique d'ordre supérieur*, thèse d'État (1972); a short proof is A. J. C. Hurkens, \"A simplification of Girard's paradox\", TLCA 1995."
 msgstr ""
 
-#: manual/design/elab.md:240
+#: manual/design/elab.md:246
 msgid "Design decisions"
 msgstr ""
 
-#: manual/design/elab.md:242
+#: manual/design/elab.md:248
 msgid "Bidirectional checking"
 msgstr ""
 
-#: manual/design/elab.md:244
+#: manual/design/elab.md:250
 msgid "**Problem.** Inferring the type of an unannotated $\\lambda$ in a dependent type theory requires guessing its domain, which in general means higher-order unification, which is undecidable."
 msgstr ""
 
-#: manual/design/elab.md:246
+#: manual/design/elab.md:252
 msgid "**Options.** (a) Annotate every binder, $\\lambda (x : A).\\,t$. (b) Infer with unification variables. (c) Split the terms into checked and inferred ones."
 msgstr ""
 
-#: manual/design/elab.md:248
+#: manual/design/elab.md:254
 msgid "**Choice.** (c). Introduction forms ($\\lambda$, pairs, $\\star$, $\\mathrm{refl}$, $\\sup$) are checked, because their type determines the missing information; eliminations and type formers are inferred, because the type of the head determines the type of the whole. An annotation is needed only where an introduction meets an elimination, that is, at a $\\beta$-redex such as $(\\lambda.\\,t : T)\\;u$, or where a motive must be a function. A term in normal form needs no annotations at all apart from the motives. Encoding the split in the types `TermInf` and `TermChk` makes an unannotated redex unrepresentable rather than a runtime error."
 msgstr ""
 
-#: manual/design/elab.md:250
+#: manual/design/elab.md:256
 msgid "Values with closures"
 msgstr ""
 
-#: manual/design/elab.md:252
+#: manual/design/elab.md:258
 msgid "**Problem.** Comparing types requires evaluating them, including under binders."
 msgstr ""
 
-#: manual/design/elab.md:254
+#: manual/design/elab.md:260
 msgid "**Options.** (a) Rewrite syntax by substitution, which needs capture-avoiding substitution and index shifting at every step. (b) Evaluate into a semantic domain where binders are host functions."
 msgstr ""
 
-#: manual/design/elab.md:256
+#: manual/design/elab.md:262
 msgid "**Choice.** (b). A body is represented by a MoonBit function `(Value) -> Value`, so $\\beta$-reduction is a host function call and substitution never happens on syntax. Read-back recovers syntax only when needed: for printing, for comparison by $q_l$, and in the checks that compare normal forms."
 msgstr ""
 
-#: manual/design/elab.md:258
+#: manual/design/elab.md:264
 msgid "Indices in terms, levels in values"
 msgstr ""
 
-#: manual/design/elab.md:260
+#: manual/design/elab.md:266
 msgid "Terms use indices, so that $\\alpha$-equivalence is structural equality and closed subterms do not depend on their position. Fresh variables in values use levels, `Local(l)` for the checker and `Quote(l)` for read-back, so that creating a fresh variable is a counter increment and values never need shifting. The two kinds of fresh variable are separate `Name` constructors, so a variable introduced by the checker cannot be mistaken for one introduced while reading back."
 msgstr ""
 
-#: manual/design/elab.md:262
+#: manual/design/elab.md:268
 msgid "Subtyping instead of explicit lifts"
 msgstr ""
 
-#: manual/design/elab.md:264
+#: manual/design/elab.md:270
 msgid "Cumulativity could be expressed with explicit lifting operators $\\uparrow : \\mathcal U_i \\to \\mathcal U_{i+1}$. Building it into the change of direction $(\\textsf{Sub})$ instead means a type written in $\\mathcal U_0$ can be used in $\\mathcal U_1$ without any term-level coercion, as in `type_chk(..., Inf(UnitType), VUniverse(1))`."
 msgstr ""
 
-#: manual/design/elab.md:266
+#: manual/design/elab.md:272
 msgid "Correctness and invariants"
 msgstr ""
 
-#: manual/design/elab.md:268
+#: manual/design/elab.md:274
 msgid "**Environment invariant.** At level $l$, `env` has exactly $l$ entries, entry $i$ is $x_{l-1-i}$, and `ctx` declares every $x_k$. The rules that go under a binder are the only places that extend the state, and they extend all three together. $(\\textsf{Var})$ relies on this invariant; a caller of `type_inf` that breaks it gets `Internal error: Bound variable not in environment`."
 msgstr ""
 
-#: manual/design/elab.md:269
+#: manual/design/elab.md:275
 msgid "**Evaluate only what has been checked.** In every rule, a subterm is evaluated after the premise that checks it, for example the argument in $(\\Pi\\textsf{-E})$ and the type in $(\\textsf{Ann})$. Since the evaluator panics on ill-typed redexes, this ordering is what keeps the checker total on ill-typed input: it raises `TypeError` before it evaluates."
 msgstr ""
 
-#: manual/design/elab.md:270
+#: manual/design/elab.md:276
 msgid "**Stability of types.** Every type the checker returns is a value, so the caller never has to normalise it again, and every comparison of types happens on values."
 msgstr ""
 
-#: manual/design/elab.md:271
+#: manual/design/elab.md:277
 msgid "**Termination.** Evaluation of a well-typed term terminates by the normalisation theorem for Martin-Löf type theory with W types and predicative universes. The checker only evaluates checked terms (invariant 2), so it terminates on every input for which its rules are sound; the gaps listed below are the exceptions."
 msgstr ""
 
-#: manual/design/elab.md:273
+#: manual/design/elab.md:279
 msgid "Known gaps"
 msgstr ""
 
-#: manual/design/elab.md:275
+#: manual/design/elab.md:281
 msgid "The implementation is a work in progress, and some rules are weaker or stronger than the theory above. They are recorded here so that users can avoid them; the code is unchanged."
 msgstr ""
 
-#: manual/design/elab.md:277
-msgid "**The motive of $J$ is checked only for its shape.** $(J)$ requires $P$ to have a type of the form $\\Pi(D_1, \\Pi(D_2, \\mathcal U_k))$, but it does not compare $D_1$ with $A$ or $D_2$ with $\\mathrm{Id}(A, x, z)$. A motive with the wrong domains is accepted, so this rule is not sound in general."
-msgstr ""
-
-#: manual/design/elab.md:278
+#: manual/design/elab.md:283
 msgid "**`def_eq` uses an empty context.** It cannot look up the types of free variables, so `conv_neu` cannot compare the arguments of two neutral applications, and `def_eq(0, f x, f x)` returns `false` for a free `f`. Inside the checker, where the context is available, the comparison succeeds."
 msgstr ""
 
-#: manual/design/elab.md:279
+#: manual/design/elab.md:284
 msgid "**$\\mathrm{refl}$ compares read-backs without $\\eta$.** $(\\mathrm{Id}\\textsf{-I})$ compares $q_l$ syntactically, so $\\mathrm{refl}\\;f : \\mathrm{Id}(\\mathbf 1 \\to \\mathbf 1, f, \\lambda.\\,f\\,\\#0)$ is rejected even though the two endpoints are $\\eta$-equal. The same holds for the domain checks in $(W\\textsf{-E})$."
 msgstr ""
 
-#: manual/design/elab.md:280
+#: manual/design/elab.md:285
 msgid "**Read-back of a stuck `wrec` is not re-evaluable.** `neutral_quote` writes the family $B$ of an `NWRec` as a body under a binder, but `WRec` expects $B$ as a function term, so $\\llbracket q_l(v) \\rrbracket$ can differ from $v$ for such values."
 msgstr ""
 
-#: manual/design/elab.md:281
+#: manual/design/elab.md:286
 msgid "**Subtyping only for $\\Pi$, $\\Sigma$ and universes.** $W$ and identity types are compared by conversion, without cumulativity in their components."
 msgstr ""
 
-#: manual/design/elab.md:283
+#: manual/design/elab.md:288
 msgid "Alternatives rejected"
 msgstr ""
 
-#: manual/design/elab.md:285
+#: manual/design/elab.md:290
 msgid "**Typed terms with names.** Named variables need capture-avoiding substitution and make $\\alpha$-equivalence a separate check; de Bruijn indices avoid both."
 msgstr ""
 
-#: manual/design/elab.md:286
+#: manual/design/elab.md:291
 msgid "**Substitution-based normalisation.** Repeated syntactic substitution is slower and harder to get right than evaluation into closures, and it still needs a separate conversion check."
 msgstr ""
 
-#: manual/design/elab.md:287
+#: manual/design/elab.md:292
 msgid "**Impredicative or self-containing universes.** $\\mathcal U : \\mathcal U$ is inconsistent, and an impredicative $\\mathrm{Prop}$ is not part of the theory stella follows."
 msgstr ""
 
-#: manual/design/elab.md:288
+#: manual/design/elab.md:293
 msgid "**Inductive families.** W types provide well-founded trees with a single eliminator, which keeps the kernel small; general inductive definitions would need a positivity checker."
 msgstr ""
 
-#: manual/design/elab.md:290
+#: manual/design/elab.md:295
 msgid "Boundaries"
 msgstr ""
 
-#: manual/design/elab.md:292
+#: manual/design/elab.md:297
 msgid "The package deliberately does not:"
 msgstr ""
 
-#: manual/design/elab.md:294
+#: manual/design/elab.md:299
 msgid "parse a surface syntax, elaborate implicit arguments or solve unification problems; terms are built as MoonBit values in core syntax;"
 msgstr ""
 
-#: manual/design/elab.md:295
+#: manual/design/elab.md:300
 msgid "support definitions, `let` or global definitions with bodies; the context holds postulates (names with types) only;"
 msgstr ""
 
-#: manual/design/elab.md:296
+#: manual/design/elab.md:301
 msgid "provide universe polymorphism, inductive families, an empty type or sum types;"
 msgstr ""
 
-#: manual/design/elab.md:297
+#: manual/design/elab.md:302
 msgid "implement univalence, higher inductive types or any other feature of homotopy type theory, although the treatise describes them as goals of the project;"
 msgstr ""
 
-#: manual/design/elab.md:298
+#: manual/design/elab.md:303
 msgid "guarantee anything for ill-typed input to the evaluator; `eval_inf`, `eval_chk` and the `val_` functions may panic."
 msgstr ""
 

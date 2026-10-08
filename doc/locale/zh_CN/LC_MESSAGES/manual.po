@@ -494,195 +494,195 @@ msgstr "**消去形式需推断。** 先推断被消去项的类型，再将其�
 msgid "Path induction, with the motive $P$ inferred and $\\bar A = \\llbracket A \\rrbracket$, $\\bar x = \\llbracket x \\rrbracket$, $\\bar y = \\llbracket y \\rrbracket$, $\\bar P = \\llbracket P \\rrbracket$:"
 msgstr "路径归纳，其中动机 $P$ 被推断，且 $\\bar A = \\llbracket A \\rrbracket$、$\\bar x = \\llbracket x \\rrbracket$、$\\bar y = \\llbracket y \\rrbracket$、$\\bar P = \\llbracket P \\rrbracket$："
 
-#: manual/design/elab.md:186
+#: manual/design/elab.md:190
+msgid "The universe level $k$ of the motive is inferred rather than fixed, which is what cumulative universes need. The two domains are still checked: $P$ is only ever applied to a point of $\\bar A$ and to a path out of $\\bar x$, so its domains must accept those arguments, and $\\Pi$ is contravariant in its domain. Checking only the shape $\\Pi(D_1, \\Pi(D_2, \\mathcal U_k))$ would let $P$ be applied to arguments of the wrong type during checking."
+msgstr "motive 的宇宙层级 $k$ 是推断出来的，而不是固定的，这正是累积宇宙所需要的。但两个定义域仍然要检查：$P$ 只会被应用到 $\\bar A$ 中的点以及从 $\\bar x$ 出发的路径上，因此它的定义域必须接受这些参数，而 $\\Pi$ 在定义域上是逆变的。如果只检查形状 $\\Pi(D_1, \\Pi(D_2, \\mathcal U_k))$，检查过程中 $P$ 就可能被应用到类型错误的参数上。"
+
+#: manual/design/elab.md:192
 msgid "W recursion, where $B$ is an inferable *function* $A \\to \\mathcal U_k$, $\\bar B(v) = \\llbracket B \\rrbracket \\cdot v$ and $\\bar W = W(\\bar A, \\bar B)$:"
 msgstr "W 递归，其中 $B$ 是可推断的*函数* $A \\to \\mathcal U_k$，$\\bar B(v) = \\llbracket B \\rrbracket \\cdot v$，$\\bar W = W(\\bar A, \\bar B)$："
 
-#: manual/design/elab.md:200
+#: manual/design/elab.md:206
 msgid "**Changing direction.** An inferable term is accepted in checking mode when its type is a subtype of the expected one:"
 msgstr "**切换方向。** 当可推断项的类型是期望类型的子类型时，它在检查模式下被接受："
 
-#: manual/design/elab.md:206
+#: manual/design/elab.md:212
 msgid "The opposite direction is $(\\textsf{Ann})$: a checkable term becomes inferable once its type is written down."
 msgstr "相反方向是 $(\\textsf{Ann})$：可检查项一旦写下其类型，就成为可推断的。"
 
-#: manual/design/elab.md:208
+#: manual/design/elab.md:214
 msgid "Subtyping and conversion"
 msgstr "子类型与转换"
 
-#: manual/design/elab.md:210
+#: manual/design/elab.md:216
 msgid "The relation $A \\le A'$ (`subtype_nf`, exposed for the empty context as `def_eq`) is cumulativity:"
 msgstr "关系 $A \\le A'$（`subtype_nf`，在空上下文中以 `def_eq` 对外提供）即累积性："
 
-#: manual/design/elab.md:222
+#: manual/design/elab.md:228
 msgid "The $\\Pi$ rule is contravariant in the domain: a function that accepts every element of $A$ accepts every element of a subtype $A' \\le A$, and its results in $F(x)$ are also results in the supertype $F'(x)$. The $\\Sigma$ rule keeps the first component *invariant*; covariance would also be sound, but the implementation, and its tests, require conversion there."
 msgstr "$\\Pi$ 规则在定义域上逆变：接受 $A$ 中每个元素的函数，也接受子类型 $A' \\le A$ 中的每个元素，而其在 $F(x)$ 中的结果也是超类型 $F'(x)$ 中的结果。$\\Sigma$ 规则保持第一分量*不变*；协变同样是可靠的，但实现及其测试要求此处使用转换。"
 
-#: manual/design/elab.md:224
+#: manual/design/elab.md:230
 msgid "Conversion $A \\equiv A'$ (`conv_type`) compares types structurally, entering binders with a fresh variable, and compares the endpoints of identity types with the type-directed $\\equiv_A$ (`conv_nf`), which adds $\\eta$:"
 msgstr "转换 $A \\equiv A'$（`conv_type`）按结构比较类型，用新变量进入绑定子，并用类型导向的 $\\equiv_A$（`conv_nf`）比较恒等类型的端点，后者加入了 $\\eta$："
 
-#: manual/design/elab.md:232
+#: manual/design/elab.md:238
 msgid "Neutral terms are compared spine by spine (`conv_neu`), looking up the type of the head variable in $\\Gamma$ to compare application arguments at the right type. Everything else falls back to comparing read-backs, $q_l(v) = q_l(v')$."
 msgstr "中性项逐个序列比较（`conv_neu`），在 $\\Gamma$ 中查找头部变量的类型，以便在正确的类型下比较应用参数。其他所有情况退化为比较读回结果 $q_l(v) = q_l(v')$。"
 
-#: manual/design/elab.md:234
+#: manual/design/elab.md:240
 msgid "Universes"
 msgstr "宇宙"
 
-#: manual/design/elab.md:236
+#: manual/design/elab.md:242
 msgid "The universes are *predicative* and *Russell style*: a type is itself a term, and $\\mathcal U_i : \\mathcal U_{i+1}$. There is no rule $\\mathcal U_i : \\mathcal U_i$, because a universe containing itself makes the theory inconsistent (Girard's paradox).[^girard] A type former lands in the larger universe of its parts, $\\max(i, j)$, which is what predicativity requires: $\\Pi_{A : \\mathcal U_0} A \\to A$ quantifies over $\\mathcal U_0$ and therefore lives in $\\mathcal U_1$. Cumulativity $\\mathcal U_i \\le \\mathcal U_{i+1}$ is not a typing rule but part of subtyping, used by $(\\textsf{Sub})$."
 msgstr "宇宙是*直谓的*、*Russell 风格*的：类型本身就是项，且 $\\mathcal U_i : \\mathcal U_{i+1}$。不存在规则 $\\mathcal U_i : \\mathcal U_i$，因为包含自身的宇宙会使理论不一致（Girard 悖论）。[^girard] 类型构造子落在其各部分中较大的宇宙 $\\max(i, j)$ 中，这正是直谓性的要求：$\\Pi_{A : \\mathcal U_0} A \\to A$ 对 $\\mathcal U_0$ 进行量化，因而位于 $\\mathcal U_1$ 中。累积性 $\\mathcal U_i \\le \\mathcal U_{i+1}$ 不是类型规则，而是子类型关系的一部分，由 $(\\textsf{Sub})$ 使用。"
 
-#: manual/design/elab.md:238
+#: manual/design/elab.md:244
 msgid "J.-Y. Girard, *Interprétation fonctionnelle et élimination des coupures de l'arithmétique d'ordre supérieur*, thèse d'État (1972); a short proof is A. J. C. Hurkens, \"A simplification of Girard's paradox\", TLCA 1995."
 msgstr "J.-Y. Girard, *Interprétation fonctionnelle et élimination des coupures de l'arithmétique d'ordre supérieur*, thèse d'État (1972)；简短的证明见 A. J. C. Hurkens, \"A simplification of Girard's paradox\", TLCA 1995。"
 
-#: manual/design/elab.md:240
+#: manual/design/elab.md:246
 msgid "Design decisions"
 msgstr "设计决策"
 
-#: manual/design/elab.md:242
+#: manual/design/elab.md:248
 msgid "Bidirectional checking"
 msgstr "双向检查"
 
-#: manual/design/elab.md:244
+#: manual/design/elab.md:250
 msgid "**Problem.** Inferring the type of an unannotated $\\lambda$ in a dependent type theory requires guessing its domain, which in general means higher-order unification, which is undecidable."
 msgstr "**问题。** 在依值类型论中推断未标注 $\\lambda$ 的类型需要猜测其定义域，一般而言这意味着高阶合一，而高阶合一是不可判定的。"
 
-#: manual/design/elab.md:246
+#: manual/design/elab.md:252
 msgid "**Options.** (a) Annotate every binder, $\\lambda (x : A).\\,t$. (b) Infer with unification variables. (c) Split the terms into checked and inferred ones."
 msgstr "**选项。** (a) 标注每个绑定子，$\\lambda (x : A).\\,t$。(b) 用合一变量进行推断。(c) 将项划分为需检查的和可推断的两类。"
 
-#: manual/design/elab.md:248
+#: manual/design/elab.md:254
 msgid "**Choice.** (c). Introduction forms ($\\lambda$, pairs, $\\star$, $\\mathrm{refl}$, $\\sup$) are checked, because their type determines the missing information; eliminations and type formers are inferred, because the type of the head determines the type of the whole. An annotation is needed only where an introduction meets an elimination, that is, at a $\\beta$-redex such as $(\\lambda.\\,t : T)\\;u$, or where a motive must be a function. A term in normal form needs no annotations at all apart from the motives. Encoding the split in the types `TermInf` and `TermChk` makes an unannotated redex unrepresentable rather than a runtime error."
 msgstr "**选择。** (c)。引入形式（$\\lambda$、对、$\\star$、$\\mathrm{refl}$、$\\sup$）需检查，因为其类型决定了缺失的信息；消去形式和类型构造子可推断，因为头部的类型决定了整体的类型。只有在引入形式遇到消去形式时才需要标注，即在 $(\\lambda.\\,t : T)\\;u$ 这样的 $\\beta$-可约式处，或在动机必须是函数的地方。范式项除动机外完全不需要标注。将这种划分编码进类型 `TermInf` 和 `TermChk`，使得未标注的可约式无法表示，而不是成为运行时错误。"
 
-#: manual/design/elab.md:250
+#: manual/design/elab.md:256
 msgid "Values with closures"
 msgstr "带闭包的值"
 
-#: manual/design/elab.md:252
+#: manual/design/elab.md:258
 msgid "**Problem.** Comparing types requires evaluating them, including under binders."
 msgstr "**问题。** 比较类型需要对其求值，包括在绑定子之下。"
 
-#: manual/design/elab.md:254
+#: manual/design/elab.md:260
 msgid "**Options.** (a) Rewrite syntax by substitution, which needs capture-avoiding substitution and index shifting at every step. (b) Evaluate into a semantic domain where binders are host functions."
 msgstr "**选项。** (a) 通过代换改写语法，这需要在每一步做避免捕获的代换和索引移位。(b) 求值到一个语义域，其中绑定子是宿主语言的函数。"
 
-#: manual/design/elab.md:256
+#: manual/design/elab.md:262
 msgid "**Choice.** (b). A body is represented by a MoonBit function `(Value) -> Value`, so $\\beta$-reduction is a host function call and substitution never happens on syntax. Read-back recovers syntax only when needed: for printing, for comparison by $q_l$, and in the checks that compare normal forms."
 msgstr "**选择。** (b)。函数体由 MoonBit 函数 `(Value) -> Value` 表示，因此 $\\beta$-归约是一次宿主函数调用，代换从不发生在语法上。读回只在需要时恢复语法：用于打印、用于以 $q_l$ 进行比较，以及用于比较范式的检查中。"
 
-#: manual/design/elab.md:258
+#: manual/design/elab.md:264
 msgid "Indices in terms, levels in values"
 msgstr "项中用索引，值中用层级"
 
-#: manual/design/elab.md:260
+#: manual/design/elab.md:266
 msgid "Terms use indices, so that $\\alpha$-equivalence is structural equality and closed subterms do not depend on their position. Fresh variables in values use levels, `Local(l)` for the checker and `Quote(l)` for read-back, so that creating a fresh variable is a counter increment and values never need shifting. The two kinds of fresh variable are separate `Name` constructors, so a variable introduced by the checker cannot be mistaken for one introduced while reading back."
 msgstr "项使用索引，使得 $\\alpha$-等价就是结构相等，且闭子项不依赖于其位置。值中的新变量使用层级——检查器用 `Local(l)`，读回用 `Quote(l)`——使得创建新变量只是计数器加一，值永远不需要移位。两种新变量是不同的 `Name` 构造子，因此检查器引入的变量不会与读回时引入的变量混淆。"
 
-#: manual/design/elab.md:262
+#: manual/design/elab.md:268
 msgid "Subtyping instead of explicit lifts"
 msgstr "以子类型代替显式提升"
 
-#: manual/design/elab.md:264
+#: manual/design/elab.md:270
 msgid "Cumulativity could be expressed with explicit lifting operators $\\uparrow : \\mathcal U_i \\to \\mathcal U_{i+1}$. Building it into the change of direction $(\\textsf{Sub})$ instead means a type written in $\\mathcal U_0$ can be used in $\\mathcal U_1$ without any term-level coercion, as in `type_chk(..., Inf(UnitType), VUniverse(1))`."
 msgstr "累积性可以用显式提升算子 $\\uparrow : \\mathcal U_i \\to \\mathcal U_{i+1}$ 表达。改为将其内置于方向切换 $(\\textsf{Sub})$ 中，意味着写在 $\\mathcal U_0$ 中的类型可以在 $\\mathcal U_1$ 中使用，无需任何项层面的强制转换，如 `type_chk(..., Inf(UnitType), VUniverse(1))`。"
 
-#: manual/design/elab.md:266
+#: manual/design/elab.md:272
 msgid "Correctness and invariants"
 msgstr "正确性与不变式"
 
-#: manual/design/elab.md:268
+#: manual/design/elab.md:274
 msgid "**Environment invariant.** At level $l$, `env` has exactly $l$ entries, entry $i$ is $x_{l-1-i}$, and `ctx` declares every $x_k$. The rules that go under a binder are the only places that extend the state, and they extend all three together. $(\\textsf{Var})$ relies on this invariant; a caller of `type_inf` that breaks it gets `Internal error: Bound variable not in environment`."
 msgstr "**环境不变式。** 在层级 $l$ 处，`env` 恰有 $l$ 个条目，第 $i$ 个条目为 $x_{l-1-i}$，且 `ctx` 声明了每个 $x_k$。进入绑定子的规则是唯一扩展状态的地方，并且它们同时扩展这三者。$(\\textsf{Var})$ 依赖于这一不变式；破坏它的 `type_inf` 调用者会得到 `Internal error: Bound variable not in environment`。"
 
-#: manual/design/elab.md:269
+#: manual/design/elab.md:275
 msgid "**Evaluate only what has been checked.** In every rule, a subterm is evaluated after the premise that checks it, for example the argument in $(\\Pi\\textsf{-E})$ and the type in $(\\textsf{Ann})$. Since the evaluator panics on ill-typed redexes, this ordering is what keeps the checker total on ill-typed input: it raises `TypeError` before it evaluates."
 msgstr "**只对已检查的内容求值。** 在每条规则中，子项都在检查它的前提之后才被求值，例如 $(\\Pi\\textsf{-E})$ 中的参数和 $(\\textsf{Ann})$ 中的类型。由于求值器在类型错误的可约式上会 panic，正是这种顺序使检查器在类型错误的输入上保持全函数：它会在求值之前抛出 `TypeError`。"
 
-#: manual/design/elab.md:270
+#: manual/design/elab.md:276
 msgid "**Stability of types.** Every type the checker returns is a value, so the caller never has to normalise it again, and every comparison of types happens on values."
 msgstr "**类型的稳定性。** 检查器返回的每个类型都是值，因此调用者无需再次归一化，所有类型比较都在值上进行。"
 
-#: manual/design/elab.md:271
+#: manual/design/elab.md:277
 msgid "**Termination.** Evaluation of a well-typed term terminates by the normalisation theorem for Martin-Löf type theory with W types and predicative universes. The checker only evaluates checked terms (invariant 2), so it terminates on every input for which its rules are sound; the gaps listed below are the exceptions."
 msgstr "**终止性。** 由带 W 类型和直谓宇宙的 Martin-Löf 类型论的归一化定理，良类型项的求值会终止。检查器只对已检查的项求值（不变式 2），因此在其规则可靠的每个输入上都会终止；下面列出的缺口是例外。"
 
-#: manual/design/elab.md:273
+#: manual/design/elab.md:279
 msgid "Known gaps"
 msgstr "已知缺口"
 
-#: manual/design/elab.md:275
+#: manual/design/elab.md:281
 msgid "The implementation is a work in progress, and some rules are weaker or stronger than the theory above. They are recorded here so that users can avoid them; the code is unchanged."
 msgstr "本实现仍在开发中，部分规则比上述理论更弱或更强。在此记录它们，以便用户避开；代码保持不变。"
 
-#: manual/design/elab.md:277
-msgid "**The motive of $J$ is checked only for its shape.** $(J)$ requires $P$ to have a type of the form $\\Pi(D_1, \\Pi(D_2, \\mathcal U_k))$, but it does not compare $D_1$ with $A$ or $D_2$ with $\\mathrm{Id}(A, x, z)$. A motive with the wrong domains is accepted, so this rule is not sound in general."
-msgstr "**$J$ 的动机只检查其形状。** $(J)$ 要求 $P$ 的类型具有 $\\Pi(D_1, \\Pi(D_2, \\mathcal U_k))$ 的形式，但并不比较 $D_1$ 与 $A$，或 $D_2$ 与 $\\mathrm{Id}(A, x, z)$。定义域错误的动机也会被接受，因此这条规则一般而言是不可靠的。"
-
-#: manual/design/elab.md:278
+#: manual/design/elab.md:283
 msgid "**`def_eq` uses an empty context.** It cannot look up the types of free variables, so `conv_neu` cannot compare the arguments of two neutral applications, and `def_eq(0, f x, f x)` returns `false` for a free `f`. Inside the checker, where the context is available, the comparison succeeds."
 msgstr "**`def_eq` 使用空上下文。** 它无法查找自由变量的类型，因此 `conv_neu` 无法比较两个中性应用的参数，对于自由的 `f`，`def_eq(0, f x, f x)` 返回 `false`。在上下文可用的检查器内部，该比较会成功。"
 
-#: manual/design/elab.md:279
+#: manual/design/elab.md:284
 msgid "**$\\mathrm{refl}$ compares read-backs without $\\eta$.** $(\\mathrm{Id}\\textsf{-I})$ compares $q_l$ syntactically, so $\\mathrm{refl}\\;f : \\mathrm{Id}(\\mathbf 1 \\to \\mathbf 1, f, \\lambda.\\,f\\,\\#0)$ is rejected even though the two endpoints are $\\eta$-equal. The same holds for the domain checks in $(W\\textsf{-E})$."
 msgstr "**$\\mathrm{refl}$ 比较读回结果时不考虑 $\\eta$。** $(\\mathrm{Id}\\textsf{-I})$ 按语法比较 $q_l$，因此 $\\mathrm{refl}\\;f : \\mathrm{Id}(\\mathbf 1 \\to \\mathbf 1, f, \\lambda.\\,f\\,\\#0)$ 会被拒绝，尽管两个端点是 $\\eta$-相等的。$(W\\textsf{-E})$ 中的定义域检查同样如此。"
 
-#: manual/design/elab.md:280
+#: manual/design/elab.md:285
 msgid "**Read-back of a stuck `wrec` is not re-evaluable.** `neutral_quote` writes the family $B$ of an `NWRec` as a body under a binder, but `WRec` expects $B$ as a function term, so $\\llbracket q_l(v) \\rrbracket$ can differ from $v$ for such values."
 msgstr "**卡住的 `wrec` 的读回结果无法重新求值。** `neutral_quote` 将 `NWRec` 的族 $B$ 写成绑定子之下的体，但 `WRec` 期望 $B$ 是函数项，因此对这类值，$\\llbracket q_l(v) \\rrbracket$ 可能与 $v$ 不同。"
 
-#: manual/design/elab.md:281
+#: manual/design/elab.md:286
 msgid "**Subtyping only for $\\Pi$, $\\Sigma$ and universes.** $W$ and identity types are compared by conversion, without cumulativity in their components."
 msgstr "**只有 $\\Pi$、$\\Sigma$ 和宇宙有子类型。** $W$ 和恒等类型按转换比较，其分量上没有累积性。"
 
-#: manual/design/elab.md:283
+#: manual/design/elab.md:288
 msgid "Alternatives rejected"
 msgstr "被否决的方案"
 
-#: manual/design/elab.md:285
+#: manual/design/elab.md:290
 msgid "**Typed terms with names.** Named variables need capture-avoiding substitution and make $\\alpha$-equivalence a separate check; de Bruijn indices avoid both."
 msgstr "**带名字的类型化项。** 具名变量需要避免捕获的代换，并使 $\\alpha$-等价成为单独的检查；德布鲁因索引避免了这两者。"
 
-#: manual/design/elab.md:286
+#: manual/design/elab.md:291
 msgid "**Substitution-based normalisation.** Repeated syntactic substitution is slower and harder to get right than evaluation into closures, and it still needs a separate conversion check."
 msgstr "**基于代换的归一化。** 反复的语法代换比求值到闭包更慢、更难写对，而且仍需要单独的转换检查。"
 
-#: manual/design/elab.md:287
+#: manual/design/elab.md:292
 msgid "**Impredicative or self-containing universes.** $\\mathcal U : \\mathcal U$ is inconsistent, and an impredicative $\\mathrm{Prop}$ is not part of the theory stella follows."
 msgstr "**非直谓或包含自身的宇宙。** $\\mathcal U : \\mathcal U$ 是不一致的，而非直谓的 $\\mathrm{Prop}$ 不属于 stella 所遵循的理论。"
 
-#: manual/design/elab.md:288
+#: manual/design/elab.md:293
 msgid "**Inductive families.** W types provide well-founded trees with a single eliminator, which keeps the kernel small; general inductive definitions would need a positivity checker."
 msgstr "**归纳族。** W 类型以单一消去子提供良基树，使内核保持精简；一般的归纳定义需要正性检查器。"
 
-#: manual/design/elab.md:290
+#: manual/design/elab.md:295
 msgid "Boundaries"
 msgstr "边界"
 
-#: manual/design/elab.md:292
+#: manual/design/elab.md:297
 msgid "The package deliberately does not:"
 msgstr "本包有意不做以下事情："
 
-#: manual/design/elab.md:294
+#: manual/design/elab.md:299
 msgid "parse a surface syntax, elaborate implicit arguments or solve unification problems; terms are built as MoonBit values in core syntax;"
 msgstr "解析表层语法、细化隐式参数或求解合一问题；项以核心语法的 MoonBit 值构建；"
 
-#: manual/design/elab.md:295
+#: manual/design/elab.md:300
 msgid "support definitions, `let` or global definitions with bodies; the context holds postulates (names with types) only;"
 msgstr "支持定义、`let` 或带定义体的全局定义；上下文只包含公设（带类型的名字）；"
 
-#: manual/design/elab.md:296
+#: manual/design/elab.md:301
 msgid "provide universe polymorphism, inductive families, an empty type or sum types;"
 msgstr "提供宇宙多态、归纳族、空类型或和类型；"
 
-#: manual/design/elab.md:297
+#: manual/design/elab.md:302
 msgid "implement univalence, higher inductive types or any other feature of homotopy type theory, although the treatise describes them as goals of the project;"
 msgstr "实现单价性、高阶归纳类型或同伦类型论的任何其他特性，尽管论著将它们描述为项目的目标；"
 
-#: manual/design/elab.md:298
+#: manual/design/elab.md:303
 msgid "guarantee anything for ill-typed input to the evaluator; `eval_inf`, `eval_chk` and the `val_` functions may panic."
 msgstr "对求值器的类型错误输入作任何保证；`eval_inf`、`eval_chk` 和 `val_` 函数可能 panic。"
 
@@ -941,6 +941,9 @@ msgstr "[设计说明](../design/elab.md)以推理规则记法给出类型规则
 #: manual/tutorial/elab.md:211
 msgid "The treatise linked from the [overview](../index.md) develops the type theory from the untyped lambda calculus."
 msgstr "从[概览](../index.md)链接的论著从无类型 lambda 演算出发发展了该类型论。"
+
+#~ msgid "**The motive of $J$ is checked only for its shape.** $(J)$ requires $P$ to have a type of the form $\\Pi(D_1, \\Pi(D_2, \\mathcal U_k))$, but it does not compare $D_1$ with $A$ or $D_2$ with $\\mathrm{Id}(A, x, z)$. A motive with the wrong domains is accepted, so this rule is not sound in general."
+#~ msgstr "**$J$ 的动机只检查其形状。** $(J)$ 要求 $P$ 的类型具有 $\\Pi(D_1, \\Pi(D_2, \\mathcal U_k))$ 的形式，但并不比较 $D_1$ 与 $A$，或 $D_2$ 与 $\\mathrm{Id}(A, x, z)$。定义域错误的动机也会被接受，因此这条规则一般而言是不可靠的。"
 
 #~ msgid "elab is part of Luna-Flow/stella. This page should describe the public types, constructors, functions, traits, and observable semantics that are implemented in the current branch."
 #~ msgstr "elab 属于 Luna-Flow/stella。本页描述当前分支已经实现的公开类型、构造器、函数、trait 以及可观察语义。"
