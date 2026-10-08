@@ -143,17 +143,19 @@ fn conv_neu(lvl : Int, ctx : Context, n1 : Neutral, n2 : Neutral) -> Bool {
           }
           conv_nf(lvl, ctx, a1, a2, dom)
         }
-        _ => false
+        // The head's type is unknown (e.g. `def_eq` has no context): fall
+        // back to comparing the read-backs, which is sound but ignores η.
+        _ => neutral_quote(lvl, n1) == neutral_quote(lvl, n2)
       }
     (NFst(p1), NFst(p2)) =>
       match infer_neutral_type(ctx, p1) {
         Some(VSigma(_, _)) => conv_neu(lvl, ctx, p1, p2)
-        _ => false
+        _ => neutral_quote(lvl, n1) == neutral_quote(lvl, n2)
       }
     (NSnd(p1), NSnd(p2)) =>
       match infer_neutral_type(ctx, p1) {
         Some(VSigma(_, _)) => conv_neu(lvl, ctx, p1, p2)
-        _ => false
+        _ => neutral_quote(lvl, n1) == neutral_quote(lvl, n2)
       }
     _ => neutral_quote(lvl, n1) == neutral_quote(lvl, n2)
   }

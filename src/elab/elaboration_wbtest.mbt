@@ -219,3 +219,15 @@ test "J: motive whose second domain is not Id(A, x, y) is rejected" {
   let motive : TermChk = Inf(Ann(Lam(Lam(unit_ty)), motive_ty))
   assert_true(j_rejects(motive))
 }
+
+///|
+test "def_eq: reflexive on neutral applications (#18)" {
+  let f_tt = eval_inf(App(Free(Global("f")), UnitElement), @list.empty())
+  assert_true(def_eq(0, f_tt, f_tt))
+  let f_u = eval_inf(
+    App(Free(Global("f")), Inf(Free(Global("u")))),
+    @list.empty(),
+  )
+  assert_true(def_eq(0, f_u, f_u))
+  assert_false(def_eq(0, f_tt, f_u))
+}
