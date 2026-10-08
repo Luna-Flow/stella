@@ -140,3 +140,82 @@ test "Edge Case: Annotation with higher universe" {
       fail("Expected Unit to check against U1, but got error: \{msg}")
   }
 }
+
+///|
+fn j_fixture_refl_tt() -> TermInf {
+  let unit_ty : TermChk = Inf(UnitType)
+  Ann(Rfl(UnitElement), Inf(Id(unit_ty, UnitElement, UnitElement)))
+}
+
+///|
+fn j_rejects(motive : TermChk) -> Bool {
+  let unit_ty : TermChk = Inf(UnitType)
+  let term = JElim(
+    unit_ty,
+    UnitElement,
+    motive,
+    UnitElement,
+    UnitElement,
+    j_fixture_refl_tt(),
+  )
+  let res : Result[Value, Error] = try type_inf_0(@list.empty(), term) catch {
+    e => Err(e)
+  } noraise {
+    v => Ok(v)
+  }
+  res is Err(TypeError(_))
+}
+
+///|
+test "J: well-typed motive is accepted" {
+  let unit_ty : TermChk = Inf(UnitType)
+  // motive : Π(y : Unit). Id(Unit, tt, y) → U0 := λy. λq. Unit
+  let motive_ty : TermChk = Inf(
+    Pi(
+      unit_ty,
+      Inf(Pi(Inf(Id(unit_ty, UnitElement, Inf(Bound(0)))), Inf(Universe(0)))),
+    ),
+  )
+  let motive : TermChk = Inf(Ann(Lam(Lam(unit_ty)), motive_ty))
+  let term = JElim(
+    unit_ty,
+    UnitElement,
+    motive,
+    UnitElement,
+    UnitElement,
+    j_fixture_refl_tt(),
+  )
+  assert_true(type_inf_0(@list.empty(), term) is VUnitType)
+}
+
+///|
+test "J: motive whose first domain does not accept A is rejected" {
+  // motive : U0 → U0 → U0, used with A = Unit (issue #19)
+  let u0 : TermChk = Inf(Universe(0))
+  let motive_ty : TermChk = Inf(Pi(u0, Inf(Pi(u0, u0))))
+  let motive : TermChk = Inf(Ann(Lam(Lam(Inf(UnitType))), motive_ty))
+  assert_true(j_rejects(motive))
+}
+
+///|
+test "J: motive that would eliminate its argument is rejected, not crashed" {
+  // motive : (Unit → Unit) → Unit → U0 := λf. λq. Id(Unit, f tt, tt) (issue #19)
+  let unit_ty : TermChk = Inf(UnitType)
+  let motive_ty : TermChk = Inf(
+    Pi(Inf(Pi(unit_ty, unit_ty)), Inf(Pi(unit_ty, Inf(Universe(0))))),
+  )
+  let body : TermChk = Inf(
+    Id(unit_ty, Inf(App(Bound(1), UnitElement)), UnitElement),
+  )
+  let motive : TermChk = Inf(Ann(Lam(Lam(body)), motive_ty))
+  assert_true(j_rejects(motive))
+}
+
+///|
+test "J: motive whose second domain is not Id(A, x, y) is rejected" {
+  // motive : Π(y : Unit). Unit → U0 — second domain ignores the path type
+  let unit_ty : TermChk = Inf(UnitType)
+  let motive_ty : TermChk = Inf(Pi(unit_ty, Inf(Pi(unit_ty, Inf(Universe(0))))))
+  let motive : TermChk = Inf(Ann(Lam(Lam(unit_ty)), motive_ty))
+  assert_true(j_rejects(motive))
+}

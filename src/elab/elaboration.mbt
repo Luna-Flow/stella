@@ -468,16 +468,35 @@ pub fn type_inf(
       type_chk(lvl, ctx, env, y, type_a)
       let val_y = eval_chk(y, env)
       type_chk(lvl, ctx, env, Inf(p), VId(type_a, val_x, val_y))
+      // The motive must have type Π(y : A). Id(A, x, y) → U_i for some i.
+      // Its universe level is inferred, but both domains must accept the
+      // arguments J passes to it (Π is contravariant in its domain).
       let type_motive = ensure_inf(lvl, ctx, env, motive)
       match type_motive {
-        VPi(_, f1) =>
-          match f1(val_var(Quote(lvl))) {
-            VPi(_, f2) => {
-              let co_domain = f2(val_var(Quote(lvl + 1)))
+        VPi(dom_y, f1) => {
+          if !subtype(lvl, ctx, type_a, dom_y) {
+            raise TypeError("J: motive's first domain does not accept A")
+          }
+          let val_fresh_y = val_var(Local(lvl))
+          let ctx_y = cons((Local(lvl), type_a), ctx)
+          match f1(val_fresh_y) {
+            VPi(dom_p, f2) => {
+              if !subtype(
+                  lvl + 1,
+                  ctx_y,
+                  VId(type_a, val_x, val_fresh_y),
+                  dom_p,
+                ) {
+                raise TypeError(
+                  "J: motive's second domain does not accept Id(A, x, y)",
+                )
+              }
+              let co_domain = f2(val_var(Local(lvl + 1)))
               ensure_univ(co_domain) |> ignore
             }
             _ => raise TypeError("Motive must be a binary function")
           }
+        }
         _ => raise TypeError("Motive must be a function")
       }
       let val_motive = eval_chk(motive, env)
