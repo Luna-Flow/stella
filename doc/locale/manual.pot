@@ -16,329 +16,349 @@ msgid "elab API"
 msgstr ""
 
 #: manual/api/elab.md:3
-msgid "The `elab` package (`src/elab`, import path `Luna-Flow/stella/elab`) is the kernel of stella: the syntax of a dependent type theory, its evaluation into values, the read-back of values into normal forms, and a bidirectional type checker. Its interface file is [`src/elab/pkg.generated.mbti`](../../../src/elab/pkg.generated.mbti)."
+msgid "Purpose"
 msgstr ""
 
 #: manual/api/elab.md:5
-msgid "Terms use de Bruijn indices: `Bound(0)` is the variable bound by the nearest enclosing binder. The binders are `Lam`, the second argument of `Pi`, `Sigma` and `W`, and nothing else. The [design notes](../design/elab.md) give the typing rules in full."
+msgid "The `elab` package (`src/elab`, import path `Luna-Flow/stella/elab`) is the kernel of stella: the syntax of a dependent type theory, its evaluation into values, the read-back of values into normal forms, and a bidirectional type checker. Its interface file is [`src/elab/pkg.generated.mbti`](../../../src/elab/pkg.generated.mbti)."
 msgstr ""
 
 #: manual/api/elab.md:7
-msgid "The examples on this page are tests in a package with this `moon.pkg`:"
+msgid "Terms use de Bruijn indices: `Bound(0)` is the variable bound by the nearest enclosing binder. The binders are `Lam`, the second argument of `Pi`, `Sigma` and `W`, and nothing else. The [design notes](../design/elab.md) give the typing rules in full."
 msgstr ""
 
-#: manual/api/elab.md:16
-msgid "and they bring the types into scope with:"
+#: manual/api/elab.md:9
+msgid "Importing"
 msgstr ""
 
-#: manual/api/elab.md:22
-#: manual/design/elab.md:16
-msgid "Syntax"
+#: manual/api/elab.md:11
+msgid "Add the package and the list package, which provides contexts and environments, to your `moon.pkg`:"
+msgstr ""
+
+#: manual/api/elab.md:20
+msgid "The examples on this page bring the types into scope with one `using` declaration, so that constructors can be written without the `@elab.` prefix:"
 msgstr ""
 
 #: manual/api/elab.md:26
+#: manual/design/elab.md:22
+msgid "Syntax"
+msgstr ""
+
+#: manual/api/elab.md:30
 msgid "`Name` identifies a free variable."
 msgstr ""
 
-#: manual/api/elab.md:37
-#: manual/api/elab.md:69
-#: manual/api/elab.md:103
+#: manual/api/elab.md:41
+#: manual/api/elab.md:73
+#: manual/api/elab.md:107
 msgid "Constructor"
 msgstr ""
 
-#: manual/api/elab.md:37
-#: manual/api/elab.md:69
-#: manual/api/elab.md:103
+#: manual/api/elab.md:41
+#: manual/api/elab.md:73
+#: manual/api/elab.md:107
 msgid "Meaning"
 msgstr ""
 
-#: manual/api/elab.md:39
+#: manual/api/elab.md:43
 msgid "A constant declared by the user in the typing context, such as a postulated type `A`."
 msgstr ""
 
-#: manual/api/elab.md:40
+#: manual/api/elab.md:44
 msgid "A variable that the type checker introduces when it goes under a binder; `level` counts the binders from the outside, starting at 0."
 msgstr ""
 
-#: manual/api/elab.md:41
+#: manual/api/elab.md:45
 msgid "A variable that `quote` introduces when it reads back a function body; `quote` turns it back into a `Bound` index."
 msgstr ""
 
-#: manual/api/elab.md:43
+#: manual/api/elab.md:47
 msgid "User code normally creates only `Global` names. `Name::equal` is the promoted `Eq` method; prefer `==`."
 msgstr ""
 
-#: manual/api/elab.md:47
+#: manual/api/elab.md:51
 msgid "`TermInf` is the type of terms whose type the checker can infer."
 msgstr ""
 
-#: manual/api/elab.md:69
-#: manual/api/elab.md:103
+#: manual/api/elab.md:73
+#: manual/api/elab.md:107
 msgid "Notation"
 msgstr ""
 
-#: manual/api/elab.md:71
+#: manual/api/elab.md:75
 msgid "The variable bound by the $i$-th enclosing binder, counting from 0."
 msgstr ""
 
-#: manual/api/elab.md:72
+#: manual/api/elab.md:76
 msgid "A free variable, looked up in the typing context."
 msgstr ""
 
-#: manual/api/elab.md:73
+#: manual/api/elab.md:77
 msgid "The unit type."
 msgstr ""
 
-#: manual/api/elab.md:74
+#: manual/api/elab.md:78
 msgid "The universe at level $i \\ge 0$."
 msgstr ""
 
-#: manual/api/elab.md:75
+#: manual/api/elab.md:79
 msgid "The checkable term `t` annotated with the type `T`."
 msgstr ""
 
-#: manual/api/elab.md:76
+#: manual/api/elab.md:80
 msgid "Dependent function type; `B` is under one binder."
 msgstr ""
 
-#: manual/api/elab.md:77
+#: manual/api/elab.md:81
 msgid "Function application."
 msgstr ""
 
-#: manual/api/elab.md:78
+#: manual/api/elab.md:82
 msgid "Dependent pair type; `B` is under one binder."
 msgstr ""
 
-#: manual/api/elab.md:79
+#: manual/api/elab.md:83
 msgid "Projections of a pair."
 msgstr ""
 
-#: manual/api/elab.md:80
+#: manual/api/elab.md:84
 msgid "Identity type."
 msgstr ""
 
-#: manual/api/elab.md:81
+#: manual/api/elab.md:85
 msgid "The based path eliminator: from `d : P x (refl x)` and `p : Id(A, x, y)`, a term of `P y p`. `P` is a function term of type $\\Pi_{y : A} \\mathrm{Id}_A(x, y) \\to \\mathcal U_k$."
 msgstr ""
 
-#: manual/api/elab.md:82
+#: manual/api/elab.md:86
 msgid "Well-founded tree type; `B` is under one binder."
 msgstr ""
 
-#: manual/api/elab.md:83
+#: manual/api/elab.md:87
 msgid "Recursion on `w : W(A, B)` into the motive `P`. Unlike in `W`, `B` here is a function term of type $A \\to \\mathcal U_k$."
 msgstr ""
 
-#: manual/api/elab.md:85
+#: manual/api/elab.md:89
 msgid "`TermInf::equal` compares terms structurally, which is $\\alpha$-equivalence because variables are de Bruijn indices; prefer `==`."
 msgstr ""
 
-#: manual/api/elab.md:89
+#: manual/api/elab.md:93
 msgid "`TermChk` is the type of terms that the checker checks against a known type."
 msgstr ""
 
-#: manual/api/elab.md:105
+#: manual/api/elab.md:109
 msgid "An inferable term used where a checkable one is expected."
 msgstr ""
 
-#: manual/api/elab.md:106
+#: manual/api/elab.md:110
 msgid "The element of the unit type."
 msgstr ""
 
-#: manual/api/elab.md:107
+#: manual/api/elab.md:111
 msgid "Function abstraction; `t` is under one binder. The domain is not written, it comes from the expected type."
 msgstr ""
 
-#: manual/api/elab.md:108
+#: manual/api/elab.md:112
 msgid "Dependent pair."
 msgstr ""
 
-#: manual/api/elab.md:109
+#: manual/api/elab.md:113
 msgid "Reflexivity proof of $\\mathrm{Id}_A(t, t)$."
 msgstr ""
 
-#: manual/api/elab.md:110
+#: manual/api/elab.md:114
 msgid "Node of a W type with label `a` and child function `f`."
 msgstr ""
 
-#: manual/api/elab.md:112
+#: manual/api/elab.md:116
 msgid "A type is written as a `TermChk`, but most typing rules infer the type of a type, so a type position must contain `Inf(...)`, for example `Inf(UnitType)`."
 msgstr ""
 
-#: manual/api/elab.md:126
+#: manual/api/elab.md:130
 msgid "Values"
 msgstr ""
 
-#: manual/api/elab.md:130
+#: manual/api/elab.md:134
 msgid "`Value` is the semantic domain: terms evaluated to weak head normal form, with binders represented as MoonBit functions."
 msgstr ""
 
-#: manual/api/elab.md:150
+#: manual/api/elab.md:154
 msgid "Each constructor corresponds to a term constructor. A binder body becomes a function `(Value) -> Value`: `VPi(a, b)` is $\\Pi_{x : a} b(x)$, and `VLam(f)` is the function $x \\mapsto f(x)$. Values are also used as types, and `Type` is an alias of `Value` that the package uses for that role. Because values contain functions, `Value` has no `Eq`; compare values with `def_eq` or by comparing their normal forms from `quote`. `Debug` prints a function as `<function: ...>`."
 msgstr ""
 
-#: manual/api/elab.md:154
+#: manual/api/elab.md:158
 msgid "`Neutral` is a computation that is stuck on a free variable."
 msgstr ""
 
-#: manual/api/elab.md:167
+#: manual/api/elab.md:171
 msgid "A neutral term is a free variable followed by a spine of eliminations that cannot reduce: an application of a variable, a projection of a variable, or `J` or `wrec` on a variable. A neutral term is a value through `VNeutral`."
 msgstr ""
 
-#: manual/api/elab.md:171
+#: manual/api/elab.md:175
 msgid "`Context` assigns types to free variables; `Env` assigns values to bound variables."
 msgstr ""
 
-#: manual/api/elab.md:178
+#: manual/api/elab.md:182
 msgid "A `Context` is searched from the head, so a later declaration shadows an earlier one. In an `Env`, the head is the value of `Bound(0)`, the next element the value of `Bound(1)`, and so on."
 msgstr ""
 
-#: manual/api/elab.md:180
-#: manual/design/elab.md:45
+#: manual/api/elab.md:184
+#: manual/design/elab.md:51
 msgid "Evaluation"
 msgstr ""
 
-#: manual/api/elab.md:184
+#: manual/api/elab.md:188
 msgid "`eval_inf` and `eval_chk` evaluate a term in an environment."
 msgstr ""
 
-#: manual/api/elab.md:191
+#: manual/api/elab.md:195
 msgid "They compute the weak head normal form, $\\llbracket t \\rrbracket_\\rho$ in the design notes: annotations are erased, binders become closures over the environment, and eliminations reduce through the `val_` functions below. Evaluation does not type-check. On an ill-typed term it can panic, for example when a non-function is applied or `Bound(i)` has no entry in the environment."
 msgstr ""
 
-#: manual/api/elab.md:203
+#: manual/api/elab.md:207
 msgid "`val_var` is the value of a free variable."
 msgstr ""
 
-#: manual/api/elab.md:209
+#: manual/api/elab.md:213
 msgid "`val_var(x)` is `VNeutral(NFree(x))`."
 msgstr ""
 
-#: manual/api/elab.md:213
+#: manual/api/elab.md:217
 msgid "These apply a function value and project a pair value."
 msgstr ""
 
-#: manual/api/elab.md:221
+#: manual/api/elab.md:225
 msgid "They implement the $\\beta$-rules $(\\lambda f)\\,v = f(v)$, $\\pi_1 (v, w) = v$ and $\\pi_2 (v, w) = w$. On a neutral argument they extend the neutral spine. On any other value they panic."
 msgstr ""
 
-#: manual/api/elab.md:225
+#: manual/api/elab.md:229
 msgid "`val_j_elim` evaluates the path eliminator."
 msgstr ""
 
-#: manual/api/elab.md:231
+#: manual/api/elab.md:235
 msgid "`val_j_elim(a, x, p, d, y, e)` returns `d` when `e` is `VRfl(_)`, the rule $J(A, x, P, d, x, \\mathrm{refl}\\,x) = d$, extends the neutral spine when `e` is neutral, and panics otherwise."
 msgstr ""
 
-#: manual/api/elab.md:235
+#: manual/api/elab.md:239
 msgid "`val_w_rec` evaluates W recursion."
 msgstr ""
 
-#: manual/api/elab.md:241
+#: manual/api/elab.md:245
 msgid "`val_w_rec(a, b, p, s, w)` computes, for `w = VSup(l, f)`,"
 msgstr ""
 
-#: manual/api/elab.md:247
+#: manual/api/elab.md:251
 msgid "that is, the step function applied to the label, the children and the recursive results on the children. It extends the neutral spine when `w` is neutral and panics otherwise."
 msgstr ""
 
-#: manual/api/elab.md:251
+#: manual/api/elab.md:255
 msgid "`val_max_univ` returns the larger of two universes."
 msgstr ""
 
-#: manual/api/elab.md:257
+#: manual/api/elab.md:261
 msgid "`val_max_univ(VUniverse(i), VUniverse(j))` is `VUniverse(max(i, j))`. Any other argument panics. The checker computes the level of a $\\Pi$, $\\Sigma$ or $W$ type with this rule but does not call the function."
 msgstr ""
 
-#: manual/api/elab.md:259
+#: manual/api/elab.md:263
+msgid "The semantic eliminations reduce on introduction forms and get stuck on variables:"
+msgstr ""
+
+#: manual/api/elab.md:283
 msgid "Normal forms"
 msgstr ""
 
-#: manual/api/elab.md:263
+#: manual/api/elab.md:287
 msgid "`quote` reads a value back into a term in normal form; `neutral_quote` does the same for a neutral term."
 msgstr ""
 
-#: manual/api/elab.md:270
+#: manual/api/elab.md:294
 msgid "`quote(l, v)` expects `l` to be the number of binders the value is under, normally `0`. To read back a closure it applies the closure to a fresh variable `Quote(l)` and quotes the body at `l + 1`. `neutral_quote` turns a variable `Quote(k)` into the index `Bound(l - k - 1)` and leaves other names as `Free(x)`. The normal form of a term $t$ is `quote(0, eval_chk(t, @list.empty()))`; two terms with equal normal forms are $\\beta$-equal."
 msgstr ""
 
-#: manual/api/elab.md:281
+#: manual/api/elab.md:305
 msgid "Type checking"
 msgstr ""
 
-#: manual/api/elab.md:285
+#: manual/api/elab.md:309
 msgid "`TypeError` is the error raised by the type checker."
 msgstr ""
 
-#: manual/api/elab.md:293
+#: manual/api/elab.md:317
 msgid "The message names the rule that failed, for example `Illegal Application`, `Expected Pi type for Lambda`, `Type Mismatch: inferred type is not a subtype of expected type`, `Rfl endpoints mismatch` or `Unknown Identifier: Global(\"b\")`."
 msgstr ""
 
-#: manual/api/elab.md:297
+#: manual/api/elab.md:321
 msgid "`type_inf` infers the type of a term; `type_chk` checks a term against a type."
 msgstr ""
 
-#: manual/api/elab.md:304
+#: manual/api/elab.md:328
 msgid "`type_inf(l, ctx, env, e)` returns the type of `e` as a value, and `type_chk(l, ctx, env, t, ty)` returns normally when `t` has type `ty`; both raise `TypeError` otherwise. The arguments describe the position of the term:"
 msgstr ""
 
-#: manual/api/elab.md:306
+#: manual/api/elab.md:330
 msgid "`l` is the number of binders the checker has entered, and `Local(l)` is the next fresh variable;"
 msgstr ""
 
-#: manual/api/elab.md:307
+#: manual/api/elab.md:331
 msgid "`ctx` contains the user's `Global` declarations and one entry `(Local(k), A_k)` for every binder entered;"
 msgstr ""
 
-#: manual/api/elab.md:308
+#: manual/api/elab.md:332
 msgid "`env` has one entry `val_var(Local(k))` for every binder entered, the innermost first."
 msgstr ""
 
-#: manual/api/elab.md:310
-msgid "At the top level, pass `0`, the user's context and an empty environment. `Bound(i)` is resolved through `env` and then `ctx`, so `env` may contain only variables that are declared in `ctx`; any other value raises an internal error. In checking mode, a term that can only be inferred is accepted when its inferred type is a subtype of the expected one (cumulativity, see `def_eq`)."
+#: manual/api/elab.md:334
+msgid "At the top level, pass `0`, the user's context and an empty environment. `Bound(i)` is resolved through `env` and then `ctx`, so `env` may contain only variables that are declared in `ctx`; any other value raises `TypeError(\"Internal error: Bound variable not in environment\")`, and a variable of `env` missing from `ctx` raises `TypeError(\"Unknown Identifier\")`. In checking mode, a term that can only be inferred is accepted when its inferred type is a subtype of the expected one (cumulativity, see `def_eq`)."
 msgstr ""
 
-#: manual/api/elab.md:324
+#: manual/api/elab.md:336
+msgid "[!WARNING] An index with no entry in `env` aborts instead of raising `TypeError`: `type_inf_0(ctx, Bound(0))` panics, because the lookup unwraps a missing list element. Check that a term is closed (every `Bound(i)` lies under more than `i` binders) before passing it at the top level."
+msgstr ""
+
+#: manual/api/elab.md:339
+msgid "`type_chk` trusts its expected type: pass a value that is already known to be a type, such as the result of `type_inf` or the evaluation of a checked type. On an ill-formed expected type the checker may panic in the semantic eliminations."
+msgstr ""
+
+#: manual/api/elab.md:353
 msgid "`type_inf_0` infers the type of a closed term in a context of global declarations."
 msgstr ""
 
-#: manual/api/elab.md:330
+#: manual/api/elab.md:359
 msgid "`type_inf_0(ctx, e)` is `type_inf(0, ctx, @list.empty(), e)`. Declare a constant by adding `(Global(name), type)` to `ctx`; the type is a value, for example `VUniverse(0)` for a type variable or `VNeutral(NFree(Global(\"A\")))` for an element of a declared type `A`."
 msgstr ""
 
-#: manual/api/elab.md:351
+#: manual/api/elab.md:380
 msgid "`def_eq` decides whether one type is a subtype of another in the empty context."
 msgstr ""
 
-#: manual/api/elab.md:357
-msgid "`def_eq(l, s, t)` returns `true` when $s \\le t$ under the cumulative subtyping of the design notes: $\\mathcal U_i \\le \\mathcal U_j$ for $i \\le j$, $\\Pi$ types are contravariant in the domain and covariant in the codomain, $\\Sigma$ types are invariant in the first component and covariant in the second, and all other types are compared by conversion. Despite its name the relation is not symmetric: `def_eq(0, VUniverse(0), VUniverse(1))` is `true` and `def_eq(0, VUniverse(1), VUniverse(0))` is `false`."
+#: manual/api/elab.md:386
+msgid "`def_eq(l, s, t)` returns `true` when $s \\le t$ under the cumulative subtyping of the design notes, with `l` the number of binders the values are under (normally `0`): $\\mathcal U_i \\le \\mathcal U_j$ for $i \\le j$, $\\Pi$ types are contravariant in the domain and covariant in the codomain, $\\Sigma$ types are invariant in the first component and covariant in the second, and all other types are compared by conversion. Despite its name the relation is not symmetric: `def_eq(0, VUniverse(0), VUniverse(1))` is `true` and `def_eq(0, VUniverse(1), VUniverse(0))` is `false`. On two values that are not types, such as two functions, it compares their read-backs, which is $\\beta$-equality."
 msgstr ""
 
-#: manual/api/elab.md:359
+#: manual/api/elab.md:388
 msgid "[!NOTE] Because the context is empty, `def_eq` cannot look up the type of a free variable. Two neutral terms are then compared by their read-backs, so `f x` equals `f x` for a free `f`, but arguments that are only $\\eta$-equal, such as `f g` and `f (λx. g x)`, are not identified. Inside `type_chk`, where the context is known, $\\eta$ is used."
 msgstr ""
 
-#: manual/api/elab.md:372
+#: manual/api/elab.md:401
 msgid "Deprecated"
 msgstr ""
 
-#: manual/api/elab.md:374
+#: manual/api/elab.md:403
 msgid "The promoted methods below are kept for source compatibility. They are hidden from the interface file and warn when called from another package."
 msgstr ""
 
-#: manual/api/elab.md:376
+#: manual/api/elab.md:405
 msgid "Method"
 msgstr ""
 
-#: manual/api/elab.md:376
+#: manual/api/elab.md:405
 msgid "Replacement"
 msgstr ""
 
-#: manual/api/elab.md:379
+#: manual/api/elab.md:408
 msgid "`Repr(x)`, `@debug.to_string(x)` or `debug_inspect(x)`"
 msgstr ""
 
-#: manual/api/elab.md:381
+#: manual/api/elab.md:410
 msgid "Before the MoonBit 0.10 migration, `Name`, `TermChk`, `TermInf`, `Neutral` and `Value` implemented `Show`. These implementations were removed: `inspect(x)`, `x.to_string()` and `\"\\{x}\"` no longer compile for these types. Use the `Debug` forms instead."
 msgstr ""
 
@@ -375,302 +395,342 @@ msgid "A. Löh, C. McBride, W. Swierstra, \"A tutorial implementation of a depen
 msgstr ""
 
 #: manual/design/elab.md:14
-msgid "Mathematical background"
+msgid "Constraints"
+msgstr ""
+
+#: manual/design/elab.md:16
+msgid "Terms are MoonBit values built by the user; there is no parser, so the core syntax must be usable directly."
+msgstr ""
+
+#: manual/design/elab.md:17
+msgid "MoonBit closures cannot be compared or printed, so a value that contains a binder can only be inspected by applying it, and every equality test on values has to go through application or read-back."
 msgstr ""
 
 #: manual/design/elab.md:18
+msgid "The kernel must stay small enough to audit by reading: each rule is one match arm, and the checker has no unification, no metavariables and no global state."
+msgstr ""
+
+#: manual/design/elab.md:20
+msgid "Mathematical background"
+msgstr ""
+
+#: manual/design/elab.md:24
 msgid "Terms are split by the judgement that handles them. Writing $e$ for inferable terms (`TermInf`) and $t$ for checkable terms (`TermChk`):"
 msgstr ""
 
-#: manual/design/elab.md:28
+#: manual/design/elab.md:34
 msgid "Bound variables are de Bruijn indices $\\#i$ (`Bound(i)`): $\\#0$ refers to the nearest enclosing binder. The binders are $\\lambda$ and the second argument of $\\Pi$, $\\Sigma$ and $W$. Because a bound variable has no name, two terms are $\\alpha$-equivalent exactly when they are equal as trees, so the derived `Eq` of `TermInf` and `TermChk` *is* $\\alpha$-equivalence."
 msgstr ""
 
-#: manual/design/elab.md:30
+#: manual/design/elab.md:36
 msgid "Values and neutral terms"
 msgstr ""
 
-#: manual/design/elab.md:32
+#: manual/design/elab.md:38
 msgid "Evaluation maps terms into a semantic domain $D$ (`Value`):"
 msgstr ""
 
-#: manual/design/elab.md:41
+#: manual/design/elab.md:47
 msgid "where $f, F : D \\to D$ are MoonBit functions. A binder body becomes a function on values: $\\Pi(A, F)$ is the type $\\Pi_{x : A} F(x)$. The neutral terms $n$ (`Neutral`) are eliminations stuck on a free variable $x$."
 msgstr ""
 
-#: manual/design/elab.md:43
-msgid "Every value is in weak head normal form: no elimination is applied to an introduction form, because the evaluator reduces such redexes as soon as it builds them."
+#: manual/design/elab.md:49
+msgid "Every value is in weak head normal form: no elimination is applied to an introduction form, because the evaluator reduces such redexes as soon as it builds them. Bodies of binders are not normalised: a closure $F$ is only evaluated when it is applied, by the checker or by read-back."
 msgstr ""
 
-#: manual/design/elab.md:47
+#: manual/design/elab.md:53
 msgid "Evaluation $\\llbracket t \\rrbracket_\\rho$ (`eval_inf`, `eval_chk`) takes an environment $\\rho$ whose $i$-th entry is the value of $\\#i$:"
 msgstr ""
 
-#: manual/design/elab.md:60
+#: manual/design/elab.md:66
 msgid "and similarly for the other constructors. The semantic eliminations (`val_app`, `val_fst`, `val_snd`, `val_j_elim`, `val_w_rec`) carry the computation rules:"
 msgstr ""
 
-#: manual/design/elab.md:71
+#: manual/design/elab.md:77
 msgid "and on a neutral argument they extend the spine, for example $\\underline{n} \\cdot v = \\underline{n\\;v}$. Annotations are erased."
 msgstr ""
 
-#: manual/design/elab.md:73
+#: manual/design/elab.md:79
 msgid "Read-back and normal forms"
 msgstr ""
 
-#: manual/design/elab.md:75
+#: manual/design/elab.md:81
 msgid "Read-back $q_l$ (`quote`, `neutral_quote`) turns a value under $l$ binders into a term. A function is read back by applying it to a fresh variable:"
 msgstr ""
 
-#: manual/design/elab.md:82
+#: manual/design/elab.md:88
 msgid "and a fresh variable is turned back into an index:"
 msgstr ""
 
-#: manual/design/elab.md:88
+#: manual/design/elab.md:94
 msgid "*Why $l - k - 1$.* Read-back numbers binders by *level*, from the outside: the binder opened at depth $k$ introduces $\\mathsf{Quote}(k)$. At depth $l$, the binders opened after it have levels $k + 1, \\dots, l - 1$, so $l - 1 - k$ binders lie between the occurrence and its binder, which is its de Bruijn *index*. The variable is fresh because at depth $l$ only $\\mathsf{Quote}(0), \\dots, \\mathsf{Quote}(l-1)$ are in scope. Levels make freshness trivial (no renaming, no shifting), and indices make the output canonical."
 msgstr ""
 
-#: manual/design/elab.md:90
+#: manual/design/elab.md:96
 msgid "The *normal form* of a closed term is $\\mathrm{nf}(t) = q_0(\\llbracket t \\rrbracket_\\varepsilon)$."
 msgstr ""
 
-#: manual/design/elab.md:92
+#: manual/design/elab.md:98
 msgid "Why evaluation respects $\\beta$"
 msgstr ""
 
-#: manual/design/elab.md:94
-msgid "The central lemma of NbE is that $\\beta$-equal terms have the same value. For a redex,"
+#: manual/design/elab.md:100
+msgid "Write $t \\to u$ for one step of the reduction the evaluator implements: a $\\beta$-step $(\\lambda.\\,t : T)\\;u \\to t[u]$, a projection of a pair, $J$ on $\\mathrm{refl}$, $\\mathrm{wrec}$ on $\\sup$, or the erasure $(t : T) \\to t$ of an annotation, at any position in the term. With de Bruijn indices, $t[u]$ replaces $\\#0$ by $u$ and lowers every other free index of $t$ by one, because the binder that $\\#0$ referred to is gone."
 msgstr ""
 
-#: manual/design/elab.md:106
-msgid "where the last step is the substitution lemma, proved by induction on $t$: substituting $u$ for $\\#0$ and evaluating in $\\rho$ gives the same value as evaluating in $\\rho$ extended with the value of $u$. The same computation for the other redexes uses $\\Sigma\\beta$, $J\\beta$ and $W\\beta$ above. Since the value of a term depends only on its $\\beta$-class, so does its normal form: $t =_\\beta u \\Rightarrow \\mathrm{nf}(t) = \\mathrm{nf}(u)$. Conversely, $\\mathrm{nf}(t)$ is reached from $t$ by $\\beta$-steps, so equal normal forms imply $\\beta$-equality. Together these make \"compare normal forms\" a decision procedure for $\\beta$-equality on terms whose evaluation terminates.[^nbe]"
+#: manual/design/elab.md:102
+msgid "Values contain closures, so \"the same value\" means the same read-back: $v \\simeq w$ when $q_l(v) = q_l(w)$ at every level $l$ and for every way of applying them. The central lemma of NbE is that a reduction step does not change the value. For a redex,"
 msgstr ""
 
-#: manual/design/elab.md:108
+#: manual/design/elab.md:118
+msgid "The substitution lemma $\\llbracket t \\rrbracket_{\\llbracket u \\rrbracket_\\rho :: \\rho} = \\llbracket t[u] \\rrbracket_\\rho$ is proved by induction on $t$. Going under binders forces a more general statement: for an environment prefix $\\sigma$ of length $k$,"
+msgstr ""
+
+#: manual/design/elab.md:124
+msgid "where $t[k \\mapsto u]$ replaces $\\#k$ by $u$ with its free indices raised by $k$, and lowers the indices above $k$ by one. An occurrence of $\\#k$ evaluates to $\\llbracket u \\rrbracket_\\rho$ on the left, and on the right to the raised copy of $u$ in $\\sigma \\mathbin{+\\!\\!+} \\rho$, which skips the $k$ entries of $\\sigma$ and therefore also evaluates to $\\llbracket u \\rrbracket_\\rho$. An index below $k$ is bound inside $t$ and reads the same entry of $\\sigma$ on both sides. An index above $k$ reads one position further on the left, which is what the lowering compensates. Every other constructor follows from the induction hypothesis, with $k + 1$ under a binder. The other redexes reduce by the computation rules $\\Sigma\\beta$, $J\\beta$ and $W\\beta$ of `val_fst`, `val_snd`, `val_j_elim` and `val_w_rec`, and evaluation is compositional, so a step inside a subterm changes only the value of that subterm. Hence"
+msgstr ""
+
+#: manual/design/elab.md:130
+msgid "and since $\\simeq$ is an equivalence, terms that are equal under the symmetric closure $=_\\beta$ of $\\to$ have equal normal forms. Conversely, $\\mathrm{nf}(t)$ is reached from $t$ by reduction steps, because every equation of $\\llbracket - \\rrbracket$ and $q_l$ either rebuilds a constructor or performs one of the steps above; so equal normal forms imply $t =_\\beta \\mathrm{nf}(t) = \\mathrm{nf}(u) =_\\beta u$. Together these make \"compare normal forms\" a decision procedure for $=_\\beta$ on terms whose evaluation terminates without a panic, which includes every well-typed closed term.[^nbe]"
+msgstr ""
+
+#: manual/design/elab.md:132
+msgid "Read-back is untyped, so it does not $\\eta$-expand: `quote` keeps a variable $f$ of type $\\mathbf 1 \\to \\mathbf 1$ as $f$, while $\\lambda x.\\,f\\,x$ reads back as a $\\lambda$. The checker adds $\\eta$ in the type-directed conversion below; normal forms from `quote` decide $\\beta$ only."
+msgstr ""
+
+#: manual/design/elab.md:134
 msgid "U. Berger and H. Schwichtenberg, \"An inverse of the evaluation functional for typed λ-calculus\", LICS 1991, introduced NbE. A. Abel, *Normalization by Evaluation: Dependent Types and Impredicativity*, habilitation, LMU Munich (2013), proves soundness and completeness of NbE for Martin-Löf type theory with $\\eta$. These are results about the theory; for this implementation they are tested, not proved."
 msgstr ""
 
-#: manual/design/elab.md:110
+#: manual/design/elab.md:136
 msgid "The bidirectional judgements"
 msgstr ""
 
-#: manual/design/elab.md:112
+#: manual/design/elab.md:138
 msgid "The checker has two judgements, each a function:"
 msgstr ""
 
-#: manual/design/elab.md:114
+#: manual/design/elab.md:140
 msgid "$\\Gamma; \\rho \\vdash_l e \\Rightarrow A$ (*inference*, `type_inf`): $e$ has type $A$, which the checker computes;"
 msgstr ""
 
-#: manual/design/elab.md:115
+#: manual/design/elab.md:141
 msgid "$\\Gamma; \\rho \\vdash_l t \\Leftarrow A$ (*checking*, `type_chk`): $t$ has the given type $A$."
 msgstr ""
 
-#: manual/design/elab.md:117
+#: manual/design/elab.md:143
 msgid "The context $\\Gamma$ maps names to types (values), $\\rho$ is the environment of the current position, and $l$ counts the binders entered. Under a binder the checker extends all three with a fresh variable $x_l = \\underline{\\mathsf{Local}(l)}$: it writes $\\Gamma, x_l : A;\\ \\rho, x_l \\vdash_{l+1}$. Thus $\\rho$ always maps $\\#i$ to the variable $x_{l-1-i}$, and $\\Gamma$ gives its type. Below, $\\llbracket t \\rrbracket$ abbreviates $\\llbracket t \\rrbracket_\\rho$."
 msgstr ""
 
-#: manual/design/elab.md:119
+#: manual/design/elab.md:145
 msgid "**Variables, constants and annotations.**"
 msgstr ""
 
-#: manual/design/elab.md:129
+#: manual/design/elab.md:155
 msgid "**Universes and type formers.** Here and below, a premise $T \\Rightarrow \\mathcal U_i$ requires $T$ to be an inferable term whose inferred type *is* a universe; there is no subsumption in these premises."
 msgstr ""
 
-#: manual/design/elab.md:139
+#: manual/design/elab.md:165
 msgid "The rules $(\\Sigma\\textsf{-F})$ and $(W\\textsf{-F})$ are the same with $\\Sigma$ and $W$ in place of $\\Pi$. The identity type lives in the universe of its carrier:"
 msgstr ""
 
-#: manual/design/elab.md:145
+#: manual/design/elab.md:171
 msgid "**Introductions are checked.** The expected type supplies what the term omits, such as the domain of a $\\lambda$:"
 msgstr ""
 
-#: manual/design/elab.md:161
+#: manual/design/elab.md:187
 msgid "**Eliminations are inferred.** The type of the eliminated term is inferred and then taken apart:"
 msgstr ""
 
-#: manual/design/elab.md:171
+#: manual/design/elab.md:197
 msgid "Path induction, with the motive $P$ inferred and $\\bar A = \\llbracket A \\rrbracket$, $\\bar x = \\llbracket x \\rrbracket$, $\\bar y = \\llbracket y \\rrbracket$, $\\bar P = \\llbracket P \\rrbracket$:"
 msgstr ""
 
-#: manual/design/elab.md:190
+#: manual/design/elab.md:216
 msgid "The universe level $k$ of the motive is inferred rather than fixed, which is what cumulative universes need. The two domains are still checked: $P$ is only ever applied to a point of $\\bar A$ and to a path out of $\\bar x$, so its domains must accept those arguments, and $\\Pi$ is contravariant in its domain. Checking only the shape $\\Pi(D_1, \\Pi(D_2, \\mathcal U_k))$ would let $P$ be applied to arguments of the wrong type during checking."
 msgstr ""
 
-#: manual/design/elab.md:192
+#: manual/design/elab.md:218
 msgid "W recursion, where $B$ is an inferable *function* $A \\to \\mathcal U_k$, $\\bar B(v) = \\llbracket B \\rrbracket \\cdot v$ and $\\bar W = W(\\bar A, \\bar B)$:"
 msgstr ""
 
-#: manual/design/elab.md:206
+#: manual/design/elab.md:232
 msgid "**Changing direction.** An inferable term is accepted in checking mode when its type is a subtype of the expected one:"
 msgstr ""
 
-#: manual/design/elab.md:212
+#: manual/design/elab.md:238
 msgid "The opposite direction is $(\\textsf{Ann})$: a checkable term becomes inferable once its type is written down."
 msgstr ""
 
-#: manual/design/elab.md:214
+#: manual/design/elab.md:240
 msgid "Subtyping and conversion"
 msgstr ""
 
-#: manual/design/elab.md:216
+#: manual/design/elab.md:242
 msgid "The relation $A \\le A'$ (`subtype_nf`, exposed for the empty context as `def_eq`) is cumulativity:"
 msgstr ""
 
-#: manual/design/elab.md:228
+#: manual/design/elab.md:254
 msgid "The $\\Pi$ rule is contravariant in the domain: a function that accepts every element of $A$ accepts every element of a subtype $A' \\le A$, and its results in $F(x)$ are also results in the supertype $F'(x)$. The $\\Sigma$ rule keeps the first component *invariant*; covariance would also be sound, but the implementation, and its tests, require conversion there."
 msgstr ""
 
-#: manual/design/elab.md:230
+#: manual/design/elab.md:256
 msgid "Conversion $A \\equiv A'$ (`conv_type`) compares types structurally, entering binders with a fresh variable, and compares the endpoints of identity types with the type-directed $\\equiv_A$ (`conv_nf`), which adds $\\eta$:"
 msgstr ""
 
-#: manual/design/elab.md:238
+#: manual/design/elab.md:264
 msgid "Neutral terms are compared spine by spine (`conv_neu`), looking up the type of the head variable in $\\Gamma$ to compare application arguments at the right type. When the head's type is not in $\\Gamma$, as in `def_eq`, which has no context, the two spines are compared by their read-backs instead. That is sound, because equal read-backs are definitionally equal, but it does not use $\\eta$ on the arguments. Everything else falls back to comparing read-backs, $q_l(v) = q_l(v')$."
 msgstr ""
 
-#: manual/design/elab.md:240
+#: manual/design/elab.md:266
 msgid "Universes"
 msgstr ""
 
-#: manual/design/elab.md:242
+#: manual/design/elab.md:268
 msgid "The universes are *predicative* and *Russell style*: a type is itself a term, and $\\mathcal U_i : \\mathcal U_{i+1}$. There is no rule $\\mathcal U_i : \\mathcal U_i$, because a universe containing itself makes the theory inconsistent (Girard's paradox).[^girard] A type former lands in the larger universe of its parts, $\\max(i, j)$, which is what predicativity requires: $\\Pi_{A : \\mathcal U_0} A \\to A$ quantifies over $\\mathcal U_0$ and therefore lives in $\\mathcal U_1$. Cumulativity $\\mathcal U_i \\le \\mathcal U_{i+1}$ is not a typing rule but part of subtyping, used by $(\\textsf{Sub})$."
 msgstr ""
 
-#: manual/design/elab.md:244
+#: manual/design/elab.md:270
 msgid "J.-Y. Girard, *Interprétation fonctionnelle et élimination des coupures de l'arithmétique d'ordre supérieur*, thèse d'État (1972); a short proof is A. J. C. Hurkens, \"A simplification of Girard's paradox\", TLCA 1995."
 msgstr ""
 
-#: manual/design/elab.md:246
+#: manual/design/elab.md:272
 msgid "Design decisions"
 msgstr ""
 
-#: manual/design/elab.md:248
+#: manual/design/elab.md:274
 msgid "Bidirectional checking"
 msgstr ""
 
-#: manual/design/elab.md:250
+#: manual/design/elab.md:276
 msgid "**Problem.** Inferring the type of an unannotated $\\lambda$ in a dependent type theory requires guessing its domain, which in general means higher-order unification, which is undecidable."
 msgstr ""
 
-#: manual/design/elab.md:252
+#: manual/design/elab.md:278
 msgid "**Options.** (a) Annotate every binder, $\\lambda (x : A).\\,t$. (b) Infer with unification variables. (c) Split the terms into checked and inferred ones."
 msgstr ""
 
-#: manual/design/elab.md:254
-msgid "**Choice.** (c). Introduction forms ($\\lambda$, pairs, $\\star$, $\\mathrm{refl}$, $\\sup$) are checked, because their type determines the missing information; eliminations and type formers are inferred, because the type of the head determines the type of the whole. An annotation is needed only where an introduction meets an elimination, that is, at a $\\beta$-redex such as $(\\lambda.\\,t : T)\\;u$, or where a motive must be a function. A term in normal form needs no annotations at all apart from the motives. Encoding the split in the types `TermInf` and `TermChk` makes an unannotated redex unrepresentable rather than a runtime error."
+#: manual/design/elab.md:280
+msgid "**Choice.** (c). Introduction forms ($\\lambda$, pairs, $\\star$, $\\mathrm{refl}$, $\\sup$) are checked, because their type determines the missing information; eliminations and type formers are inferred, because the type of the head determines the type of the whole. An annotation is needed only where an introduction meets an elimination, that is, at a $\\beta$-redex such as $(\\lambda.\\,t : T)\\;u$, or where a function must be inferable: the motives of $J$ and $\\mathrm{wrec}$ and the family $B$ of $\\mathrm{wrec}$. A term in normal form checked against a known type needs no other annotations. Encoding the split in the types `TermInf` and `TermChk` makes an unannotated redex unrepresentable rather than a runtime error."
 msgstr ""
 
-#: manual/design/elab.md:256
+#: manual/design/elab.md:282
 msgid "Values with closures"
 msgstr ""
 
-#: manual/design/elab.md:258
+#: manual/design/elab.md:284
 msgid "**Problem.** Comparing types requires evaluating them, including under binders."
 msgstr ""
 
-#: manual/design/elab.md:260
+#: manual/design/elab.md:286
 msgid "**Options.** (a) Rewrite syntax by substitution, which needs capture-avoiding substitution and index shifting at every step. (b) Evaluate into a semantic domain where binders are host functions."
 msgstr ""
 
-#: manual/design/elab.md:262
+#: manual/design/elab.md:288
 msgid "**Choice.** (b). A body is represented by a MoonBit function `(Value) -> Value`, so $\\beta$-reduction is a host function call and substitution never happens on syntax. Read-back recovers syntax only when needed: for printing, for comparison by $q_l$, and in the checks that compare normal forms."
 msgstr ""
 
-#: manual/design/elab.md:264
+#: manual/design/elab.md:290
 msgid "Indices in terms, levels in values"
 msgstr ""
 
-#: manual/design/elab.md:266
+#: manual/design/elab.md:292
 msgid "Terms use indices, so that $\\alpha$-equivalence is structural equality and closed subterms do not depend on their position. Fresh variables in values use levels, `Local(l)` for the checker and `Quote(l)` for read-back, so that creating a fresh variable is a counter increment and values never need shifting. The two kinds of fresh variable are separate `Name` constructors, so a variable introduced by the checker cannot be mistaken for one introduced while reading back."
 msgstr ""
 
-#: manual/design/elab.md:268
+#: manual/design/elab.md:294
 msgid "Subtyping instead of explicit lifts"
 msgstr ""
 
-#: manual/design/elab.md:270
+#: manual/design/elab.md:296
 msgid "Cumulativity could be expressed with explicit lifting operators $\\uparrow : \\mathcal U_i \\to \\mathcal U_{i+1}$. Building it into the change of direction $(\\textsf{Sub})$ instead means a type written in $\\mathcal U_0$ can be used in $\\mathcal U_1$ without any term-level coercion, as in `type_chk(..., Inf(UnitType), VUniverse(1))`."
 msgstr ""
 
-#: manual/design/elab.md:272
+#: manual/design/elab.md:298
 msgid "Correctness and invariants"
 msgstr ""
 
-#: manual/design/elab.md:274
-msgid "**Environment invariant.** At level $l$, `env` has exactly $l$ entries, entry $i$ is $x_{l-1-i}$, and `ctx` declares every $x_k$. The rules that go under a binder are the only places that extend the state, and they extend all three together. $(\\textsf{Var})$ relies on this invariant; a caller of `type_inf` that breaks it gets `Internal error: Bound variable not in environment`."
+#: manual/design/elab.md:300
+msgid "**Environment invariant.** At level $l$, `env` has exactly $l$ entries, entry $i$ is $x_{l-1-i}$, and `ctx` declares every $x_k$. The rules that go under a binder are the only places that extend the state, and they extend all three together. $(\\textsf{Var})$ relies on this invariant. A caller of `type_inf` that breaks it gets `Internal error: Bound variable not in environment` when entry $i$ is not a variable, `Unknown Identifier` when the variable is missing from `ctx`, and a panic when `env` has no entry $i$ (see the known gaps)."
 msgstr ""
 
-#: manual/design/elab.md:275
+#: manual/design/elab.md:301
 msgid "**Evaluate only what has been checked.** In every rule, a subterm is evaluated after the premise that checks it, for example the argument in $(\\Pi\\textsf{-E})$ and the type in $(\\textsf{Ann})$. Since the evaluator panics on ill-typed redexes, this ordering is what keeps the checker total on ill-typed input: it raises `TypeError` before it evaluates."
 msgstr ""
 
-#: manual/design/elab.md:276
+#: manual/design/elab.md:302
 msgid "**Stability of types.** Every type the checker returns is a value, so the caller never has to normalise it again, and every comparison of types happens on values."
 msgstr ""
 
-#: manual/design/elab.md:277
-msgid "**Termination.** Evaluation of a well-typed term terminates by the normalisation theorem for Martin-Löf type theory with W types and predicative universes. The checker only evaluates checked terms (invariant 2), so it terminates on every input for which its rules are sound; the gaps listed below are the exceptions."
+#: manual/design/elab.md:303
+msgid "**Termination.** Evaluation of a well-typed term terminates by the normalisation theorem for Martin-Löf type theory with W types and predicative universes. The checker only evaluates terms that it has already checked (invariant 2), and every recursive call of `type_inf` and `type_chk` is on a proper subterm, so the checker terminates on every input as long as the rules it implements are sound for that theory. This is an argument about the theory, not a proof about the code: it is tested, not verified."
 msgstr ""
 
-#: manual/design/elab.md:279
+#: manual/design/elab.md:305
 msgid "Known gaps"
 msgstr ""
 
-#: manual/design/elab.md:281
+#: manual/design/elab.md:307
 msgid "The implementation is a work in progress, and some rules are weaker or stronger than the theory above. They are recorded here so that users can avoid them; the code is unchanged."
 msgstr ""
 
-#: manual/design/elab.md:283
+#: manual/design/elab.md:309
 msgid "**Subtyping only for $\\Pi$, $\\Sigma$ and universes.** $W$ and identity types are compared by conversion, without cumulativity in their components."
 msgstr ""
 
-#: manual/design/elab.md:285
+#: manual/design/elab.md:310
+msgid "**No $\\eta$ below identity and W values.** The type-directed conversion $\\equiv_A$ uses $\\eta$ at $\\Pi$, $\\Sigma$ and $\\mathbf 1$ only. At an identity type, a W type or a neutral type it compares read-backs, so the components of $\\mathrm{refl}$, $\\sup$ and stuck eliminations are compared without $\\eta$. For a variable $f : \\mathbf 1 \\to \\mathbf 1$ the checker accepts $\\mathrm{refl}\\;f : \\mathrm{Id}(\\mathbf 1 \\to \\mathbf 1, f, \\lambda x.\\,f\\,x)$, but rejects $\\mathrm{refl}\\,(\\mathrm{refl}\\;f) : \\mathrm{Id}\\bigl(\\mathrm{Id}(\\mathbf 1 \\to \\mathbf 1, f, f), \\mathrm{refl}\\;f, \\mathrm{refl}\\,(\\lambda x.\\,f\\,x)\\bigr)$ with `Rfl endpoints mismatch`, although the endpoints are definitionally equal. The checker is incomplete here, not unsound."
+msgstr ""
+
+#: manual/design/elab.md:311
+msgid "**Open terms at the top level abort.** $(\\textsf{Var})$ looks up $\\rho(i)$ without a bounds check, so `type_inf_0(ctx, Bound(0))` panics instead of raising `TypeError`."
+msgstr ""
+
+#: manual/design/elab.md:313
 msgid "Alternatives rejected"
 msgstr ""
 
-#: manual/design/elab.md:287
+#: manual/design/elab.md:315
 msgid "**Typed terms with names.** Named variables need capture-avoiding substitution and make $\\alpha$-equivalence a separate check; de Bruijn indices avoid both."
 msgstr ""
 
-#: manual/design/elab.md:288
+#: manual/design/elab.md:316
 msgid "**Substitution-based normalisation.** Repeated syntactic substitution is slower and harder to get right than evaluation into closures, and it still needs a separate conversion check."
 msgstr ""
 
-#: manual/design/elab.md:289
+#: manual/design/elab.md:317
 msgid "**Impredicative or self-containing universes.** $\\mathcal U : \\mathcal U$ is inconsistent, and an impredicative $\\mathrm{Prop}$ is not part of the theory stella follows."
 msgstr ""
 
-#: manual/design/elab.md:290
+#: manual/design/elab.md:318
 msgid "**Inductive families.** W types provide well-founded trees with a single eliminator, which keeps the kernel small; general inductive definitions would need a positivity checker."
 msgstr ""
 
-#: manual/design/elab.md:292
+#: manual/design/elab.md:320
 msgid "Boundaries"
 msgstr ""
 
-#: manual/design/elab.md:294
+#: manual/design/elab.md:322
 msgid "The package deliberately does not:"
 msgstr ""
 
-#: manual/design/elab.md:296
+#: manual/design/elab.md:324
 msgid "parse a surface syntax, elaborate implicit arguments or solve unification problems; terms are built as MoonBit values in core syntax;"
 msgstr ""
 
-#: manual/design/elab.md:297
+#: manual/design/elab.md:325
 msgid "support definitions, `let` or global definitions with bodies; the context holds postulates (names with types) only;"
 msgstr ""
 
-#: manual/design/elab.md:298
+#: manual/design/elab.md:326
 msgid "provide universe polymorphism, inductive families, an empty type or sum types;"
 msgstr ""
 
-#: manual/design/elab.md:299
+#: manual/design/elab.md:327
 msgid "implement univalence, higher inductive types or any other feature of homotopy type theory, although the treatise describes them as goals of the project;"
 msgstr ""
 
-#: manual/design/elab.md:300
+#: manual/design/elab.md:328
 msgid "guarantee anything for ill-typed input to the evaluator; `eval_inf`, `eval_chk` and the `val_` functions may panic."
 msgstr ""
 
@@ -679,95 +739,163 @@ msgid "stella"
 msgstr ""
 
 #: manual/index.md:3
-msgid "stella is a proof assistant written in MoonBit and still a work in progress. Its kernel is the `elab` package: the core syntax of a Martin-Löf type theory, evaluation into values, read-back into normal forms, and a bidirectional type checker whose definitional equality is decided by normalisation by evaluation."
+msgid "This manual documents the intended `v0.2.0` release of `Luna-Flow/stella`, the current `main` branch."
 msgstr ""
 
 #: manual/index.md:5
-msgid "The type theory has the unit type, $\\Pi$ types, $\\Sigma$ types, identity types with the $J$ eliminator, W types with recursion, and a cumulative hierarchy of predicative universes, with subtyping that is contravariant in the domain of $\\Pi$ types."
+msgid "Overview"
 msgstr ""
 
 #: manual/index.md:7
-msgid "Packages"
+msgid "stella is a proof assistant written in MoonBit and still a work in progress. Its kernel is the `elab` package: the core syntax of a Martin-Löf type theory, evaluation into values, read-back into normal forms, and a bidirectional type checker whose definitional equality is decided by normalisation by evaluation."
 msgstr ""
 
 #: manual/index.md:9
-msgid "Package"
-msgstr ""
-
-#: manual/index.md:9
-msgid "Contents"
-msgstr ""
-
-#: manual/index.md:9
-msgid "API"
-msgstr ""
-
-#: manual/index.md:9
-msgid "Tutorial"
-msgstr ""
-
-#: manual/index.md:9
-msgid "Design"
+msgid "The type theory has the unit type, $\\Pi$ types, $\\Sigma$ types, identity types with the $J$ eliminator, W types with recursion, and a cumulative hierarchy of predicative universes, with subtyping that is contravariant in the domain of $\\Pi$ types."
 msgstr ""
 
 #: manual/index.md:11
-msgid "Terms (`TermInf`, `TermChk`, `Name`), values (`Value`, `Neutral`), evaluation and read-back (`eval_inf`, `eval_chk`, `quote`), type checking (`type_inf`, `type_chk`, `type_inf_0`, `def_eq`, `TypeError`)."
-msgstr ""
-
-#: manual/index.md:11
-msgid "[API](api/elab.md)"
-msgstr ""
-
-#: manual/index.md:11
-msgid "[Tutorial](tutorial/elab.md)"
-msgstr ""
-
-#: manual/index.md:11
-msgid "[Design](design/elab.md)"
+msgid "The release candidate centers on these changes:"
 msgstr ""
 
 #: manual/index.md:13
-msgid "The package also contains white-box tests (`elaboration_wbtest.mbt`) for universe levels, subtyping and the typing of annotations."
+msgid "The kernel types derive `Debug` instead of `Show`: print them with `debug_inspect`, `Repr(x)` or `@debug.to_string(x)`."
+msgstr ""
+
+#: manual/index.md:14
+msgid "The $J$ eliminator checks the domains of its motive, and `WRec` checks the domains of its family and motive by subtyping."
 msgstr ""
 
 #: manual/index.md:15
-msgid "Reading paths"
+msgid "`Rfl` compares its endpoints by conversion with $\\eta$, `def_eq` is reflexive on neutral applications, and a stuck `wrec` reads back to a term that evaluates to itself."
 msgstr ""
 
 #: manual/index.md:17
-msgid "**New to dependent types.** Read the treatise below up to the chapter on the $\\lambda\\Pi$ calculus, then work through the [tutorial](tutorial/elab.md), which builds the identity function, pairs and a proof by path induction as MoonBit values."
-msgstr ""
-
-#: manual/index.md:18
-msgid "**Using the kernel.** The [tutorial](tutorial/elab.md) shows how to declare constants, check terms and normalise them; the [API reference](api/elab.md) states the contract of every function, including when it raises `TypeError` and when it panics."
-msgstr ""
-
-#: manual/index.md:19
-msgid "**Working on the kernel.** The [design notes](design/elab.md) give every typing rule in inference-rule notation, the evaluation and read-back equations, the invariants the checker relies on, and the known gaps between the implementation and the theory."
-msgstr ""
-
-#: manual/index.md:21
-msgid "Toolchain and installation"
+msgid "Install"
 msgstr ""
 
 #: manual/index.md:23
-msgid "stella requires MoonBit with `moonc` 0.10 or newer and has no dependencies besides the MoonBit core library."
+msgid "Then import `\"Luna-Flow/stella/elab\"` and `\"moonbitlang/core/list\"`, which provides contexts and environments, in your `moon.pkg`. The package needs the MoonBit toolchain 0.10 or later (`moonc` ≥ 0.10) and has no dependencies besides the MoonBit core library."
 msgstr ""
 
-#: manual/index.md:36
-msgid "Run `moon check --target all` and `moon test` before opening a pull request."
+#: manual/index.md:25
+msgid "[!NOTE] `moon.mod` still declares `0.1.2`, the last published version. That version implements `Show` for the kernel types and lacks the fixes listed in the [changelog](../../CHANGELOG.md); the pages below describe `main`."
 msgstr ""
 
-#: manual/index.md:38
-msgid "Theory"
+#: manual/index.md:28
+msgid "Pages"
+msgstr ""
+
+#: manual/index.md:30
+msgid "The repository is one MoonBit package, `src/elab`, documented as `elab`. The treatise is a separate attachment."
+msgstr ""
+
+#: manual/index.md:32
+msgid "Part"
+msgstr ""
+
+#: manual/index.md:32
+msgid "Tutorial"
+msgstr ""
+
+#: manual/index.md:32
+msgid "API"
+msgstr ""
+
+#: manual/index.md:32
+msgid "Design"
+msgstr ""
+
+#: manual/index.md:34
+msgid "`elab`: syntax, evaluation, read-back, type checking"
+msgstr ""
+
+#: manual/index.md:34
+msgid "[tutorial](tutorial/elab.md)"
+msgstr ""
+
+#: manual/index.md:34
+msgid "[API](api/elab.md)"
+msgstr ""
+
+#: manual/index.md:34
+msgid "[design](design/elab.md)"
+msgstr ""
+
+#: manual/index.md:35
+msgid "Theory: from the untyped lambda calculus to Martin-Löf type theory"
+msgstr ""
+
+#: manual/index.md:35
+msgid "[treatise](../attachments/stella_foundations.typ)"
+msgstr ""
+
+#: manual/index.md:37
+msgid "Exported types"
+msgstr ""
+
+#: manual/index.md:39
+msgid "Syntax: `TermInf` (inferable terms), `TermChk` (checkable terms), `Name`"
 msgstr ""
 
 #: manual/index.md:40
-msgid "The treatise below develops the type theory behind stella, from the untyped lambda calculus to Martin-Löf type theory, and explains how the kernel elaborates it. Read it as the narrative overview before working on elaboration details or extending the proof language."
+msgid "Semantics: `Value` (alias `Type`), `Neutral`"
+msgstr ""
+
+#: manual/index.md:41
+msgid "State of the checker: `Context`, `Env`"
 msgstr ""
 
 #: manual/index.md:42
-msgid "[Foundations and Elaboration of Stella Based on Dependent Type Theory](../attachments/stella_foundations.typ)"
+msgid "Errors: `TypeError`"
+msgstr ""
+
+#: manual/index.md:44
+msgid "Exported functions"
+msgstr ""
+
+#: manual/index.md:46
+msgid "Evaluation: `eval_inf`, `eval_chk`"
+msgstr ""
+
+#: manual/index.md:47
+msgid "Semantic eliminations: `val_var`, `val_app`, `val_fst`, `val_snd`, `val_j_elim`, `val_w_rec`, `val_max_univ`"
+msgstr ""
+
+#: manual/index.md:48
+msgid "Read-back: `quote`, `neutral_quote`"
+msgstr ""
+
+#: manual/index.md:49
+msgid "Type checking: `type_inf`, `type_chk`, `type_inf_0`, `def_eq`"
+msgstr ""
+
+#: manual/index.md:51
+msgid "Where to read next"
+msgstr ""
+
+#: manual/index.md:53
+msgid "The [tutorial](tutorial/elab.md) builds the identity function, pairs, a proof by path induction and a W-type recursion as MoonBit values. The [API](api/elab.md) states the contract of every function, including when it raises `TypeError` and when it panics, and the [design](design/elab.md) gives the typing rules and the theory of normalisation by evaluation."
+msgstr ""
+
+#: manual/index.md:55
+msgid "New to dependent types: read the treatise up to the chapter on the $\\lambda\\Pi$ calculus, then work through the [tutorial](tutorial/elab.md)."
+msgstr ""
+
+#: manual/index.md:56
+msgid "Using the kernel in a library: keep the [API](api/elab.md) at hand; it says which arguments each function trusts."
+msgstr ""
+
+#: manual/index.md:57
+msgid "Contributing: read the [design](design/elab.md) before changing the kernel; it gives every typing rule in inference-rule notation, the invariants the checker relies on and the known gaps."
+msgstr ""
+
+#: manual/index.md:59
+msgid "Validation"
+msgstr ""
+
+#: manual/index.md:61
+msgid "Recommended release checks:"
 msgstr ""
 
 #: manual/tutorial/elab.md:1
@@ -775,157 +903,225 @@ msgid "elab tutorial"
 msgstr ""
 
 #: manual/tutorial/elab.md:3
-msgid "This tutorial shows you how to write terms of stella's type theory as MoonBit values, ask the kernel for their types, check them against types you give, and compute their normal forms. It starts with the identity function and ends with a proof by path induction. The typing rules behind each step are in the [design notes](../design/elab.md)."
+msgid "This tutorial shows you how to write terms of stella's type theory as MoonBit values, ask the kernel for their types, check them against types you give, and compute their normal forms. It starts with the identity function and ends with a proof by path induction and a recursion on a W type. The typing rules behind each step are in the [design notes](../design/elab.md)."
 msgstr ""
 
 #: manual/tutorial/elab.md:5
-msgid "Quick start"
+msgid "I want to"
+msgstr ""
+
+#: manual/tutorial/elab.md:5
+msgid "Use"
 msgstr ""
 
 #: manual/tutorial/elab.md:7
-msgid "Add the module to your project:"
+msgid "write a term"
+msgstr ""
+
+#: manual/tutorial/elab.md:7
+msgid "the constructors of `TermInf` and `TermChk`, with `Bound(i)` for variables"
+msgstr ""
+
+#: manual/tutorial/elab.md:8
+msgid "infer the type of a closed term"
+msgstr ""
+
+#: manual/tutorial/elab.md:9
+msgid "check a term against a type"
+msgstr ""
+
+#: manual/tutorial/elab.md:10
+msgid "postulate a constant"
+msgstr ""
+
+#: manual/tutorial/elab.md:10
+msgid "a `(Global(name), type)` entry in the `Context`"
+msgstr ""
+
+#: manual/tutorial/elab.md:11
+msgid "compute a normal form"
+msgstr ""
+
+#: manual/tutorial/elab.md:12
+msgid "compare two types"
+msgstr ""
+
+#: manual/tutorial/elab.md:12
+msgid "`def_eq(0, s, t)`, which tests $s \\le t$"
 msgstr ""
 
 #: manual/tutorial/elab.md:13
+msgid "print a term or value"
+msgstr ""
+
+#: manual/tutorial/elab.md:13
+msgid "`debug_inspect`, `Repr(x)` or `@debug.to_string(x)`"
+msgstr ""
+
+#: manual/tutorial/elab.md:15
+msgid "Quick start"
+msgstr ""
+
+#: manual/tutorial/elab.md:17
+msgid "Add the module to your project:"
+msgstr ""
+
+#: manual/tutorial/elab.md:23
 msgid "Import the package and the list package, which provides contexts and environments, in your `moon.pkg`:"
 msgstr ""
 
-#: manual/tutorial/elab.md:22
+#: manual/tutorial/elab.md:32
 msgid "The smallest useful program type-checks the identity function on the unit type and applies it:"
 msgstr ""
 
-#: manual/tutorial/elab.md:37
+#: manual/tutorial/elab.md:47
 msgid "Three ideas appear here. A function `Lam` has no domain annotation, so the kernel cannot infer its type; `Ann` supplies the type. `type_inf_0` returns the type as a *value*, and `quote(0, _)` turns a value back into a term you can print. `eval_inf` computes, and the application reduces to `UnitElement`."
 msgstr ""
 
-#: manual/tutorial/elab.md:39
+#: manual/tutorial/elab.md:49
 msgid "Everyday tasks"
 msgstr ""
 
-#: manual/tutorial/elab.md:41
+#: manual/tutorial/elab.md:51
 msgid "Read and write de Bruijn indices"
 msgstr ""
 
-#: manual/tutorial/elab.md:43
+#: manual/tutorial/elab.md:53
 msgid "Variables are numbers: `Bound(0)` is the variable of the nearest enclosing binder, `Bound(1)` the one outside it, and so on. The binders are `Lam` and the second argument of `Pi`, `Sigma` and `W`. The polymorphic identity $\\lambda A.\\,\\lambda x.\\,x : \\Pi_{A : \\mathcal U_0} \\Pi_{x : A} A$ is written like this:"
 msgstr ""
 
-#: manual/tutorial/elab.md:65
+#: manual/tutorial/elab.md:75
 msgid "In the type, the domain of the inner $\\Pi$ is `Bound(0)`, the $A$ bound by the outer $\\Pi$; its codomain is under one more binder, so the same $A$ is `Bound(1)` there. The type of the application is computed by substituting: the kernel applies the codomain closure to the argument's value."
 msgstr ""
 
-#: manual/tutorial/elab.md:67
+#: manual/tutorial/elab.md:77
 msgid "Declare constants in a context"
 msgstr ""
 
-#: manual/tutorial/elab.md:69
+#: manual/tutorial/elab.md:79
 msgid "A context lists the types of free variables named `Global(...)`. Use it to postulate a type and an element of it:"
 msgstr ""
 
-#: manual/tutorial/elab.md:83
+#: manual/tutorial/elab.md:93
 msgid "The type of `a` is the value of the term `A`, which is the neutral variable `VNeutral(NFree(Global(\"A\")))`."
 msgstr ""
 
-#: manual/tutorial/elab.md:85
+#: manual/tutorial/elab.md:95
 msgid "Work with pairs"
 msgstr ""
 
-#: manual/tutorial/elab.md:87
+#: manual/tutorial/elab.md:97
 msgid "A pair is checked against a $\\Sigma$ type, and the projections infer their types from it:"
 msgstr ""
 
-#: manual/tutorial/elab.md:101
+#: manual/tutorial/elab.md:111
 msgid "Handle type errors"
 msgstr ""
 
-#: manual/tutorial/elab.md:103
+#: manual/tutorial/elab.md:113
 msgid "The checker raises `TypeError` with a message that names the failed rule. Catch it like any MoonBit error:"
 msgstr ""
 
-#: manual/tutorial/elab.md:121
+#: manual/tutorial/elab.md:131
 msgid "Use universes and cumulativity"
 msgstr ""
 
-#: manual/tutorial/elab.md:123
+#: manual/tutorial/elab.md:133
 msgid "`Universe(i)` has type `Universe(i + 1)`, and a type in $\\mathcal U_i$ is also accepted in every larger universe:"
 msgstr ""
 
-#: manual/tutorial/elab.md:140
+#: manual/tutorial/elab.md:150
 msgid "`def_eq` is the subtyping test used by the checker, not a symmetric equality."
 msgstr ""
 
-#: manual/tutorial/elab.md:142
+#: manual/tutorial/elab.md:152
 msgid "Going further"
 msgstr ""
 
-#: manual/tutorial/elab.md:144
+#: manual/tutorial/elab.md:154
 msgid "Prove something by path induction"
 msgstr ""
 
-#: manual/tutorial/elab.md:146
+#: manual/tutorial/elab.md:156
 msgid "The eliminator `JElim(A, x, P, d, y, p)` turns a proof `d` of `P x (refl x)` and a path `p : Id(A, x, y)` into a proof of `P y p`. The motive `P` must be an inferable function, so annotate it. Here the motive is constant, $P = \\lambda y.\\,\\lambda p.\\,A$, and $J$ transports `a` along `refl a`:"
 msgstr ""
 
-#: manual/tutorial/elab.md:165
+#: manual/tutorial/elab.md:175
+msgid "Recurse on a W type"
+msgstr ""
+
+#: manual/tutorial/elab.md:177
+msgid "A W type $W_{x : A} B(x)$ is the type of well-founded trees whose nodes carry a label $a : A$ and have one child for each element of $B(a)$. `Sup(a, f)` builds a node from a label and a child function, and `WRec(A, B, P, s, w)` computes by recursion on `w`. Postulate a label type `A`, a family `B`, a label `a`, a child function `kids` and a tree `w` to work with:"
+msgstr ""
+
+#: manual/tutorial/elab.md:214
+msgid "The step function receives the label `l`, the child function `f` and the recursive results `h`, one for each child; its type is $\\Pi_{l : A} \\Pi_{f : B(l) \\to W} \\Pi_{h : \\Pi_{b : B(l)} P(f\\,b)}\\, P(\\sup(l, f))$. In `WRec`, `B` is an inferable function term, here the constant `B` itself, while in `W` it is a body under a binder."
+msgstr ""
+
+#: manual/tutorial/elab.md:216
 msgid "Normalise terms and compare them"
 msgstr ""
 
-#: manual/tutorial/elab.md:167
+#: manual/tutorial/elab.md:218
 msgid "The normal form of a term is the read-back of its value. Normalisation reduces under binders, so it decides $\\beta$-equality of terms:"
 msgstr ""
 
-#: manual/tutorial/elab.md:183
+#: manual/tutorial/elab.md:234
 msgid "The comparison uses the derived `Eq` of `TermChk`, which is $\\alpha$-equivalence because names are indices."
 msgstr ""
 
-#: manual/tutorial/elab.md:185
+#: manual/tutorial/elab.md:236
 msgid "Check under binders yourself"
 msgstr ""
 
-#: manual/tutorial/elab.md:187
+#: manual/tutorial/elab.md:238
 msgid "`type_inf_0` covers closed terms. To check a term with free `Bound` variables, call `type_inf` or `type_chk` with the state the checker would have under those binders: the level, a context entry `(Local(k), type)` and an environment entry `val_var(Local(k))` per binder, innermost first."
 msgstr ""
 
-#: manual/tutorial/elab.md:198
+#: manual/tutorial/elab.md:249
 msgid "Common pitfalls"
 msgstr ""
 
-#: manual/tutorial/elab.md:200
+#: manual/tutorial/elab.md:251
 msgid "**Type positions must be inferable.** A type is a `TermChk`, but the formation rules infer the universe of a type, so write `Inf(UnitType)`, not a bare `Lam` or `Pair`, wherever a type goes."
 msgstr ""
 
-#: manual/tutorial/elab.md:201
+#: manual/tutorial/elab.md:252
 msgid "**Functions need annotations to be inferred.** `Lam(...)` can only be checked. Wrap it in `Ann(lam, Inf(Pi(...)))` to use it in an application or as a motive."
 msgstr ""
 
-#: manual/tutorial/elab.md:202
+#: manual/tutorial/elab.md:253
 msgid "**`W` and `WRec` write the family differently.** In `W(A, B)`, `B` is a body under a binder; in `WRec(A, B, ...)`, `B` is an inferable function term of type $A \\to \\mathcal U_k$."
 msgstr ""
 
-#: manual/tutorial/elab.md:203
+#: manual/tutorial/elab.md:254
 msgid "**`def_eq` is directed and context-free.** It tests subtyping, and because it does not know the type of `f` it compares neutral applications such as `f x` by their read-backs, without $\\eta$ on the arguments."
 msgstr ""
 
-#: manual/tutorial/elab.md:204
+#: manual/tutorial/elab.md:255
 msgid "**Evaluation trusts its input.** `eval_inf` and the `val_` functions panic on ill-typed terms; type-check first."
 msgstr ""
 
-#: manual/tutorial/elab.md:205
+#: manual/tutorial/elab.md:256
+msgid "**Pass closed terms at the top level.** `type_inf_0(ctx, Bound(0))` panics instead of raising `TypeError`, because the index has no binder. Free variables are `Free(Global(...))` entries of the context."
+msgstr ""
+
+#: manual/tutorial/elab.md:257
 msgid "**Print with `Debug`.** The kernel types derive `Debug`, not `Show`: use `debug_inspect`, `Repr(x)` or `@debug.to_string(x)`. Closures print as `<function: ...>`, so quote a value before printing it."
 msgstr ""
 
-#: manual/tutorial/elab.md:207
+#: manual/tutorial/elab.md:259
 msgid "Next steps"
 msgstr ""
 
-#: manual/tutorial/elab.md:209
+#: manual/tutorial/elab.md:261
 msgid "The [API reference](../api/elab.md) lists every constructor and function."
 msgstr ""
 
-#: manual/tutorial/elab.md:210
+#: manual/tutorial/elab.md:262
 msgid "The [design notes](../design/elab.md) give the typing rules in inference-rule notation and explain normalisation by evaluation."
 msgstr ""
 
-#: manual/tutorial/elab.md:211
+#: manual/tutorial/elab.md:263
 msgid "The treatise linked from the [overview](../index.md) develops the type theory from the untyped lambda calculus."
 msgstr ""
