@@ -17,7 +17,7 @@ The release candidate centers on these changes:
 ## Install
 
 ```bash
-moon add Luna-Flow/stella@0.1.2
+moon add Luna-Flow/stella@0.2.0
 ```
 
 Then import `"Luna-Flow/stella/elab"` and `"moonbitlang/core/list"`, which provides contexts and environments, in your `moon.pkg`. The package needs the MoonBit toolchain 0.10 or later (`moonc` ≥ 0.10) and has no dependencies besides the MoonBit core library.

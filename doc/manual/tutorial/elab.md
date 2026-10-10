@@ -17,7 +17,7 @@ This tutorial shows you how to write terms of stella's type theory as MoonBit va
 Add the module to your project:
 
 ```bash
-moon add Luna-Flow/stella@0.1.2
+moon add Luna-Flow/stella@0.2.0
 ```
 
 Import the package and the list package, which provides contexts and environments, in your `moon.pkg`:
