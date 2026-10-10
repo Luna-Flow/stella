@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file.
 
 ## Unreleased
 
+## 0.2.0 - 2026-10-10
+
 ### Breaking changes
 
 - `Name`, `TermChk`, `TermInf`, `Neutral` and `Value` derive `Debug` instead of `Show`. Their `Show` implementations are removed, so `inspect(x)`, `x.to_string()` and `"\{x}"` no longer compile for these types. Use `debug_inspect(x)`, `@debug.to_string(x)` or `"\{Repr(x)}"` instead.
