@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 ## Unreleased
 
+### Changed
+
+- Builds with the latest MoonBit toolchain (moon 0.1.20261012, moonc 0.10.15):
+  the deprecated `@list.empty()` is replaced by `@list.List([])` and the sources
+  follow the formatter of that toolchain. No behavior change.
+
 ## 0.2.0 - 2026-10-10
 
 ### Breaking changes

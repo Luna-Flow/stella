@@ -1,5 +1,5 @@
 ///|
-using @list {cons, empty}
+using @list {cons}
 
 ///|
 pub type Env = @list.List[Value]
@@ -85,7 +85,7 @@ pub fn val_max_univ(val1 : Value, val2 : Value) -> Value {
 
 ///|
 fn ensure_inf(
-  lvl : Int,
+  lvl : Int32,
   ctx : Context,
   env : Env,
   term_chk : TermChk,
@@ -95,7 +95,7 @@ fn ensure_inf(
 }
 
 ///|
-fn ensure_univ(val : Value) -> Int raise TypeError {
+fn ensure_univ(val : Value) -> Int32 raise TypeError {
   match val {
     VUniverse(univ_lvl) => univ_lvl
     _ => raise TypeError("Expected a universe")
@@ -132,7 +132,7 @@ fn infer_neutral_type(ctx : Context, neu : Neutral) -> Type? {
 }
 
 ///|
-fn conv_neu(lvl : Int, ctx : Context, n1 : Neutral, n2 : Neutral) -> Bool {
+fn conv_neu(lvl : Int32, ctx : Context, n1 : Neutral, n2 : Neutral) -> Bool {
   match (n1, n2) {
     (NFree(x1), NFree(x2)) => x1 == x2
     (NApp(f1, a1), NApp(f2, a2)) =>
@@ -163,7 +163,7 @@ fn conv_neu(lvl : Int, ctx : Context, n1 : Neutral, n2 : Neutral) -> Bool {
 
 ///|
 fn conv_nf(
-  lvl : Int,
+  lvl : Int32,
   ctx : Context,
   val1 : Value,
   val2 : Value,
@@ -200,7 +200,7 @@ fn conv_nf(
 }
 
 ///|
-fn conv_type(lvl : Int, ctx : Context, val1 : Value, val2 : Value) -> Bool {
+fn conv_type(lvl : Int32, ctx : Context, val1 : Value, val2 : Value) -> Bool {
   match (val1, val2) {
     (VUniverse(u1), VUniverse(u2)) => u1 == u2
     (VPi(a1, b1), VPi(a2, b2)) => {
@@ -243,7 +243,7 @@ fn conv_type(lvl : Int, ctx : Context, val1 : Value, val2 : Value) -> Bool {
 }
 
 ///|
-fn subtype_nf(lvl : Int, ctx : Context, val1 : Value, val2 : Value) -> Bool {
+fn subtype_nf(lvl : Int32, ctx : Context, val1 : Value, val2 : Value) -> Bool {
   match (val1, val2) {
     (VUniverse(u1), VUniverse(u2)) => u1 <= u2
     (VPi(a1, b1), VPi(a2, b2)) => {
@@ -267,13 +267,13 @@ fn subtype_nf(lvl : Int, ctx : Context, val1 : Value, val2 : Value) -> Bool {
 }
 
 ///|
-fn subtype(lvl : Int, ctx : Context, val1 : Value, val2 : Value) -> Bool {
+fn subtype(lvl : Int32, ctx : Context, val1 : Value, val2 : Value) -> Bool {
   subtype_nf(lvl, ctx, val1, val2)
 }
 
 ///|
-pub fn def_eq(lvl : Int, val1 : Value, val2 : Value) -> Bool {
-  subtype(lvl, empty(), val1, val2)
+pub fn def_eq(lvl : Int32, val1 : Value, val2 : Value) -> Bool {
+  subtype(lvl, @list.List([]), val1, val2)
 }
 
 ///|
@@ -336,7 +336,7 @@ pub fn eval_chk(term : TermChk, env : Env) -> Value {
 }
 
 ///|
-pub fn quote(lvl : Int, val : Value) -> TermChk {
+pub fn quote(lvl : Int32, val : Value) -> TermChk {
   match val {
     VNeutral(neu) => Inf(neutral_quote(lvl, neu))
     VUnitType => Inf(UnitType)
@@ -356,7 +356,7 @@ pub fn quote(lvl : Int, val : Value) -> TermChk {
 }
 
 ///|
-pub fn neutral_quote(lvl : Int, neu : Neutral) -> TermInf {
+pub fn neutral_quote(lvl : Int32, neu : Neutral) -> TermInf {
   match neu {
     NFree(x) =>
       match x {
@@ -388,7 +388,7 @@ pub fn neutral_quote(lvl : Int, neu : Neutral) -> TermInf {
 
 ///|
 pub fn type_inf(
-  lvl : Int,
+  lvl : Int32,
   ctx : Context,
   env : Env,
   term : TermInf,
@@ -555,7 +555,7 @@ pub fn type_inf(
 
 ///|
 pub fn type_chk(
-  lvl : Int,
+  lvl : Int32,
   ctx : Context,
   env : Env,
   term : TermChk,
@@ -627,5 +627,5 @@ pub fn type_chk(
 
 ///|
 pub fn type_inf_0(ctx : Context, term : TermInf) -> Type raise TypeError {
-  type_inf(0, ctx, empty(), term)
+  type_inf(0, ctx, @list.List([]), term)
 }

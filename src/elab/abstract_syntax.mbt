@@ -8,8 +8,8 @@
 /// * `Quote(Int)` : Quoted variable with a de Bruijn level.
 pub(all) enum Name {
   Global(String)
-  Local(Int)
-  Quote(Int)
+  Local(Int32)
+  Quote(Int32)
 } derive(Debug, Eq)
 
 ///|
@@ -59,10 +59,10 @@ pub(all) enum TermChk {
 /// * `WRec(TermChk, TermChk, TermChk, TermChk, TermInf)` : Recursion principle
 ///   for W-types
 pub(all) enum TermInf {
-  Bound(Int)
+  Bound(Int32)
   Free(Name)
   UnitType
-  Universe(Int)
+  Universe(Int32)
   Ann(TermChk, TermChk)
   Pi(TermChk, TermChk)
   App(TermInf, TermChk)
@@ -133,7 +133,7 @@ pub(all) enum Value {
   VNeutral(Neutral)
   VUnitType
   VUnitElement
-  VUniverse(Int)
+  VUniverse(Int32)
   VLam((Value) -> Value)
   VPi(Value, (Value) -> Value)
   VSigma(Value, (Value) -> Value)

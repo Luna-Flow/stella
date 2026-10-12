@@ -1,13 +1,13 @@
 ///|
 test "Universe Hierarchy: Inference levels" {
-  let ctx = @list.empty()
+  let ctx = @list.List([])
   debug_inspect(type_inf_0(ctx, Universe(0)), content="VUniverse(1)")
   debug_inspect(type_inf_0(ctx, Universe(1)), content="VUniverse(2)")
 }
 
 ///|
 test "Universe Hierarchy: Max Rule (Pi Types)" {
-  let ctx = @list.empty()
+  let ctx = @list.List([])
   let t_base = TermInf::Pi(Inf(UnitType), Inf(UnitType))
   debug_inspect(type_inf_0(ctx, t_base), content="VUniverse(0)")
   let t_poly = TermInf::Pi(Inf(Universe(0)), Inf(Universe(0)))
@@ -29,16 +29,16 @@ test "Subtyping: Pi domain contravariance" {
   let codomain = fn(_ : Value) { VUniverse(0) }
   let wide = VPi(VUniverse(1), codomain)
   let narrow = VPi(VUniverse(0), codomain)
-  assert_eq(subtype(0, @list.empty(), wide, narrow), true)
-  assert_eq(subtype(0, @list.empty(), narrow, wide), false)
+  assert_eq(subtype(0, @list.List([]), wide, narrow), true)
+  assert_eq(subtype(0, @list.List([]), narrow, wide), false)
 }
 
 ///|
 test "Subtyping: Pi codomain covariance" {
   let low = VPi(VUniverse(0), fn(_ : Value) { VUniverse(0) })
   let high = VPi(VUniverse(0), fn(_ : Value) { VUniverse(1) })
-  assert_eq(subtype(0, @list.empty(), low, high), true)
-  assert_eq(subtype(0, @list.empty(), high, low), false)
+  assert_eq(subtype(0, @list.List([]), low, high), true)
+  assert_eq(subtype(0, @list.List([]), high, low), false)
 }
 
 ///|
@@ -46,16 +46,16 @@ test "Subtyping: Sigma domain invariant" {
   let codomain = fn(_ : Value) { VUniverse(0) }
   let wide = VSigma(VUniverse(1), codomain)
   let narrow = VSigma(VUniverse(0), codomain)
-  assert_eq(subtype(0, @list.empty(), wide, narrow), false)
-  assert_eq(subtype(0, @list.empty(), narrow, wide), false)
+  assert_eq(subtype(0, @list.List([]), wide, narrow), false)
+  assert_eq(subtype(0, @list.List([]), narrow, wide), false)
 }
 
 ///|
 test "Subtyping: Sigma codomain covariance" {
   let low = VSigma(VUniverse(0), fn(_ : Value) { VUniverse(0) })
   let high = VSigma(VUniverse(0), fn(_ : Value) { VUniverse(1) })
-  assert_eq(subtype(0, @list.empty(), low, high), true)
-  assert_eq(subtype(0, @list.empty(), high, low), false)
+  assert_eq(subtype(0, @list.List([]), low, high), true)
+  assert_eq(subtype(0, @list.List([]), high, low), false)
 }
 
 ///|
@@ -64,7 +64,7 @@ test "Type checking: Pi subtyping via annotation" {
     Ann(Lam(Inf(UnitType)), Inf(Pi(Inf(Universe(1)), Inf(Universe(0))))),
   )
   let expected = VPi(VUniverse(0), fn(_ : Value) { VUniverse(0) })
-  type_chk(0, @list.empty(), @list.empty(), term, expected) catch {
+  type_chk(0, @list.List([]), @list.List([]), term, expected) catch {
     TypeError(msg) =>
       fail("Expected Pi subtyping to hold, but got error: \{msg}")
   }
@@ -77,7 +77,7 @@ test "Type checking: Pi subtyping rejection" {
   )
   let expected = VPi(VUniverse(1), fn(_ : Value) { VUniverse(0) })
   let res : Result[Unit, Error] = try
-    type_chk(0, @list.empty(), @list.empty(), term, expected)
+    type_chk(0, @list.List([]), @list.List([]), term, expected)
   catch {
     e => Err(e)
   } noraise {
@@ -98,7 +98,7 @@ test "Type checking: Sigma domain mismatch rejection" {
   )
   let expected = VSigma(VUniverse(0), fn(_ : Value) { VUniverse(0) })
   let res : Result[Unit, Error] = try
-    type_chk(0, @list.empty(), @list.empty(), term, expected)
+    type_chk(0, @list.List([]), @list.List([]), term, expected)
   catch {
     e => Err(e)
   } noraise {
@@ -118,7 +118,7 @@ test "Type checking: Sigma codomain covariance" {
     ),
   )
   let expected = VSigma(VUniverse(0), fn(_ : Value) { VUniverse(1) })
-  type_chk(0, @list.empty(), @list.empty(), term, expected) catch {
+  type_chk(0, @list.List([]), @list.List([]), term, expected) catch {
     TypeError(msg) =>
       fail("Expected Sigma codomain subtyping, but got error: \{msg}")
   }
@@ -126,7 +126,7 @@ test "Type checking: Sigma codomain covariance" {
 
 ///|
 test "Universe Hierarchy: W-Types" {
-  let ctx = @list.empty()
+  let ctx = @list.List([])
   let w_term = TermInf::W(Inf(UnitType), Inf(UnitType))
   debug_inspect(type_inf_0(ctx, w_term), content="VUniverse(0)")
   let w_lifted = TermInf::W(Inf(Universe(0)), Inf(UnitType))
@@ -135,7 +135,7 @@ test "Universe Hierarchy: W-Types" {
 
 ///|
 test "Edge Case: Annotation with higher universe" {
-  type_chk(0, @list.empty(), @list.empty(), Inf(UnitType), VUniverse(1)) catch {
+  type_chk(0, @list.List([]), @list.List([]), Inf(UnitType), VUniverse(1)) catch {
     TypeError(msg) =>
       fail("Expected Unit to check against U1, but got error: \{msg}")
   }
@@ -158,7 +158,7 @@ fn j_rejects(motive : TermChk) -> Bool {
     UnitElement,
     j_fixture_refl_tt(),
   )
-  let res : Result[Value, Error] = try type_inf_0(@list.empty(), term) catch {
+  let res : Result[Value, Error] = try type_inf_0(@list.List([]), term) catch {
     e => Err(e)
   } noraise {
     v => Ok(v)
@@ -185,7 +185,7 @@ test "J: well-typed motive is accepted" {
     UnitElement,
     j_fixture_refl_tt(),
   )
-  assert_true(type_inf_0(@list.empty(), term) is VUnitType)
+  assert_true(type_inf_0(@list.List([]), term) is VUnitType)
 }
 
 ///|
@@ -222,11 +222,11 @@ test "J: motive whose second domain is not Id(A, x, y) is rejected" {
 
 ///|
 test "def_eq: reflexive on neutral applications (#18)" {
-  let f_tt = eval_inf(App(Free(Global("f")), UnitElement), @list.empty())
+  let f_tt = eval_inf(App(Free(Global("f")), UnitElement), @list.List([]))
   assert_true(def_eq(0, f_tt, f_tt))
   let f_u = eval_inf(
     App(Free(Global("f")), Inf(Free(Global("u")))),
-    @list.empty(),
+    @list.List([]),
   )
   assert_true(def_eq(0, f_u, f_u))
   assert_false(def_eq(0, f_tt, f_u))
@@ -297,10 +297,10 @@ test "quote: stuck WRec reads back to a term that evaluates to itself (#21)" {
     Lam(Lam(Lam(UnitElement))),
     Free(Global("w")),
   )
-  let q1 = quote(0, eval_inf(t, @list.empty()))
+  let q1 = quote(0, eval_inf(t, @list.List([])))
   guard q1 is Inf(WRec(_, Lam(_), _, _, _) as t1) else {
     fail("expected B to be read back as a function")
   }
-  let q2 = quote(0, eval_inf(t1, @list.empty()))
+  let q2 = quote(0, eval_inf(t1, @list.List([])))
   assert_eq(q1, q2)
 }
