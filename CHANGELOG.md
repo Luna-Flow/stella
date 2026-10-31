@@ -4,11 +4,14 @@ All notable changes to this project are documented in this file.
 
 ## Unreleased
 
+## 0.2.1 - 2026-10-31
+
 ### Changed
 
 - Builds with the latest MoonBit toolchain (moon 0.1.20261012, moonc 0.10.15):
   the deprecated `@list.empty()` is replaced by `@list.List([])` and the sources
   follow the formatter of that toolchain. No behavior change.
+- Builds with moon 0.1.20261028; interfaces regenerated. `publish.yml` no longer runs a bare `moon install`, which now installs binaries.
 
 ## 0.2.0 - 2026-10-10
 
