@@ -43,13 +43,15 @@ pub suberror TypeError {
 }
 
 // Types and methods
+#derive(Eq, @debug.Debug)
 pub(all) enum Name {
   Global(String)
   Local(Int32)
   Quote(Int32)
-} derive(Eq, @debug.Debug)
+}
 pub fn Name::equal(Self, Self) -> Bool
 
+#derive(@debug.Debug)
 pub(all) enum Neutral {
   NFree(Name)
   NApp(Neutral, Value)
@@ -57,8 +59,9 @@ pub(all) enum Neutral {
   NSnd(Neutral)
   NJElim(Value, Value, Value, Value, Value, Neutral)
   NWRec(Value, (Value) -> Value, Value, Value, Neutral)
-} derive(@debug.Debug)
+}
 
+#derive(Eq, @debug.Debug)
 pub(all) enum TermChk {
   Inf(TermInf)
   UnitElement
@@ -66,9 +69,10 @@ pub(all) enum TermChk {
   Pair(TermChk, TermChk)
   Rfl(TermChk)
   Sup(TermChk, TermChk)
-} derive(Eq, @debug.Debug)
+}
 pub fn TermChk::equal(Self, Self) -> Bool
 
+#derive(Eq, @debug.Debug)
 pub(all) enum TermInf {
   Bound(Int32)
   Free(Name)
@@ -84,10 +88,11 @@ pub(all) enum TermInf {
   JElim(TermChk, TermChk, TermChk, TermChk, TermChk, TermInf)
   W(TermChk, TermChk)
   WRec(TermChk, TermChk, TermChk, TermChk, TermInf)
-} derive(Eq, @debug.Debug)
+}
 pub fn TermInf::equal(Self, Self) -> Bool
 
 #alias(Type)
+#derive(@debug.Debug)
 pub(all) enum Value {
   VNeutral(Neutral)
   VUnitType
@@ -101,7 +106,7 @@ pub(all) enum Value {
   VRfl(Value)
   VW(Value, (Value) -> Value)
   VSup(Value, (Value) -> Value)
-} derive(@debug.Debug)
+}
 
 // Type aliases
 pub type Context = @list.List[(Name, Value)]
