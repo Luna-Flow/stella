@@ -6,11 +6,12 @@
 /// * `Global(String)` : Global variable with a string name identifier.
 /// * `Local(Int)` : Local variable with a de Bruijn index.
 /// * `Quote(Int)` : Quoted variable with a de Bruijn level.
+#derive(Debug, Eq)
 pub(all) enum Name {
   Global(String)
   Local(Int32)
   Quote(Int32)
-} derive(Debug, Eq)
+}
 
 ///|
 /// Checkable term in dependent type theory that can be type-checked against a
@@ -26,6 +27,7 @@ pub(all) enum Name {
 ///   equals itself.
 /// * `Sup(TermChk, TermChk)` : Constructor for W-types (well-founded trees)
 ///   with shape and children components.
+#derive(Debug, Eq)
 pub(all) enum TermChk {
   Inf(TermInf)
   UnitElement
@@ -34,7 +36,7 @@ pub(all) enum TermChk {
   Rfl(TermChk)
   /// Sup(shape, children)
   Sup(TermChk, TermChk)
-} derive(Debug, Eq)
+}
 
 ///|
 /// Inferrable terms in type theory that synthesize their types during type
@@ -58,6 +60,7 @@ pub(all) enum TermChk {
 /// * `W(TermChk, TermChk)` : Well-founded tree type W(A, B)
 /// * `WRec(TermChk, TermChk, TermChk, TermChk, TermInf)` : Recursion principle
 ///   for W-types
+#derive(Debug, Eq)
 pub(all) enum TermInf {
   Bound(Int32)
   Free(Name)
@@ -77,7 +80,7 @@ pub(all) enum TermInf {
   W(TermChk, TermChk)
   /// WRec(A, B, motive, step_case, target)
   WRec(TermChk, TermChk, TermChk, TermChk, TermInf)
-} derive(Debug, Eq)
+}
 
 ///|
 /// Neutral value in the type theory system that represents terms that cannot be
@@ -98,6 +101,7 @@ pub(all) enum TermInf {
 ///   eliminator (J rule) applied to a neutral proof term
 /// * `NWRec(Value, (Value) -> Value, Value, Value, Neutral)` - W-type recursion
 ///   eliminator applied to a neutral W-type value
+#derive(Debug)
 pub(all) enum Neutral {
   NFree(Name)
   NApp(Neutral, Value)
@@ -105,7 +109,7 @@ pub(all) enum Neutral {
   NSnd(Neutral)
   NJElim(Value, Value, Value, Value, Value, Neutral)
   NWRec(Value, (Value) -> Value, Value, Value, Neutral)
-} derive(Debug)
+}
 
 ///|
 /// Runtime values in the type system representing fully evaluated terms.
@@ -129,6 +133,7 @@ pub(all) enum Neutral {
 ///   type and child type function
 /// * `VSup(Value, (Value) -> Value)` : Constructor for W-type with label and
 ///   children function
+#derive(Debug)
 pub(all) enum Value {
   VNeutral(Neutral)
   VUnitType
@@ -142,7 +147,7 @@ pub(all) enum Value {
   VRfl(Value)
   VW(Value, (Value) -> Value)
   VSup(Value, (Value) -> Value)
-} derive(Debug)
+}
 
 ///|
 pub type Type = Value
