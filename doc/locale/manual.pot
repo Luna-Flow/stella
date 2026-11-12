@@ -775,7 +775,7 @@ msgid "Install"
 msgstr ""
 
 #: manual/index.md:23
-msgid "Then import `\"Luna-Flow/stella/elab\"` and `\"moonbitlang/core/list\"`, which provides contexts and environments, in your `moon.pkg`. The package needs the MoonBit toolchain 0.10 or later (`moonc` ≥ 0.10) and has no dependencies besides the MoonBit core library."
+msgid "Then import `\"Luna-Flow/stella/elab\"` and `\"moonbitlang/core/list\"`, which provides contexts and environments, in your `moon.pkg`. The package needs the MoonBit toolchain 0.10.20 or later (`moonc` ≥ 0.10.20) and has no dependencies besides the MoonBit core library."
 msgstr ""
 
 #: manual/index.md:25

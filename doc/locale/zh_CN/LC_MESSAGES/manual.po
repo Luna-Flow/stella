@@ -775,8 +775,8 @@ msgid "Install"
 msgstr "安装"
 
 #: manual/index.md:23
-msgid "Then import `\"Luna-Flow/stella/elab\"` and `\"moonbitlang/core/list\"`, which provides contexts and environments, in your `moon.pkg`. The package needs the MoonBit toolchain 0.10 or later (`moonc` ≥ 0.10) and has no dependencies besides the MoonBit core library."
-msgstr "然后在你的 `moon.pkg` 中导入 `\"Luna-Flow/stella/elab\"` 和提供上下文与环境的 `\"moonbitlang/core/list\"`。本包需要 MoonBit 工具链 0.10 或更高版本（`moonc` ≥ 0.10），除 MoonBit 核心库外没有其他依赖。"
+msgid "Then import `\"Luna-Flow/stella/elab\"` and `\"moonbitlang/core/list\"`, which provides contexts and environments, in your `moon.pkg`. The package needs the MoonBit toolchain 0.10.20 or later (`moonc` ≥ 0.10.20) and has no dependencies besides the MoonBit core library."
+msgstr "然后在你的 `moon.pkg` 中导入 `\"Luna-Flow/stella/elab\"` 和提供上下文与环境的 `\"moonbitlang/core/list\"`。本包需要 MoonBit 工具链 0.10.20 或更高版本（`moonc` ≥ 0.10.20），除 MoonBit 核心库外没有其他依赖。"
 
 #: manual/index.md:25
 msgid "[!NOTE] `moon.mod` still declares `0.1.2`, the last published version. That version implements `Show` for the kernel types and lacks the fixes listed in the [changelog](../../CHANGELOG.md); the pages below describe `main`."
