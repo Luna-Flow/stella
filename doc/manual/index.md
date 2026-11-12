@@ -20,7 +20,7 @@ The release candidate centers on these changes:
 moon add Luna-Flow/stella@0.2.0
 ```
 
-Then import `"Luna-Flow/stella/elab"` and `"moonbitlang/core/list"`, which provides contexts and environments, in your `moon.pkg`. The package needs the MoonBit toolchain 0.10 or later (`moonc` ≥ 0.10) and has no dependencies besides the MoonBit core library.
+Then import `"Luna-Flow/stella/elab"` and `"moonbitlang/core/list"`, which provides contexts and environments, in your `moon.pkg`. The package needs the MoonBit toolchain 0.10.20 or later (`moonc` ≥ 0.10.20) and has no dependencies besides the MoonBit core library.
 
 > [!NOTE]
 > `moon.mod` still declares `0.1.2`, the last published version. That version implements `Show` for the kernel types and lacks the fixes listed in the [changelog](../../CHANGELOG.md); the pages below describe `main`.
